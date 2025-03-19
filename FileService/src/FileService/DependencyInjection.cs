@@ -21,32 +21,29 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddInfrastructure(configuration);
-
-        services.AddCustomSwagger(configuration);
-
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
-
-        services.AddApplicationLoggingSeq(configuration);
-
-        services.AddAuthServices(configuration);
-
-        services.AddEndpoints(Assembly.GetExecutingAssembly());
-
-        services.AddCors();
-
-        services.AddBackgroundServices();
-
-        services.AddObservability(configuration, [InstrumentationOptions.MeterName],
-            [DiagnosticHeaders.DefaultListenerName]);
+        services
+            .AddInfrastructure(configuration)
+            .AddFramework(configuration);
 
         return services;
     }
 
-    private static IServiceCollection AddBackgroundServices(this IServiceCollection services)
+    private static IServiceCollection AddFramework(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
-        services.AddHostedService<CancelMultipartUploadService>();
+        services.AddApplicationLoggingSeq(configuration)
+            .AddEndpointsApiExplorer()
+            .AddCustomSwagger(configuration)
+            .AddSwaggerGen()
+            .AddAuthServices(configuration)
+            .AddEndpoints(Assembly.GetExecutingAssembly())
+            .AddCors()
+            .AddObservability(configuration, [InstrumentationOptions.MeterName],
+                [DiagnosticHeaders.DefaultListenerName]);
+
+        services.AddHttpContextAccessor()
+            .AddScoped<UserScopedData>();
 
         return services;
     }
@@ -58,9 +55,16 @@ public static class DependencyInjectionInfrastructure
     {
         services.AddMessageBus(configuration)
             .AddMinio(configuration)
-            .FileServices(configuration);
+            .FileServices(configuration)
+            .AddDistributedCache(configuration)
+            .AddBackgroundServices();
 
-        services.AddDistributedCache(configuration);
+        return services;
+    }
+
+    private static IServiceCollection AddBackgroundServices(this IServiceCollection services)
+    {
+        services.AddHostedService<CancelMultipartUploadService>();
 
         return services;
     }

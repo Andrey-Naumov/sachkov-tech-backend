@@ -6,10 +6,10 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services
     .AddLogging(builder.Configuration)
     .AddEndpoints(Assembly.GetExecutingAssembly())
