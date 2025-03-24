@@ -50,4 +50,13 @@ public interface IFileService
     /// <returns>Ответ с URL для скачивания файлов.</returns>
     Task<Result<GetDownloadUrlsResponse, ErrorList>> GetDownloadUrls(
         GetDownloadUrlsRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получение ссылки на плейлист HLS.
+    /// </summary>
+    /// <param name="videoId">Видео Id.</param>
+    /// <param name="cancellationToken">Токен отмены.</param>
+    /// <returns>Ответ с URL для скачивания плейлиста HLS.</returns>
+    Task<Result<GetHlsPlaylistUrlResponse, ErrorList>> GetHlsPlaylistUrl(
+        Guid videoId, CancellationToken cancellationToken);
 }

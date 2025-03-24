@@ -26,9 +26,5 @@
     <ItemGroup>
       <Compile Remove="DataModels\UserDataModel.cs" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="DataModels\" />
-    </ItemGroup>
     
 </Project>

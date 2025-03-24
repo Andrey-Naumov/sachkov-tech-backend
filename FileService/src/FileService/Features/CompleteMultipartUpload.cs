@@ -1,5 +1,6 @@
 ﻿using FileService.Contracts;
-using FileService.Services;
+using FileService.FilesManagement;
+using FileService.VideoProcessing;
 using MassTransit;
 using SachkovTech.Framework.Authorization;
 using SachkovTech.Framework.Endpoints;
@@ -21,13 +22,12 @@ public static class CompleteMultipartUpload
     private static async Task<IResult> Handler(
         CompleteMultipartUploadRequest request,
         IS3Provider s3Provider,
-        // VideoProcessor videoProcessor,
-        IPublishEndpoint publishEndpoint,
         CancellationToken cancellationToken)
     {
         if (request.PartETags.Count == 0)
         {
-            return ResultResponse.BadRequest<CompleteMultipartUploadResponse>(Errors.General.ValueIsInvalid("PartETags должен содержать хотя бы одну часть."));
+            return ResultResponse.BadRequest<CompleteMultipartUploadResponse>(
+                Errors.General.ValueIsInvalid("PartETags должен содержать хотя бы одну часть."));
         }
 
         var partETags = request.PartETags
@@ -40,7 +40,6 @@ public static class CompleteMultipartUpload
             partETags,
             cancellationToken);
 
-        // await publishEndpoint.Publish(new VideoUploadedEvent("videos", key), cancellationToken);
         return ResultResponse.Ok(new CompleteMultipartUploadResponse(key));
     }
 }

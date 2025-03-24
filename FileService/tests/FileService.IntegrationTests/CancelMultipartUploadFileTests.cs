@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
 using FileService.Contracts;
-using FileService.Services;
+using FileService.FilesManagement;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using SharedKernel;

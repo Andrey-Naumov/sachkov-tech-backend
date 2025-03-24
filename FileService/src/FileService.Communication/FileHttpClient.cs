@@ -45,4 +45,11 @@ public class FileHttpClient(HttpClient httpClient) : IFileService
         var response = await httpClient.PostAsJsonAsync("api/files/urls", request, cancellationToken);
         return await response.HandleResponseAsync<GetDownloadUrlsResponse>(cancellationToken);
     }
+
+    public async Task<Result<GetHlsPlaylistUrlResponse, ErrorList>> GetHlsPlaylistUrl(
+        Guid videoId, CancellationToken cancellationToken)
+    {
+        var response = await httpClient.GetAsync($"api/files/hls/{videoId}/playlist", cancellationToken);
+        return await response.HandleResponseAsync<GetHlsPlaylistUrlResponse>(cancellationToken);
+    }
 }

@@ -4,7 +4,7 @@ using SharedKernel;
 
 namespace SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonsByModuleWithPagination;
 
-public class GetLessonsByModuleWithPaginationValidator : AbstractValidator<GetLessonsWithPaginationQuery>
+public class GetLessonsByModuleWithPaginationValidator : AbstractValidator<GetLessonsByModuleQuery>
 {
     public GetLessonsByModuleWithPaginationValidator()
     {

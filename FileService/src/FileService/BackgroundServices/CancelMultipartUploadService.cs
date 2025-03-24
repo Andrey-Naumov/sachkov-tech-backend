@@ -1,6 +1,6 @@
 ﻿using Amazon.S3;
 using FileService.Contracts;
-using FileService.Services;
+using FileService.FilesManagement;
 
 namespace FileService.BackgroundServices;
 

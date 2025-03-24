@@ -23,10 +23,10 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
         : base(factory)
     {
         _sut = Scope.ServiceProvider
-            .GetRequiredService<IQueryHandlerWithResult<PagedList<LessonDto>, GetLessonsWithPaginationQuery>>();
+            .GetRequiredService<IQueryHandlerWithResult<PagedList<LessonDto>, GetLessonsByModuleQuery>>();
     }
 
-    private IQueryHandlerWithResult<PagedList<LessonDto>, GetLessonsWithPaginationQuery> _sut;
+    private IQueryHandlerWithResult<PagedList<LessonDto>, GetLessonsByModuleQuery> _sut;
 
     [Fact]
     public async Task Get_lessons_with_pagination()
@@ -37,7 +37,7 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
         const int countLessons = 5;
         var (moduleId, lessons) = await SeedLessonsToDatabase(DbContext, countLessons, cancellationToken);
 
-        var fileIds = lessons.Select(l => l.Video.FileId);
+        var fileIds = lessons.Select(l => l.ProcessedVideo.FileId);
         Factory.SetupSuccessFileServiceMock(fileIds);
 
         const int page = 1;
@@ -53,7 +53,7 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
         pagedList.Items.Should().HaveCount(countLessons);
         pagedList.TotalCount.Should().Be(countLessons);
         // TODO: Исправить работу с файлами
-        pagedList.Items.First().VideoUrl.Should().Be("test/" + Guid.Empty);
+        pagedList.Items.First().HlsVideoUrl.Should().Be("test/" + Guid.Empty);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
         int invalidPage = -1;
         int invalidPageSize = -1;
         var moduleId = ModuleId.NewModuleId();
-        var invalidQuery = new GetLessonsWithPaginationQuery(invalidPage, invalidPageSize, moduleId, string.Empty);
+        var invalidQuery = new GetLessonsByModuleQuery(invalidPage, invalidPageSize, moduleId, string.Empty);
 
         SetupFailureValidationResult(invalidQuery, cancellationToken);
 
@@ -80,9 +80,9 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
     }
 
     private void SetupFailureValidationResult(
-        GetLessonsWithPaginationQuery query, CancellationToken cancellationToken)
+        GetLessonsByModuleQuery query, CancellationToken cancellationToken)
     {
-        var validatorMock = Substitute.For<IValidator<GetLessonsWithPaginationQuery>>();
+        var validatorMock = Substitute.For<IValidator<GetLessonsByModuleQuery>>();
 
         var validationFailures = new List<ValidationFailure>
         {

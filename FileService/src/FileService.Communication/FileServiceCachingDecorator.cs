@@ -50,7 +50,7 @@ public class FileServiceCachingDecorator : IFileService
     {
         string cacheKey = request.FileId;
 
-        var cachedUrl = await _cacheService.GetAsync<string>(cacheKey, cancellationToken);
+        string? cachedUrl = await _cacheService.GetAsync<string>(cacheKey, cancellationToken);
         if (cachedUrl is not null)
             return new GetDownloadUrlResponse(cachedUrl);
 
@@ -59,7 +59,7 @@ public class FileServiceCachingDecorator : IFileService
             return urlResult.Error;
 
         await _cacheService.SetAsync(cacheKey, urlResult.Value.DownloadUrl,
-            new DistributedCacheEntryOptions()
+            new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(_minioOptions.UrlExpirationDays),
             }, cancellationToken);
@@ -77,7 +77,7 @@ public class FileServiceCachingDecorator : IFileService
         foreach (var location in request.Locations)
         {
             string cacheKey = location.FileId;
-            var cachedUrl = await _cacheService.GetAsync<string>(cacheKey, cancellationToken);
+            string? cachedUrl = await _cacheService.GetAsync<string>(cacheKey, cancellationToken);
 
             if (cachedUrl is not null)
                 fileUrls.Add(new FileUrl(cacheKey, cachedUrl));
@@ -85,27 +85,34 @@ public class FileServiceCachingDecorator : IFileService
                 uncachedFileIds.Add(new FileLocation(location.FileId, location.BucketName));
         }
 
-        if (uncachedFileIds.Any())
+        if (uncachedFileIds.Count == 0)
         {
-            var uncachedRequest = new GetDownloadUrlsRequest(uncachedFileIds);
-            var urlResult = await _fileService.GetDownloadUrls(uncachedRequest, cancellationToken);
+            return new GetDownloadUrlsResponse(fileUrls);
+        }
 
-            if (urlResult.IsFailure)
-                return urlResult.Error;
+        var uncachedRequest = new GetDownloadUrlsRequest(uncachedFileIds);
+        var urlResult = await _fileService.GetDownloadUrls(uncachedRequest, cancellationToken);
 
-            foreach (var fileUrl in urlResult.Value.FileUrls.Where(f => f is not null))
-            {
-                string cacheKey = fileUrl.FileId;
-                _cacheService.SetAsync(cacheKey, fileUrl.Url,
-                    new DistributedCacheEntryOptions()
-                    {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(_minioOptions.UrlExpirationDays),
-                    }, cancellationToken).Wait();
+        if (urlResult.IsFailure)
+            return urlResult.Error;
 
-                fileUrls.Add(fileUrl);
-            }
+        foreach (var fileUrl in urlResult.Value.FileUrls.Where(f => f is not null))
+        {
+            string cacheKey = fileUrl!.FileId;
+            await _cacheService.SetAsync(cacheKey, fileUrl.Url,
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(_minioOptions.UrlExpirationDays),
+                }, cancellationToken);
+
+            fileUrls.Add(fileUrl);
         }
 
         return new GetDownloadUrlsResponse(fileUrls);
+    }
+
+    public Task<Result<GetHlsPlaylistUrlResponse, ErrorList>> GetHlsPlaylistUrl(Guid videoId, CancellationToken cancellationToken)
+    {
+        return _fileService.GetHlsPlaylistUrl(videoId, cancellationToken);
     }
 }

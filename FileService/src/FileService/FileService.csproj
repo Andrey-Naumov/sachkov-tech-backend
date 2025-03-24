@@ -19,6 +19,7 @@
     <PackageReference Include="MimeTypesMap" Version="1.0.9" />
     <PackageReference Include="Minio.AspNetCore" Version="6.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
+    <PackageReference Include="SachkovTech.Issues.Contracts" Version="1.1.4" />
     <PackageReference Include="Scrutor" Version="6.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     <PackageReference Include="sharedkernel" Version="1.1.8" />

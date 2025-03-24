@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using FileService.Communication;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
@@ -21,6 +22,7 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
     private readonly ILessonsRepository _lessonsRepository;
     private readonly IModulesRepository _modulesRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPublisher _publisher;
     private readonly ILogger<CreateLessonHandler> _logger;
     private readonly IFileService _fileService;
 
@@ -29,6 +31,7 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
         ILessonsRepository lessonsRepository,
         IModulesRepository modulesRepository,
         IUnitOfWork unitOfWork,
+        IPublisher publisher,
         IFileService fileService,
         ILogger<CreateLessonHandler> logger)
     {
@@ -36,6 +39,7 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
         _lessonsRepository = lessonsRepository;
         _modulesRepository = modulesRepository;
         _unitOfWork = unitOfWork;
+        _publisher = publisher;
         _logger = logger;
         _fileService = fileService;
     }
@@ -83,9 +87,11 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
 
         var video = new Video(Guid.Parse(result.Value.FileId));
 
-        lesson.AddVideo(video);
+        lesson.AddOriginalVideo(video);
 
         await _unitOfWork.SaveChanges(cancellationToken);
+
+        await _publisher.PublishDomainEvents(lesson, cancellationToken);
 
         await transaction.CommitAsync(cancellationToken);
 

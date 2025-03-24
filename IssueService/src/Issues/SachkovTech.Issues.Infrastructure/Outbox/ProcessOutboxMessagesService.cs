@@ -18,12 +18,12 @@ public class ProcessOutboxMessagesService
     private readonly ILogger<ProcessOutboxMessagesService> _logger;
 
     public ProcessOutboxMessagesService(
-        Bind<IIssueMessageBus, IPublishEndpoint> publisher,
+        IPublishEndpoint publisher,
         IssuesDbContext dbContext,
         ILogger<ProcessOutboxMessagesService> logger)
     {
         _dbContext = dbContext;
-        _publisher = publisher.Value;
+        _publisher = publisher;
         _logger = logger;
     }
 
@@ -88,11 +88,11 @@ public class ProcessOutboxMessagesService
 
             await pipeline.ExecuteAsync(
                 async token =>
-            {
-                await _publisher.Publish(deserializedMessage, messageType, token);
+                {
+                    await _publisher.Publish(deserializedMessage, messageType, token);
 
-                message.ProcessedOnUtc = DateTime.UtcNow;
-            }, cancellationToken);
+                    message.ProcessedOnUtc = DateTime.UtcNow;
+                }, cancellationToken);
         }
         catch (Exception ex)
         {

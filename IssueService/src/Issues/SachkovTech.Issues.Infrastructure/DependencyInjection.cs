@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using SachkovTech.Core.Database;
 using SachkovTech.Issues.Application.Interfaces;
+using SachkovTech.Issues.Infrastructure.Consumers;
 using SachkovTech.Issues.Infrastructure.DbContexts;
 using SachkovTech.Issues.Infrastructure.Migrator;
 using SachkovTech.Issues.Infrastructure.Outbox;
@@ -40,9 +41,11 @@ public static class DependencyInjection
 
     private static IServiceCollection AddMessageBus(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddMassTransit<IIssueMessageBus>(configure =>
+        services.AddMassTransit(configure =>
         {
             configure.SetKebabCaseEndpointNameFormatter();
+
+            configure.AddConsumer<LessonVideoProcessedConsumer>();
 
             configure.UsingRabbitMq((context, cfg) =>
             {

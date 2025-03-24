@@ -7,6 +7,7 @@ using SachkovTech.Issues.Domain.IssueSolving.Entities;
 using SachkovTech.Issues.Domain.IssuesReviews;
 using SachkovTech.Issues.Domain.Lesson;
 using SachkovTech.Issues.Domain.Module;
+using SachkovTech.Issues.Domain.Module.Entities;
 using SachkovTech.Issues.Infrastructure.Outbox;
 
 namespace SachkovTech.Issues.Infrastructure.DbContexts;
@@ -42,6 +43,10 @@ public class IssuesDbContext : DbContext, IIssuesReadDbContext
     public IQueryable<IssueReview> ReadIssueReviews => Set<IssueReview>().AsQueryable().AsNoTracking();
 
     public IQueryable<Lesson> ReadLessons => Set<Lesson>().AsQueryable().AsNoTracking();
+
+    public IQueryable<LessonPosition> ReadLessonPositions => Set<LessonPosition>().AsQueryable().AsNoTracking();
+
+    public IQueryable<IssuePosition> ReadIssuePositions => Set<IssuePosition>().AsQueryable().AsNoTracking();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

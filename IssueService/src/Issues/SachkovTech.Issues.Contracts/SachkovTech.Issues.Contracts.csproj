@@ -10,11 +10,11 @@
         <Description>Issues contracts library</Description>
         <RepositoryUrl>https://github.com/SachkovTech/sachkov-tech-backend</RepositoryUrl>
         <PackageDescription>Issues contracts library</PackageDescription>
-        <Version>1.1.1</Version>
+        <Version>1.1.4</Version>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FileService.Contracts" Version="1.1.7" />
+      <PackageReference Include="FileService.Contracts" Version="1.2.0" />
     </ItemGroup>
 
 </Project>

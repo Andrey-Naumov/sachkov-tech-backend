@@ -1,4 +1,5 @@
 using FileService;
+using FileService.VideoProcessing;
 using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Middlewares;
 using Serilog;
@@ -12,7 +13,6 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
 builder.Services.AddProgramDependencies(builder.Configuration);
-
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();

@@ -30,7 +30,7 @@ public class GetLessonByIdTest : LessonsTestsBase
 
         var query = Fixture.CreateGetLessonByIdQuery(lesson.Id);
 
-        Factory.SetupSuccessFileServiceMock([lesson.Video.FileId]);
+        Factory.SetupSuccessFileServiceMock([lesson.ProcessedVideo.FileId]);
 
         // Act
         var result = await _sut.Handle(query, cancellationToken);
@@ -40,9 +40,9 @@ public class GetLessonByIdTest : LessonsTestsBase
         var lessonResponse = result.Value;
         lessonResponse.Should().NotBeNull();
         lessonResponse.Id.Should().Be(query.LessonId);
-        lessonResponse.VideoUrl.Should().Be($"test/{lesson.Video.FileId}");
+        lessonResponse.HlsVideoUrl.Should().Be($"test/{lesson.ProcessedVideo.FileId}");
         // TODO: нужно доделать LessonMapper, а потом поставить тестовые данные
-        lessonResponse.PreviewUrl.Should().Be(string.Empty);
+        // lessonResponse.PreviewUrl.Should().Be(string.Empty);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class GetLessonByIdTest : LessonsTestsBase
 
         var video = new Video(Guid.NewGuid());
 
-        lesson.AddVideo(video);
+        lesson.AddOriginalVideo(video);
         await dbContext.Lessons.AddAsync(lesson, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 

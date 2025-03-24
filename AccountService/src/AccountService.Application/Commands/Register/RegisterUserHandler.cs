@@ -46,7 +46,6 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         RegisterUserCommand command, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
-
         if (!validationResult.IsValid)
             return validationResult.ToList();
 

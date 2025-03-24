@@ -1,8 +1,10 @@
 ﻿using System.Reflection;
 using Amazon.S3;
 using FileService.BackgroundServices;
+using FileService.Consumers;
 using FileService.Contracts.Options;
-using FileService.Services;
+using FileService.FilesManagement;
+using FileService.VideoProcessing;
 using MassTransit;
 using MassTransit.Logging;
 using MassTransit.Monitoring;
@@ -24,6 +26,11 @@ public static class DependencyInjection
         services
             .AddInfrastructure(configuration)
             .AddFramework(configuration);
+
+        services.Configure<VideoProcessOptions>(configuration.GetSection(nameof(VideoProcessOptions)));
+
+        services.AddTransient<VideoProcessor>();
+        services.AddTransient<ProcessRunner>();
 
         return services;
     }
@@ -96,7 +103,16 @@ public static class DependencyInjectionInfrastructure
         {
             configure.SetKebabCaseEndpointNameFormatter();
 
-            // configure.AddConsumer<VideoProcessConsumer>();
+            configure.AddConsumer<LessonVideoUploadedConsumer>(cfg =>
+            {
+                cfg.UseMessageRetry(r =>
+                {
+                    r.Ignore<FfmpegProcessingException>();
+
+                    r.Incremental(3, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+                });
+            });
+
             configure.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(new Uri(configuration["RabbitMQ:Host"]!), h =>

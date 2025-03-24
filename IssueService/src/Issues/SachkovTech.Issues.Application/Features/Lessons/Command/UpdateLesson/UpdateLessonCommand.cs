@@ -7,7 +7,5 @@ public record UpdateLessonCommand(
     string Title,
     string Description,
     int Experience,
-    Guid VideoId,
-    Guid PreviewId,
     IEnumerable<Guid> Tags,
     IEnumerable<Guid> Issues) : ICommand;

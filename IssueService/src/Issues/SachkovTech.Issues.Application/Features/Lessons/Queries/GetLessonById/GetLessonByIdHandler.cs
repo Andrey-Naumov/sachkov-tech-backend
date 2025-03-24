@@ -4,7 +4,6 @@ using FileService.Contracts;
 using Microsoft.EntityFrameworkCore;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Issues.Application.Interfaces;
-using SachkovTech.Issues.Application.Mappers;
 using SachkovTech.Issues.Contracts.Lesson;
 using SachkovTech.Issues.Domain.ValueObjects;
 using SharedKernel;
@@ -30,18 +29,28 @@ public class GetLessonByIdHandler : IQueryHandlerWithResult<LessonDto, GetLesson
         if (lesson is null)
             return Errors.General.NotFound(query.LessonId, "lesson").ToErrorList();
 
-        var fileLocation = new FileLocation(lesson.Video.FileId.ToString(), lesson.Video.FileLocation);
+        var lessonPosition = await _readDbContext.ReadLessonPositions
+            .FirstOrDefaultAsync(l => l.LessonId == lesson.Id, cancellationToken);
 
-        var videoUrlsRequest = new GetDownloadUrlsRequest([fileLocation]);
+        if (lessonPosition is null)
+            return Errors.General.NotFound(query.LessonId, "lesson position").ToErrorList();
 
-        var videoUrlsResult = await _fileService.GetDownloadUrls(videoUrlsRequest, cancellationToken);
-        if (videoUrlsResult.IsFailure)
+        var videoUrlResult = await _fileService.GetHlsPlaylistUrl(lesson.ProcessedVideo.FileId, cancellationToken);
+        if (videoUrlResult.IsFailure)
             return Errors.General.NotFound().ToErrorList();
 
-        var videoUrls = videoUrlsResult.Value.FileUrls
-            .Where(f => f != null)
-            .ToDictionary(f => new Video(Guid.Parse(f!.FileId)), f => f!.Url);
-
-        return lesson.ToDto(null, videoUrls);
+        return new LessonDto
+        {
+            Id = lesson.Id.Value,
+            ModuleId = lesson.ModuleId,
+            Title = lesson.Title.Value,
+            Description = lesson.Description.Value,
+            Experience = lesson.Experience.Value,
+            HlsVideoUrl = videoUrlResult.Value.PlaylistUrl,
+            Position = lessonPosition.Position.Value,
+            // TODO
+            Tags = [],
+            Issues = [],
+        };
     }
 }

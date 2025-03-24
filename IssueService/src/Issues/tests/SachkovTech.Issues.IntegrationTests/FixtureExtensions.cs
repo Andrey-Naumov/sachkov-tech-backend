@@ -84,14 +84,14 @@ public static class FixtureExtensions
             .Create();
     }
 
-    public static GetLessonsWithPaginationQuery CreateGetLessonsWithPaginationQuery(
+    public static GetLessonsByModuleQuery CreateGetLessonsWithPaginationQuery(
         this IFixture fixture,
         Guid moduleId,
         int page,
         int pageSize,
         string? search = null)
     {
-        return fixture.Build<GetLessonsWithPaginationQuery>()
+        return fixture.Build<GetLessonsByModuleQuery>()
             .With(g => g.ModuleId, moduleId)
             .With(g => g.Page, page)
             .With(g => g.PageSize, pageSize)

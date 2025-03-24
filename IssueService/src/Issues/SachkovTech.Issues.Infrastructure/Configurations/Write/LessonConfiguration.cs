@@ -46,10 +46,6 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
                 .HasColumnName("experience");
         });
 
-        builder.Property(l => l.PreviewId)
-            .IsRequired(false)
-            .HasColumnName("preview_id");
-
         builder.Property(x => x.Tags)
             .HasColumnName("tags")
             .HasColumnType("uuid[]");
@@ -59,15 +55,39 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
             .HasColumnType("uuid[]");
 
         builder
-            .ComplexProperty(l => l.Video, vb =>
+            .ComplexProperty(l => l.AutoPreview, vb =>
             {
                 vb.Property(t => t.FileId)
                     .IsRequired()
-                    .HasColumnName("file_id");
+                    .HasColumnName("auto_preview_id");
 
                 vb.Property(t => t.FileLocation)
                     .IsRequired()
-                    .HasColumnName("file_location");
+                    .HasColumnName("auto_preview_location");
+            });
+
+        builder
+            .ComplexProperty(l => l.OriginalVideo, vb =>
+            {
+                vb.Property(t => t.FileId)
+                    .IsRequired()
+                    .HasColumnName("original_video_id");
+
+                vb.Property(t => t.FileLocation)
+                    .IsRequired()
+                    .HasColumnName("original_video_location");
+            });
+
+        builder
+            .ComplexProperty(l => l.ProcessedVideo, vb =>
+            {
+                vb.Property(t => t.FileId)
+                    .IsRequired()
+                    .HasColumnName("processed_video_id");
+
+                vb.Property(t => t.FileLocation)
+                    .IsRequired()
+                    .HasColumnName("processed_video_location");
             });
     }
 }

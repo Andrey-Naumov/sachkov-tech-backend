@@ -23,11 +23,11 @@ public class LessonsController : ApplicationController
     [Permission(Permissions.Lessons.READ_LESSON)]
     public async Task<IActionResult> GetLessons(
         [FromQuery] GetLessonsRequest request,
-        [FromServices] GetLessonsByModuleWithPaginationHandler byModuleWithPaginationHandler,
+        [FromServices] GetLessonsByModuleHandler handler,
         CancellationToken cancellationToken)
     {
-        var result = await byModuleWithPaginationHandler.Handle(
-            new GetLessonsWithPaginationQuery(request.Page, request.PageSize, request.ModuleId, request.Search),
+        var result = await handler.Handle(
+            new GetLessonsByModuleQuery(request.Page, request.PageSize, request.ModuleId, request.Search),
             cancellationToken);
 
         if (result.IsFailure)
@@ -107,8 +107,6 @@ public class LessonsController : ApplicationController
             request.Title,
             request.Description,
             request.Experience,
-            request.VideoId,
-            request.PreviewId,
             request.Tags,
             request.Issues);
 

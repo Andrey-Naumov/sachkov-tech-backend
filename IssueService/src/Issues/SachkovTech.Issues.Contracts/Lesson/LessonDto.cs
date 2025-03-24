@@ -1,5 +1,3 @@
-using SachkovTech.Issues.Contracts.Issue;
-
 namespace SachkovTech.Issues.Contracts.Lesson;
 
 public class LessonDto
@@ -16,15 +14,13 @@ public class LessonDto
 
     public int Experience { get; init; }
 
-    public Guid VideoId { get; init; }
+    public Guid ProcessedVideoId { get; init; }
 
-    public string FileLocation { get; init; } = string.Empty;
+    public string? HlsVideoUrl { get; init; } = string.Empty;
 
-    public string VideoUrl { get; init; } = string.Empty;
+    public Guid AutoPreviewId { get; init; }
 
-    public Guid PreviewId { get; init; }
-
-    public string PreviewUrl { get; init; } = string.Empty;
+    public string? AutoPreviewUrl { get; init; } = string.Empty;
 
     public Guid[] Tags { get; init; } = [];
 
