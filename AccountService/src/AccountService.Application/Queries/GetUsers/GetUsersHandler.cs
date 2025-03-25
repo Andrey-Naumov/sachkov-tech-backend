@@ -38,7 +38,8 @@ public class GetUsersHandler : IQueryHandler<PagedList<UserDto>, GetUsersQuery>
             .ToPagedList(
                 query.Page,
                 query.PageSize,
-                u => u.ToUserDto(),
+                // TODO: Реализовать получение файлов
+                u => u.ToUserDto(null),
                 cancellationToken);
     }
 }

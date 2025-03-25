@@ -10,6 +10,7 @@ public record UserDto(
     string? ThirdName,
     string? Email,
     string? PhoneNumber,
+    string AvatarUrl,
     DateTime RegistrationDate,
     IEnumerable<SocialNetworkDto> SocialNetworks,
     StudentAccountDto? StudentAccount,

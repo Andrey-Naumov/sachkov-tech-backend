@@ -31,12 +31,12 @@ public class S3Provider : IS3Provider
     {
         await CreateBucketIfNotExists(location.BucketName, cancellationToken);
 
-        // TODO: отменить multipart загрузку если она уже идёт
         var initiateRequest = new InitiateMultipartUploadRequest
         {
             BucketName = location.BucketName, Key = location.FileId, ContentType = contentType,
         };
 
+        // TODO: с русскими символами не пропускает
         initiateRequest.Metadata.Add("file-name", fileName);
         initiateRequest.Metadata.Add("file-extension", Path.GetExtension(fileName));
 

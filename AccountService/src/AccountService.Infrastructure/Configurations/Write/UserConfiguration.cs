@@ -25,12 +25,17 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             fb.Property(a => a!.ThirdName).IsRequired(false).HasColumnName("third_name");
         });
 
-        builder.Property(a => a.Photo)
-            .IsRequired(false)
-            .HasConversion(
-                photo => photo!.FileId,
-                value => new Photo(value))
-            .HasColumnName("photo");
+        builder
+            .ComplexProperty(u => u.Avatar, ab =>
+            {
+                ab.Property(t => t.FileId)
+                    .IsRequired()
+                    .HasColumnName("file_id");
+
+                ab.Property(t => t.FileLocation)
+                    .IsRequired()
+                    .HasColumnName("file_location");
+            });
 
         builder.HasOne(u => u.StudentAccount)
             .WithOne(s => s.User)

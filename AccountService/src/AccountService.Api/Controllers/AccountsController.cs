@@ -5,13 +5,16 @@ using AccountService.Application.Commands.Login;
 using AccountService.Application.Commands.Logout;
 using AccountService.Application.Commands.RefreshTokens;
 using AccountService.Application.Commands.Register;
+using AccountService.Application.Commands.StartUploadAvatar;
 using AccountService.Application.Commands.UpdateEmail;
 using AccountService.Application.Commands.UpdatePhoneNumber;
 using AccountService.Application.Commands.UpdateProfile;
+using AccountService.Application.Commands.UploadAvatar;
 using AccountService.Application.Commands.VerifyConfirmationLink;
 using AccountService.Application.Queries.GetUserById;
 using AccountService.Application.Queries.GetUsers;
 using AccountService.Contracts.Requests;
+using FileService.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using SachkovTech.Framework;
 using SachkovTech.Framework.Authorization;
@@ -267,6 +270,44 @@ public class AccountsController : ApplicationController
         CancellationToken cancellationToken = default)
     {
         var command = new UpdatePhoneNumberCommand(userId, request.PhoneNumber);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Error.ToResponse();
+
+        return Ok(result.Value);
+    }
+
+    [Permission(Permissions.Accounts.UPDATE_ACCOUNT)]
+    [HttpPut("avatar")]
+    public async Task<ActionResult> StartUploadAvatar(
+        [FromBody] FileMetadataRequest request,
+        [FromServices] StartUploadAvatarHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new StartUploadAvatarCommand(
+            request.FileName,
+            request.ContentType,
+            request.FileSize);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            result.Error.ToResponse();
+
+        return Ok(result.Value);
+    }
+
+    [Permission(Permissions.Accounts.UPDATE_ACCOUNT)]
+    [HttpPatch("{userId:guid}/avatar")]
+    public async Task<ActionResult> UploadAvatar(
+        [FromRoute] Guid userId,
+        [FromBody] CompleteMultipartUploadRequest request,
+        [FromServices] UploadAvatarHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new UploadAvatarCommand(userId, request);
 
         var result = await handler.Handle(command, cancellationToken);
 

@@ -6,7 +6,7 @@ namespace AccountService.Application.Mappers;
 
 public static class StudentMapper
 {
-    public static UserDto ToUserDto(this User user)
+    public static UserDto ToUserDto(this User user, string? avatarUrl)
         => new(
             user.Id,
             user.UserName,
@@ -15,6 +15,7 @@ public static class StudentMapper
             user.FullName.ThirdName,
             user.Email,
             user.PhoneNumber,
+            avatarUrl ?? string.Empty,
             user.RegistrationDate,
             user.SocialNetworks.Select(s => new SocialNetworkDto(s.Link, s.Name)),
             user.ToStudentAccountDto(),

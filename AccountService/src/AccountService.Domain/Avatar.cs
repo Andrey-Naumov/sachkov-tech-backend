@@ -3,9 +3,13 @@ using SharedKernel;
 
 namespace AccountService.Domain;
 
-public class Photo : ComparableValueObject
+public class Avatar : ComparableValueObject
 {
-    private const long MAX_FILE_SIZE = 5242880;
+    public const string LOCATION = "photos";
+
+    public static readonly Avatar None = new(Guid.Empty);
+
+    private const long MAX_FILE_SIZE = 10_485_760;
 
     private static readonly string[] _permitedFilesType =
     [
@@ -17,40 +21,39 @@ public class Photo : ComparableValueObject
         "jpg", "jpeg", "png", "gif"
     ];
 
-    public Photo(Guid fileId)
+    public Avatar(Guid fileId)
     {
         FileId = fileId;
     }
 
     public Guid FileId { get; }
 
-    // public static Result<Photo, Error> Create(Guid fileId) => new Photo(fileId);
+    public string FileLocation { get; } = LOCATION;
+
     public static UnitResult<Error> Validate(
         string fileName,
         string contentType,
         long size)
     {
         if (string.IsNullOrWhiteSpace(fileName))
-        {
             return Errors.General.ValueIsInvalid(fileName);
+
+        int lastDotIndex = fileName.LastIndexOf('.');
+        if (lastDotIndex == -1 || lastDotIndex == fileName.Length - 1)
+        {
+            return Errors.General.Failure();
         }
 
-        var fileExtension = fileName[fileName.LastIndexOf('.')..];
+        string fileExtension = fileName[(lastDotIndex + 1)..];
 
         if (_permitedExtensions.All(x => x != fileExtension))
-        {
             return Error.Validation("file.invalidExtension", "Неверное расширение файла.");
-        }
 
         if (_permitedFilesType.All(x => x != contentType))
-        {
             return Errors.General.ValueIsInvalid(contentType);
-        }
 
         if (size > MAX_FILE_SIZE)
-        {
             return Error.Validation("file.invalidSize", "Неверный размер файла.");
-        }
 
         return Result.Success<Error>();
     }
@@ -58,5 +61,6 @@ public class Photo : ComparableValueObject
     protected override IEnumerable<IComparable> GetComparableEqualityComponents()
     {
         yield return FileId;
+        yield return FileLocation;
     }
 }

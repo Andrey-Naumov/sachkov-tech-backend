@@ -18,7 +18,7 @@ public class User : IdentityUser<Guid>
 
     public FullName FullName { get; set; } = null!;
 
-    public Photo? Photo { get; set; }
+    public Avatar Avatar { get; set; } = Avatar.None;
 
     public IReadOnlyList<Role> Roles => _roles;
 
@@ -100,6 +100,15 @@ public class User : IdentityUser<Guid>
     public void UpdatePhoneNumber(string? phoneNumber)
     {
         PhoneNumber = phoneNumber;
+    }
+
+    public UnitResult<Error> UpdateAvatar(Avatar avatar)
+    {
+        if (Avatar == Avatar.None)
+            return Errors.General.AlreadyExist();
+
+        Avatar = avatar;
+        return UnitResult.Success<Error>();
     }
 
     public void UpdateSocialNetworks(IEnumerable<SocialNetwork> socialNetworks) =>

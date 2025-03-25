@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <Title>Issues.Contracts</Title>
-        <Authors>SachkovTech</Authors>
-        <Company>SachkovTech</Company>
-        <Description>Issues contracts library</Description>
-        <RepositoryUrl>https://github.com/SachkovTech/sachkov-tech-backend</RepositoryUrl>
-        <PackageDescription>Issues contracts library</PackageDescription>
-        <Version>1.1.4</Version>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Title>Issues.Contracts</Title>
+    <Authors>SachkovTech</Authors>
+    <Company>SachkovTech</Company>
+    <Description>Issues contracts library</Description>
+    <RepositoryUrl>https://github.com/SachkovTech/sachkov-tech-backend</RepositoryUrl>
+    <PackageDescription>Issues contracts library</PackageDescription>
+    <Version>1.1.4</Version>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="FileService.Contracts" Version="1.2.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FileService.Contracts" Version="1.2.0" />
+  </ItemGroup>
 
 </Project>
