@@ -1,8 +1,5 @@
-namespace SachkovTech.Framework.Authorization;
+﻿namespace SachkovTech.Issues.Presentation;
 
-/// <summary>
-/// Доступные пермиссии.
-/// </summary>
 public static class Permissions
 {
     public static class Lessons
@@ -41,18 +38,5 @@ public static class Permissions
         public const string CREATE_REVIEW_ISSUE = "review.issues.create";
         public const string UPDATE_REVIEW_ISSUE = "review.issues.update";
         public const string COMMENT_REVIEW_ISSUE = "review.issues.comment";
-    }
-
-    public static class Accounts
-    {
-        public const string ENROLL_ACCOUNT = "accounts.enroll";
-        public const string READ_ACCOUNT = "accounts.read";
-        public const string UPDATE_ACCOUNT = "accounts.update";
-    }
-
-    public static class Files
-    {
-        public const string READ_FILES = "files.read";
-        public const string UPLOAD_FILES = "files.upload";
     }
 }

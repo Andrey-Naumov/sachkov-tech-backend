@@ -2,29 +2,19 @@ namespace TagService.Extensions;
 
 public class CursorList<T>
 {
-    public IReadOnlyList<T> Items { get; init; } = [];
-
-    public long? TotalCount { get; init; }
-
-    public int Limit { get; init; }
-
-    public Guid? Cursor { get; init; }
-
-    public Guid? NextCursor { get; init; }
-
-    public bool HasNextCursor => NextCursor.HasValue;
+    public IReadOnlyList<T> Items { get; init; }
+    
+    public string? Cursor { get; init; }
+    
+    public bool HasMore { get; init; }
 
     public CursorList(
-        IReadOnlyList<T> items, 
-        Guid? cursor, 
-        Guid? nextCursor, 
-        int limit, 
-        long? totalCount = null)
+        IEnumerable<T> items, 
+        string? cursor, 
+        bool hasMore)
     {
-        Items = items;
+        Items = items.ToList();
         Cursor = cursor;
-        Limit = limit;
-        TotalCount = totalCount;
-        NextCursor = nextCursor;
+        HasMore = hasMore;
     }
 }

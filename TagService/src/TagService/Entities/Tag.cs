@@ -1,11 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
-using TagService.HelperClasses;
+using SharedKernel;
 
 namespace TagService.Entities;
 
 public class Tag : Entity<Guid>
 {
-    public const int TEXT_MAX_LENGTH = 50;
+    public const int TEXT_MAX_LENGTH = 1000;
     
     public string Name { get; private set; }
     
@@ -15,35 +15,31 @@ public class Tag : Entity<Guid>
     
     public int UsagesCount { get; private set; }
     
-    public Tag(Guid id, string name, string description, DateTime createdAt, int usagesCount) : base(id)
+    public Tag(Guid id, string name, string description, DateTime createdAt) : base(id)
     {
         Name = name;
         Description = description;
         CreatedAt = createdAt;
-        UsagesCount = usagesCount;
     }
 
-    public static Result<Tag, Error> Cretate(string name, string description, DateTime createdAt, int usagesCount)
+    public static Result<Tag, Error> Create(string name, string description, DateTime createdAt)
     {
         if(string.IsNullOrWhiteSpace(name) || name.Length > TEXT_MAX_LENGTH)
-            return Error.Validation("Name cannot be empty");
+            return Errors.General.ValueIsRequired("Name");
         
         if(string.IsNullOrWhiteSpace(description) || description.Length > TEXT_MAX_LENGTH)
-            return Error.Validation("Description name cannot be empty");
+            return Errors.General.ValueIsRequired("Description");
         
-        if(usagesCount < 0)
-            return Error.Validation("Usages count name cannot be less than zero");
-        
-        return new Tag(Guid.NewGuid(), name, description, createdAt, usagesCount);
+        return new Tag(Guid.NewGuid(), name, description, createdAt);
     }
 
     public UnitResult<Error> Edit(string name, string description)
     {
         if (string.IsNullOrWhiteSpace(name) || name.Length > TEXT_MAX_LENGTH)
-            return Error.Validation("Text is invalid");
+            return Errors.General.ValueIsInvalid("Text");
         
         if(string.IsNullOrWhiteSpace(description) || description.Length > TEXT_MAX_LENGTH)
-            return Error.Validation("Text is invalid");
+            return Errors.General.ValueIsInvalid("Text");
         
         Name = name;
         Description = description;
@@ -53,5 +49,12 @@ public class Tag : Entity<Guid>
 
     public void UsagesIncrease() => UsagesCount++;
     
-    public void UsagesDecrease() => UsagesCount--;
+    public UnitResult<Error> UsagesDecrease()
+    {
+        if (UsagesCount <= 0)
+            return Errors.General.ValueIsInvalid("UsagesCount");
+    
+        UsagesCount--;
+        return Result.Success<Error>();
+    }
 }

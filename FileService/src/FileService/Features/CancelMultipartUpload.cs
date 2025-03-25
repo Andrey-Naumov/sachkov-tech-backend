@@ -1,6 +1,5 @@
 ﻿using FileService.Contracts;
 using FileService.FilesManagement;
-using SachkovTech.Framework.Authorization;
 using SachkovTech.Framework.Endpoints;
 
 namespace FileService.Features;

@@ -3,7 +3,6 @@ using FileService.Contracts;
 using FileService.Contracts.Options;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;

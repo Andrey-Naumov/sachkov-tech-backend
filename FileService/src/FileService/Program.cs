@@ -1,5 +1,4 @@
 using FileService;
-using FileService.VideoProcessing;
 using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Middlewares;
 using Serilog;

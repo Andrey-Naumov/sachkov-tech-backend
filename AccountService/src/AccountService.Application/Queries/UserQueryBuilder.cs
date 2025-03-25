@@ -26,7 +26,8 @@ internal class UserQueryBuilder
     {
         _userQuery = _userQuery.WhereIf(
             string.IsNullOrWhiteSpace(roleName) == false,
-            ud => ud.Roles.Any(r => r.Name != null && r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase)));
+            ud => ud.Roles.Any(
+                r => r.Name != null && r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase)));
 
         return this;
     }
@@ -42,7 +43,8 @@ internal class UserQueryBuilder
     {
         _userQuery = _userQuery.WhereIf(
             string.IsNullOrWhiteSpace(roleName) == false,
-            ud => ud.Roles.All(r => r.Name != null && !r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase)));
+            ud => ud.Roles.All(r =>
+                r.Name != null && !r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase)));
 
         return this;
     }

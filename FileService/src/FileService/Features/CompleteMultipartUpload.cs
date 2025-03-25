@@ -1,8 +1,5 @@
 ﻿using FileService.Contracts;
 using FileService.FilesManagement;
-using FileService.VideoProcessing;
-using MassTransit;
-using SachkovTech.Framework.Authorization;
 using SachkovTech.Framework.Endpoints;
 using SharedKernel;
 

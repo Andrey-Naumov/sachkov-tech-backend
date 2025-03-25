@@ -23,7 +23,11 @@
       "modules.read",
       "modules.create",
       "modules.update",
-      "modules.delete"
+      "modules.delete",
+      "tag.read",
+      "tag.create",
+      "tag.update",
+      "tag.delete"
     ],
     "Student": [
       "lessons.read",
@@ -81,6 +85,12 @@
       "review.issues.create",
       "review.issues.update",
       "review.issues.comment"
+    ],
+    "Tags": [
+      "tag.read",
+      "tag.create",
+      "tag.update",
+      "tag.delete"
     ],
     "Files": [
       "files.read",

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>Framework</PackageId>
-    <Version>1.3.0</Version>
+    <Version>1.3.4</Version>
     <Authors>SachkovTech</Authors>
     <Company>SachkovTech</Company>
     <PackageDescription>Framework project</PackageDescription>
@@ -38,7 +38,6 @@
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0"/>
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0"/>
     <PackageReference Include="Serilog.Sinks.Http" Version="9.1.0"/>
-    <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Trace" Version="4.0.0"/>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0"/>
