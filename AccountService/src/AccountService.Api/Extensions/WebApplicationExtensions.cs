@@ -32,7 +32,10 @@ public static class WebApplicationExtensions
     {
         app.UseCors(config =>
         {
-            config.WithOrigins("http://localhost:5173", "http://localhost:4173")
+            config.WithOrigins(
+                    "http://localhost:5173",
+                    "http://localhost:4173",
+                    "http://192.168.1.222:4173")
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
