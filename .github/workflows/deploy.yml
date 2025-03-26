@@ -1,0 +1,30 @@
+on:
+  push:
+    branches:
+      - dev
+  
+jobs:
+  run_pull:
+    name: run pull
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: install ssh keys
+      run: |
+        mkdir -p ~/.ssh/
+        sudo chmod 700 ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        sudo chmod 600 ~/.ssh/id_rsa
+        echo "${{ secrets.SSH_HOST }}" > ~/.ssh/known_hosts
+        
+    - name: connect & pull & docker-compose
+      run: |
+        ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+        "cd ${{ secrets.WORK_DIR }} && \
+        git pull origin main && \
+        cd ${{ secrets.DOCKER_DIR }} && \
+        docker compose down && \
+        docker compose up --build -d"
+          
+    - name: cleanup
+      run: rm -rf ~/.ssh
