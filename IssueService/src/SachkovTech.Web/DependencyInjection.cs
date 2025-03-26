@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Caching;
 using SachkovTech.Framework.Authorization;
+using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Logging;
 using SachkovTech.Framework.Observability;
 using SachkovTech.Framework.Swagger;
@@ -27,6 +28,7 @@ public static class DependencyInjection
         };
 
         services.AddControllers();
+        services.AddLowerCaseRouting();
 
         services.Configure<ApiBehaviorOptions>(options =>
         {

@@ -8,6 +8,7 @@ using MassTransit.Monitoring;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Caching;
 using SachkovTech.Framework.Authorization;
+using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Logging;
 using SachkovTech.Framework.Observability;
 using SachkovTech.Framework.Swagger;
@@ -18,13 +19,10 @@ public static class DependencyInjection
 {
     public static void AddProgramDependencies(this IServiceCollection services, IConfiguration configuration)
     {
-        var assemblies = new[]
-        {
-            typeof(AccountService.Application.DependencyInjection).Assembly,
-        };
+        var assemblies = new[] { typeof(AccountService.Application.DependencyInjection).Assembly, };
 
         services.AddControllers();
-        services.AddRouting(options => options.LowercaseUrls = true);
+        services.AddLowerCaseRouting();
 
         services
             .AddInfrastructure(configuration)

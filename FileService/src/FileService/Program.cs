@@ -12,6 +12,7 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
 builder.Services.AddProgramDependencies(builder.Configuration);
+
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
