@@ -102,13 +102,9 @@ public class User : IdentityUser<Guid>
         PhoneNumber = phoneNumber;
     }
 
-    public UnitResult<Error> UpdateAvatar(Avatar avatar)
+    public void UpdateAvatar(Avatar avatar)
     {
-        if (Avatar == Avatar.None)
-            return Errors.General.AlreadyExist();
-
         Avatar = avatar;
-        return UnitResult.Success<Error>();
     }
 
     public void UpdateSocialNetworks(IEnumerable<SocialNetwork> socialNetworks) =>

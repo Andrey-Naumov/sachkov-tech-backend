@@ -294,7 +294,7 @@ public class AccountsController : ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
-            result.Error.ToResponse();
+            return result.Error.ToResponse();
 
         return Ok(result.Value);
     }

@@ -45,9 +45,7 @@ public class UploadAvatarHandler : ICommandHandler<Guid, UploadAvatarCommand>
 
         var avatar = new Avatar(Guid.Parse(result.Value.FileId));
 
-        var updateResult = userResult.UpdateAvatar(avatar);
-        if (updateResult.IsFailure)
-            return updateResult.Error.ToErrorList();
+        userResult.UpdateAvatar(avatar);
 
         await _unitOfWork.SaveChanges(cancellationToken);
 
