@@ -21,6 +21,7 @@ using SachkovTech.Framework.Authorization;
 
 namespace AccountService.Api.Controllers;
 
+[Route("api/accounts")]
 public class AccountsController : ApplicationController
 {
     private readonly HttpContextProvider _httpContextProvider;
