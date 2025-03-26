@@ -1,4 +1,6 @@
-﻿using SachkovTech.Core.Database;
+﻿using AccountService.Api.Cors;
+using Microsoft.Extensions.Options;
+using SachkovTech.Core.Database;
 using SachkovTech.Framework.Middlewares;
 using Serilog;
 
@@ -30,15 +32,33 @@ public static class WebApplicationExtensions
 
     private static void ConfigureCors(this WebApplication app)
     {
+        var corsSettings = app.Services.GetRequiredService<IOptions<CorsSettings>>().Value;
+
         app.UseCors(config =>
         {
-            config.WithOrigins(
-                    "http://localhost:5173",
-                    "http://localhost:4173",
-                    "http://192.168.1.222:4173")
-                .AllowCredentials()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
+            if (corsSettings.AllowedOrigins.Length > 0)
+                config.WithOrigins(corsSettings.AllowedOrigins);
+
+            if (corsSettings.AllowCredentials)
+                config.AllowCredentials();
+
+            if (corsSettings.AllowedHeaders.Length > 0 && !corsSettings.AllowedHeaders.Contains("*"))
+            {
+                config.WithHeaders(corsSettings.AllowedHeaders);
+            }
+            else
+            {
+                config.AllowAnyHeader();
+            }
+
+            if (corsSettings.AllowedMethods.Length > 0 && !corsSettings.AllowedMethods.Contains("*"))
+            {
+                config.WithMethods(corsSettings.AllowedMethods);
+            }
+            else
+            {
+                config.AllowAnyMethod();
+            }
         });
     }
 }

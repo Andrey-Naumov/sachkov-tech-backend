@@ -1,4 +1,5 @@
 using System.Reflection;
+using AccountService.Api.Cors;
 using AccountService.Api.Providers;
 using AccountService.Application;
 using AccountService.Infrastructure;
@@ -23,6 +24,7 @@ public static class DependencyInjection
 
         services.AddControllers();
         services.AddLowerCaseRouting();
+        services.Configure<CorsSettings>(configuration.GetSection(CorsSettings.CORS));
 
         services
             .AddInfrastructure(configuration)

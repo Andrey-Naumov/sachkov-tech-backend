@@ -20,6 +20,7 @@
       "files.upload",
       "accounts.enroll",
       "accounts.read",
+      "accounts.update",
       "modules.read",
       "modules.create",
       "modules.update",
@@ -98,7 +99,8 @@
     ],
     "Accounts": [
       "accounts.enroll",
-      "accounts.read"
+      "accounts.read",
+      "accounts.update"
     ]
   }
 }

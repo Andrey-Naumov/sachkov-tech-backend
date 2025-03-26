@@ -116,6 +116,13 @@ services:
       - "9001:9001"
     volumes:
       - minio_data:/data
+    environment:
+      - MINIO_BROWSER=on
+      - MINIO_CORS_ALLOWED_ORIGINS=*
+      - MINIO_CORS_ALLOWED_METHODS=GET,POST,PUT,DELETE,HEAD,OPTIONS
+      - MINIO_CORS_ALLOWED_HEADERS=*
+      - MINIO_CORS_EXPOSE_HEADERS=*
+      - MINIO_CORS_MAX_AGE=0
     command: server --console-address ":9001" /data
     restart: always
 
