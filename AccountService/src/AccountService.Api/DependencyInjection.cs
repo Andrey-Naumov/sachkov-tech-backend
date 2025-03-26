@@ -24,6 +24,7 @@ public static class DependencyInjection
         };
 
         services.AddControllers();
+        services.AddRouting(options => options.LowercaseUrls = true);
 
         services
             .AddInfrastructure(configuration)
