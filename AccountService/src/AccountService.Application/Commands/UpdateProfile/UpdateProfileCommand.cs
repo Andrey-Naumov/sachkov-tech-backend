@@ -4,5 +4,5 @@ using SachkovTech.Core.Abstractions;
 namespace AccountService.Application.Commands.UpdateProfile;
 
 public record UpdateProfileCommand(
-    Guid Id,
+    Guid UserId,
     UpdateProfileRequest Dto) : ICommand;

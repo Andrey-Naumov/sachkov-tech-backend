@@ -222,8 +222,7 @@ public class AccountsController : ApplicationController
         return Ok();
     }
 
-    // TODO: изменить разрешение
-    [Permission(Permissions.Accounts.READ_ACCOUNT)]
+    [Permission(Permissions.Accounts.UPDATE_ACCOUNT)]
     [HttpPut("profile")]
     public async Task<ActionResult> UpdateProfile(
         [FromBody] UpdateProfileRequest request,
@@ -243,7 +242,7 @@ public class AccountsController : ApplicationController
         return Ok(result.Value);
     }
 
-    [Permission(Permissions.Accounts.ENROLL_ACCOUNT)]
+    [Permission(Permissions.Accounts.UPDATE_ACCOUNT)]
     [HttpPut("{userId:guid}/email")]
     public async Task<ActionResult> UpdateEmail(
         [FromRoute] Guid userId,
@@ -261,7 +260,7 @@ public class AccountsController : ApplicationController
         return Ok(result.Value);
     }
 
-    [Permission(Permissions.Accounts.ENROLL_ACCOUNT)]
+    [Permission(Permissions.Accounts.UPDATE_ACCOUNT)]
     [HttpPut("{userId:guid}/phone-number")]
     public async Task<ActionResult> UpdatePhoneNumber(
         [FromRoute] Guid userId,

@@ -1,6 +1,8 @@
 ﻿using AccountService.Application.Database;
+using AccountService.Domain;
 using CSharpFunctionalExtensions;
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
@@ -11,24 +13,28 @@ namespace AccountService.Application.Commands.UpdatePhoneNumber;
 
 public class UpdatePhoneNumberHandler : ICommandHandler<Guid, UpdatePhoneNumberCommand>
 {
-    private readonly ILogger<UpdatePhoneNumberHandler> _logger;
     private readonly IValidator<UpdatePhoneNumberCommand> _validator;
+    private readonly UserManager<User> _userManager;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<UpdatePhoneNumberHandler> _logger;
+
 
     // private readonly ICacheService _cache;
     public UpdatePhoneNumberHandler(
-            ILogger<UpdatePhoneNumberHandler> logger,
             IValidator<UpdatePhoneNumberCommand> validator,
+            UserManager<User> userManager,
             IUserRepository userRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ILogger<UpdatePhoneNumberHandler> logger)
 
         // ICacheService cache
     {
-        _logger = logger;
         _validator = validator;
+        _userManager = userManager;
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
+        _logger = logger;
 
         // _cache = cache;
     }
@@ -41,19 +47,19 @@ public class UpdatePhoneNumberHandler : ICommandHandler<Guid, UpdatePhoneNumberC
         if (validationResult.IsValid == false)
             return validationResult.ToList();
 
-        var userResult = await _userRepository.GetById(command.UserId, cancellationToken);
-        if (userResult.IsFailure)
-            return userResult.Error.ToErrorList();
+        var user = await _userManager.FindByIdAsync(command.UserId.ToString());
+        if (user is null)
+            return Errors.General.NotFound(command.UserId).ToErrorList();
 
         if (command.PhoneNumber != null)
         {
             var userPhoneNumberResult = await _userRepository.GetByPhoneNumber(command.PhoneNumber, cancellationToken);
 
-            if (userPhoneNumberResult != null && userResult.Value.Id != userPhoneNumberResult.Id)
+            if (userPhoneNumberResult != null && user.Id != userPhoneNumberResult.Id)
                 return Errors.General.AlreadyExist().ToErrorList();
         }
 
-        userResult.Value.UpdatePhoneNumber(command.PhoneNumber);
+        user.UpdatePhoneNumber(command.PhoneNumber);
 
         // var key = "users_" + userResult.Value.Id;
         //
@@ -66,6 +72,6 @@ public class UpdatePhoneNumberHandler : ICommandHandler<Guid, UpdatePhoneNumberC
 
         _logger.LogInformation("Updated user phone number successfully for {UserId}.", command.UserId);
 
-        return userResult.Value.Id;
+        return user.Id;
     }
 }

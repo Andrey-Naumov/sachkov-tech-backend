@@ -63,7 +63,7 @@ public static class FixtureExtensions
     public static UpdateProfileCommand CreateUpdateProfileCommand(this IFixture fixture, Guid userId)
     {
         return fixture.Build<UpdateProfileCommand>()
-            .With(c => c.Id, userId)
+            .With(c => c.UserId, userId)
             .With(u => u.Dto, new UpdateProfileRequest("username", "firstname", "secondname", "thirdname",
                 new List<SocialNetworkDto>
                 {

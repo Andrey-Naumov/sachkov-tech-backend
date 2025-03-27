@@ -1,6 +1,8 @@
 ﻿using AccountService.Application.Database;
+using AccountService.Domain;
 using CSharpFunctionalExtensions;
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
@@ -11,24 +13,25 @@ namespace AccountService.Application.Commands.UpdateEmail;
 
 public class UpdateEmailHandler : ICommandHandler<Guid, UpdateEmailCommand>
 {
-    private readonly ILogger<UpdateEmailHandler> _logger;
     private readonly IValidator<UpdateEmailCommand> _validator;
-    private readonly IUserRepository _userRepository;
+    private readonly UserManager<User> _userManager;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<UpdateEmailHandler> _logger;
+
 
     // private readonly ICacheService _cache;
     public UpdateEmailHandler(
-            ILogger<UpdateEmailHandler> logger,
             IValidator<UpdateEmailCommand> validator,
-            IUserRepository userRepository,
-            IUnitOfWork unitOfWork)
+            UserManager<User> userManager,
+            IUnitOfWork unitOfWork,
+            ILogger<UpdateEmailHandler> logger)
 
         // ICacheService cache
     {
-        _logger = logger;
         _validator = validator;
-        _userRepository = userRepository;
+        _userManager = userManager;
         _unitOfWork = unitOfWork;
+        _logger = logger;
 
         // _cache = cache;
     }
@@ -41,11 +44,11 @@ public class UpdateEmailHandler : ICommandHandler<Guid, UpdateEmailCommand>
         if (validationResult.IsValid == false)
             return validationResult.ToList();
 
-        var userResult = await _userRepository.GetById(command.UserId, cancellationToken);
-        if (userResult.IsFailure)
-            return userResult.Error.ToErrorList();
+        var user = await _userManager.FindByIdAsync(command.UserId.ToString());
+        if (user is null)
+            return Errors.General.NotFound(command.UserId).ToErrorList();
 
-        userResult.Value.UpdateEmail(command.Email);
+        user.UpdateEmail(command.Email);
 
         // var key = "users_" + userResult.Value.Id;
         //
@@ -58,6 +61,6 @@ public class UpdateEmailHandler : ICommandHandler<Guid, UpdateEmailCommand>
 
         _logger.LogInformation("Updated user main info successfully for {UserId}.", command.UserId);
 
-        return userResult.Value.Id;
+        return user.Id;
     }
 }
