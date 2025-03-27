@@ -15,10 +15,10 @@ public class DecreaseAnswerRating
             app.MapPut("answers/{answerId:guid}/decrease-rating", Handler);
         }
     }
-    
+
     private static async Task<IResult> Handler(
         [FromRoute] Guid answerId,
-        [FromServices] ApplicationDbContext dbContext, 
+        [FromServices] ApplicationDbContext dbContext,
         [FromServices] ILogger<DecreaseAnswerRating> logger,
         CancellationToken cancellationToken)
     {
@@ -30,7 +30,7 @@ public class DecreaseAnswerRating
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation($"Decreased answer rating with id: {answerId}");
+        logger.LogInformation("Decreased answer {answerId} rating", answerId);
 
         return ResultResponse.Ok(answer.Id);
     }

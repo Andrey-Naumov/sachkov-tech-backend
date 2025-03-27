@@ -1,4 +1,4 @@
-﻿using FaqService.Contracts;
+﻿using FaqService.Contracts.Requests;
 using FaqService.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +34,7 @@ public class UpdateAnswerMainInfo
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation($"Updated answer main info with id {answerId}");
+        logger.LogInformation("Updated answer main info {answerId}", answerId);
 
         return ResultResponse.Ok(answerId);
     }

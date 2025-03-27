@@ -1,14 +1,24 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 8006
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
+ARG NUGET_USERNAME
+ARG NUGET_PASSWORD
 WORKDIR /src
+
+RUN dotnet nuget add source https://nuget.pkg.github.com/SachkovTech/index.json \
+    -n github \
+    --username $NUGET_USERNAME \
+    --password $NUGET_PASSWORD \
+    --store-password-in-clear-text
+
 COPY ["src/FaqService/FaqService.csproj", "src/FaqService/"]
-COPY ["src/SharedKernel/SharedKernel.csproj", "src/SharedKernel/"]
+COPY ["src/FaqService.Contracts/FaqService.Contracts.csproj", "src/FaqService.Contracts/"]
+COPY ["src/FaqService/etc/key.pub", "src/FaqService/etc/"]
+
 RUN dotnet restore "src/FaqService/FaqService.csproj"
 COPY . .
 WORKDIR "/src/src/FaqService"

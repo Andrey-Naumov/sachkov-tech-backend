@@ -1,4 +1,4 @@
-﻿using FaqService.Contracts;
+﻿using FaqService.Contracts.Requests;
 using FaqService.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,34 +13,34 @@ public class CreateAnswer
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapPost("posts/{postId:guid}/answers", Handler);
+            app.MapPost("questions/{questionId:guid}/answers", Handler);
         }
     }
-    
+
     private static async Task<IResult> Handler(
-        [FromRoute] Guid postId,
+        [FromRoute] Guid questionId,
         [FromBody] CreateAnswerRequest request,
-        [FromServices] ApplicationDbContext dbContext, 
+        [FromServices] ApplicationDbContext dbContext,
         [FromServices] ILogger<CreateAnswer> logger,
         CancellationToken cancellationToken)
     {
-        var post = await dbContext.Posts.SingleOrDefaultAsync(p => p.Id == postId, cancellationToken);
-        if (post is null)
-            return ResultResponse.NotFound(Errors.General.NotFound(postId));
+        var question = await dbContext.Questions.SingleOrDefaultAsync(p => p.Id == questionId, cancellationToken);
+        if (question is null)
+            return ResultResponse.NotFound(Errors.General.NotFound(questionId));
 
         var answerResult = Entities.Answer.Create(
-            postId,
+            questionId,
             request.UserId,
             request.Text);
 
         if (answerResult.IsFailure)
-            return ResultResponse.BadRequest(Errors.General.NotFound(postId));
+            return ResultResponse.BadRequest(Errors.General.NotFound(questionId));
 
         await dbContext.Answers.AddAsync(answerResult.Value, cancellationToken);
-        
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation($"Created answer with id: {postId}");
+        logger.LogInformation("Created answer {answerId}", answerResult.Value.Id);
 
         return ResultResponse.Ok(answerResult.Value.Id);
     }

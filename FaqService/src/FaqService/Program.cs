@@ -1,42 +1,33 @@
-using System.Reflection;
-using FaqService;
+﻿using FaqService;
 using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Middlewares;
 using Serilog;
 
+const string dockerEnvName = "Docker";
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
 builder.Services
-    .AddLogging(builder.Configuration)
-    .AddEndpoints(Assembly.GetExecutingAssembly())
-    .AddDbContext()
-    .AddRepositories()
-    .AddElasticSearch(builder.Configuration);
+    .AddProgramDependencies(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging();
 app.UseExceptionMiddleware();
 
-app.UseSerilogRequestLogging();
-
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment(dockerEnvName))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.MapEndpoints();
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.UseRouting();
-
-app.MapControllers();
 
 app.Run();

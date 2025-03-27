@@ -6,11 +6,11 @@ namespace FaqService.Infrastructure;
 
 public class ApplicationDbContext(IConfiguration configuration) : DbContext
 {
-    public DbSet<Post> Posts => Set<Post>();
-    
+    public DbSet<Question> Questions => Set<Question>();
+
     public DbSet<Answer> Answers => Set<Answer>();
 
-    const string DATABASE = "Database";
+    private const string DATABASE = "Database";
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

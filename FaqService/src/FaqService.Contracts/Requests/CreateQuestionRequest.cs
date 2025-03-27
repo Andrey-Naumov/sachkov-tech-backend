@@ -1,6 +1,6 @@
-﻿namespace FaqService.Contracts;
+﻿namespace FaqService.Contracts.Requests;
 
-public record CreatePostRequest(
+public record CreateQuestionRequest(
     string Title,
     string Description,
     string ReplLink,

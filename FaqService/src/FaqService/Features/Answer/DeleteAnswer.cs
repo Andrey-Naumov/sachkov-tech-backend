@@ -15,10 +15,10 @@ public class DeleteAnswer
             app.MapDelete("answers/{answerId:guid}", Handler);
         }
     }
-    
+
     private static async Task<IResult> Handler(
         [FromRoute] Guid answerId,
-        [FromServices] ApplicationDbContext dbContext, 
+        [FromServices] ApplicationDbContext dbContext,
         [FromServices] ILogger<DeleteAnswer> logger,
         CancellationToken cancellationToken)
     {
@@ -29,8 +29,8 @@ public class DeleteAnswer
         dbContext.Answers.Remove(answer);
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        
-        logger.LogInformation("Answer {AnswerId} was deleted.", answerId);
+
+        logger.LogInformation("Answer {AnswerId} was deleted", answerId);
 
         return ResultResponse.Ok(answerId);
     }

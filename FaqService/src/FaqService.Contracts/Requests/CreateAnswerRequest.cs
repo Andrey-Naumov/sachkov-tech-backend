@@ -1,3 +1,3 @@
-﻿namespace FaqService.Contracts;
+﻿namespace FaqService.Contracts.Requests;
 
 public record CreateAnswerRequest(string Text, Guid UserId);

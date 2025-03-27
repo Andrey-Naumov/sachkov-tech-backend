@@ -13,14 +13,14 @@ public class AnswerConfiguration : IEntityTypeConfiguration<Answer>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(a => a.PostId)
+        builder.Property(a => a.QuestionId)
             .IsRequired()
-            .HasColumnName("post_id");
-        
+            .HasColumnName("question_id");
+
         builder.Property(a => a.IsSolution)
             .IsRequired()
             .HasColumnName("is_solution");
-        
+
         builder.Property(a => a.Text)
             .IsRequired()
             .HasMaxLength(MAX_TEXT_LENGTH)
@@ -29,11 +29,11 @@ public class AnswerConfiguration : IEntityTypeConfiguration<Answer>
         builder.Property(a => a.UserId)
             .IsRequired()
             .HasColumnName("user_id");
-        
+
         builder.Property(a => a.Rating)
             .IsRequired()
             .HasColumnName("rating");
-        
+
         builder.Property(p => p.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();

@@ -30,7 +30,7 @@ public class IncreaseAnswerRating
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation($"Increased answer rating with id: {answerId}");
+        logger.LogInformation("Increased answer {answerId} rating", answerId);
 
         return ResultResponse.Ok(answer.Id);
     }

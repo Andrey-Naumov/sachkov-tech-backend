@@ -1,4 +1,4 @@
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +8,7 @@ public static class CursorPaginationQueriesExtensions
 {
     public static async Task<CursorList<T>> ToCursorListWithOrderedIds<T>(
         this IQueryable<T> source,
-        List<Guid> orderedIds,  
+        List<Guid> orderedIds,
         Guid? cursor,
         int limit,
         CancellationToken cancellationToken = default)
@@ -17,13 +17,13 @@ public static class CursorPaginationQueriesExtensions
         var totalCount = await source.CountAsync(cancellationToken);
 
         var cursorIndex = cursor.HasValue ? orderedIds.IndexOf(cursor.Value) : -1;
-        var postIdsForPagination = cursorIndex >= 0
+        var entityIdsForPagination = cursorIndex >= 0
             ? orderedIds.Skip(cursorIndex + 1).Take(limit).ToList()
             : orderedIds.Take(limit).ToList();
 
         var itemsFromDb = await source
-            .Where(p => postIdsForPagination.Contains(p.Id))
-            .OrderBy(x => postIdsForPagination.IndexOf(x.Id)) 
+            .Where(p => entityIdsForPagination.Contains(p.Id))
+            .OrderBy(x => entityIdsForPagination.IndexOf(x.Id))
             .Take(limit)
             .ToListAsync(cancellationToken);
 
@@ -34,8 +34,7 @@ public static class CursorPaginationQueriesExtensions
             cursor: cursor,
             nextCursor: nextCursorId,
             limit: limit,
-            totalCount: totalCount
-        );
+            totalCount: totalCount);
     }
 
     public static async Task<CursorList<T>> ToCursorList<T>(
@@ -49,11 +48,10 @@ public static class CursorPaginationQueriesExtensions
 
         var query = source.WhereIf(
             cursor.HasValue,
-            x => x.Id > cursor
-        );
+            x => x.Id > cursor);
 
         var items = await query
-            .OrderBy(x => x.Id) 
+            .OrderBy(x => x.Id)
             .Take(limit)
             .ToListAsync(cancellationToken);
 
@@ -64,8 +62,7 @@ public static class CursorPaginationQueriesExtensions
             cursor: cursor,
             nextCursor: nextCursor,
             limit: limit,
-            totalCount: totalCount
-        );
+            totalCount: totalCount);
     }
 
     public static IQueryable<T> WhereIf<T>(

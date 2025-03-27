@@ -1,5 +1,6 @@
+﻿using FaqService.Contracts.Messaging.Events;
 using FaqService.Infrastructure;
-using FaqService.Infrastructure.Repositories;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace FaqService.Extensions;
@@ -7,42 +8,50 @@ namespace FaqService.Extensions;
 public class ElasticIndexRecoveryService
 {
     private readonly ApplicationDbContext _dbContext;
-    private readonly SearchRepository _searchRepository;
+    private readonly IPublishEndpoint _publishEndpoint;
     private readonly ILogger<ElasticIndexRecoveryService> _logger;
 
     public ElasticIndexRecoveryService(
         ApplicationDbContext dbContext,
-        SearchRepository searchRepository,
+        IPublishEndpoint publishEndpoint,
         ILogger<ElasticIndexRecoveryService> logger)
     {
         _dbContext = dbContext;
-        _searchRepository = searchRepository;
+        _publishEndpoint = publishEndpoint;
         _logger = logger;
     }
 
-    public async Task RestoreElasticIndex(Guid postId, bool indexResult, CancellationToken cancellationToken)
+    public async Task RestoreElasticIndex(Guid questionId, CancellationToken cancellationToken)
     {
-        if (!indexResult)
-            return;
+        _logger.LogWarning("Restoring previous index state for question {questionId}", questionId);
 
-        _logger.LogWarning("Restoring previous index state for post {PostId}.", postId);
+        var question = await _dbContext.Questions.SingleOrDefaultAsync(p => p.Id == questionId, cancellationToken);
 
-        var post = await _dbContext.Posts.SingleOrDefaultAsync(p => p.Id == postId, cancellationToken);
-
-        if (post is null)
+        if (question is null)
         {
-            _logger.LogError("Failed to restore index for post {PostId}. Post not found after rollback.", postId);
+            _logger.LogError("Failed to restore index for question {questionId}. Question not found after rollback.", questionId);
             return;
         }
 
         try
         {
-            await _searchRepository.IndexPost(post);
-            _logger.LogInformation("Successfully restored index for post {PostId}.", postId);
+            QuestionUpdatedEvent questionUpdatedEvent = new(
+                question.Id,
+                question.Title,
+                question.Description,
+                question.PullRequestLink.Value,
+                question.Status,
+                question.CreatedAt,
+                question.Tags,
+                question.IssueId,
+                question.LessonId);
+
+            await _publishEndpoint.Publish(questionUpdatedEvent, cancellationToken);
+            _logger.LogInformation("Successfully published index restoration command for question {questionId}.", questionId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to restore index for post {PostId} after rollback.", postId);
+            _logger.LogError(ex, "Failed to publish index restoration command for question {questiontId} after rollback.", questionId);
         }
     }
 }

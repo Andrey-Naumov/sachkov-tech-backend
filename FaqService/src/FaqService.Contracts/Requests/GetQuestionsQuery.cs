@@ -1,8 +1,8 @@
-using FaqService.Contracts.Enums;
+﻿using FaqService.Contracts.Enums;
 
-namespace FaqService.Contracts;
+namespace FaqService.Contracts.Requests;
 
-public record GetPostsQuery(
+public record GetQuestionsQuery(
     string? SearchText,
     Status? Status,
     bool? SortByDateDescending,
