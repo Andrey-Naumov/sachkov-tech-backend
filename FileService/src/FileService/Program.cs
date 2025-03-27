@@ -26,7 +26,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment(dockerEnv))
 
 app.UseCors(config =>
 {
-    config.WithOrigins("http://localhost:5173")
+    config.WithOrigins("http://192.168.1.222:4173", "http://192.168.1.222:4173")
         .AllowCredentials()
         .AllowAnyHeader()
         .AllowAnyMethod();
