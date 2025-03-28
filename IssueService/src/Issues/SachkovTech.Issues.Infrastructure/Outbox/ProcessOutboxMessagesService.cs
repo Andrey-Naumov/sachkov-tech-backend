@@ -1,11 +1,9 @@
 ﻿using System.Text.Json;
 using MassTransit;
-using MassTransit.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
-using SachkovTech.Issues.Application.Interfaces;
 using SachkovTech.Issues.Infrastructure.DbContexts;
 using PredicateBuilder = Polly.PredicateBuilder;
 

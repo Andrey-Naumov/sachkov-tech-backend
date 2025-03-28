@@ -15,10 +15,10 @@ public class GetLessonByIdTest : LessonsTestsBase
     public GetLessonByIdTest(LessonTestWebFactory factory)
         : base(factory)
     {
-        _sut = Scope.ServiceProvider.GetRequiredService<IQueryHandlerWithResult<LessonDto, GetLessonByIdQuery>>();
+        _sut = Scope.ServiceProvider.GetRequiredService<IQueryHandlerWithResult<LessonResponse, GetLessonByIdQuery>>();
     }
 
-    private readonly IQueryHandlerWithResult<LessonDto, GetLessonByIdQuery> _sut;
+    private readonly IQueryHandlerWithResult<LessonResponse, GetLessonByIdQuery> _sut;
 
     [Fact]
     public async Task Get_existing_lesson_by_id()

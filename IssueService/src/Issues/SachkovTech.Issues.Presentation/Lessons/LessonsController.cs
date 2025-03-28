@@ -24,11 +24,17 @@ public class LessonsController : ApplicationController
     public async Task<IActionResult> GetLessons(
         [FromQuery] GetLessonsRequest request,
         [FromServices] GetLessonsByModuleHandler handler,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken)
     {
-        var result = await handler.Handle(
-            new GetLessonsByModuleQuery(request.Page, request.PageSize, request.ModuleId, request.Search),
-            cancellationToken);
+        var query = new GetLessonsByModuleQuery(
+            request.Page,
+            request.PageSize,
+            request.ModuleId,
+            userScopedData.UserId,
+            request.Search);
+
+        var result = await handler.Handle(query, cancellationToken);
 
         if (result.IsFailure)
             return result.Error.ToResponse();
@@ -41,9 +47,10 @@ public class LessonsController : ApplicationController
     public async Task<IActionResult> GetLessonById(
         [FromRoute] Guid lessonId,
         [FromServices] GetLessonByIdHandler handler,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken)
     {
-        var result = await handler.Handle(new GetLessonByIdQuery(lessonId), cancellationToken);
+        var result = await handler.Handle(new GetLessonByIdQuery(lessonId, userScopedData.UserId), cancellationToken);
 
         if (result.IsFailure)
             return result.Error.ToResponse();
