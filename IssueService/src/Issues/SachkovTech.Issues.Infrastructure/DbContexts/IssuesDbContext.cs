@@ -6,6 +6,7 @@ using SachkovTech.Issues.Domain.Issue;
 using SachkovTech.Issues.Domain.IssueSolving.Entities;
 using SachkovTech.Issues.Domain.IssuesReviews;
 using SachkovTech.Issues.Domain.Lesson;
+using SachkovTech.Issues.Domain.LessonsViewing;
 using SachkovTech.Issues.Domain.Module;
 using SachkovTech.Issues.Domain.Module.Entities;
 using SachkovTech.Issues.Infrastructure.Outbox;
@@ -27,6 +28,8 @@ public class IssuesDbContext : DbContext, IIssuesReadDbContext
 
     public DbSet<UserIssue> UserIssues => Set<UserIssue>();
 
+    public DbSet<UserLesson> UserLessons => Set<UserLesson>();
+
     public DbSet<IssueReview> IssueReviews => Set<IssueReview>();
 
     public DbSet<Lesson> Lessons => Set<Lesson>();
@@ -39,6 +42,8 @@ public class IssuesDbContext : DbContext, IIssuesReadDbContext
     public IQueryable<Issue> ReadIssues => Set<Issue>().AsQueryable().AsNoTracking();
 
     public IQueryable<UserIssue> ReadUserIssues => Set<UserIssue>().AsQueryable().AsNoTracking();
+
+    public IQueryable<UserLesson> ReadUserLessons => Set<UserLesson>().AsQueryable().AsNoTracking();
 
     public IQueryable<IssueReview> ReadIssueReviews => Set<IssueReview>().AsQueryable().AsNoTracking();
 

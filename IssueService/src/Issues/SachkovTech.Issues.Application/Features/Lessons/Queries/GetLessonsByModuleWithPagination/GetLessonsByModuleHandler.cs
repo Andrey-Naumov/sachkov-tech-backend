@@ -9,13 +9,12 @@ using SachkovTech.Core.Database;
 using SachkovTech.Core.Validation;
 using SachkovTech.Issues.Contracts.Lesson;
 using SachkovTech.Issues.Domain.Lesson;
-using SachkovTech.Issues.Domain.ValueObjects;
 using SharedKernel;
 
 namespace SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonsByModuleWithPagination;
 
 public class GetLessonsByModuleHandler
-    : IQueryHandlerWithResult<PagedList<LessonDto>, GetLessonsByModuleQuery>
+    : IQueryHandlerWithResult<PagedList<LessonResponse>, GetLessonsByModuleQuery>
 {
     private readonly IValidator<GetLessonsByModuleQuery> _validator;
     private readonly IFileService _fileService;
@@ -31,7 +30,7 @@ public class GetLessonsByModuleHandler
         _sqlConnectionFactory = sqlConnectionFactory;
     }
 
-    public async Task<Result<PagedList<LessonDto>, ErrorList>> Handle(
+    public async Task<Result<PagedList<LessonResponse>, ErrorList>> Handle(
         GetLessonsByModuleQuery query, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(query, cancellationToken);
@@ -42,23 +41,28 @@ public class GetLessonsByModuleHandler
 
         var parameters = new DynamicParameters();
         parameters.Add("@ModuleId", query.ModuleId);
+        parameters.Add("@UserId", query.UserId);
 
         var sqlBuilder = new StringBuilder(
             """
-            SELECT
-                l.id AS Id,
-                l.module_id AS ModuleId,
-                l.title AS Title,
-                l.description AS Description,
-                l.experience AS Experience,
-                l.tags AS Tags,
-                l.issues AS Issues,
-                l.auto_preview_id AS AutoPreviewId,
-                lp.position AS Position
+            SELECT l.id              AS Id,
+                   l.module_id       AS ModuleId,
+                   l.title           AS Title,
+                   l.description     AS Description,
+                   l.experience      AS Experience,
+                   l.tags            AS Tags,
+                   l.issues          AS Issues,
+                   l.auto_preview_id AS AutoPreviewId,
+                   lp.position       AS Position,
+                   ul.is_completed AS IsCompleted
             FROM issues.lessons AS l
                      JOIN issues.lesson_position AS lp
                           ON l.id = lp.lesson_id
-            WHERE NOT l.is_deleted AND l.module_id = @ModuleId
+                     LEFT JOIN issues.user_lessons AS ul
+                               ON l.id = ul.lesson_id
+                                   AND ul.user_id = @UserId
+            WHERE NOT l.is_deleted
+              AND l.module_id = @ModuleId
             """);
 
         if (!string.IsNullOrWhiteSpace(query.Search))
@@ -105,7 +109,7 @@ public class GetLessonsByModuleHandler
             .Where(f => f is not null && f.FileId != Guid.Empty.ToString())
             .ToDictionary(f => f!.FileId, f => f!.Url);
 
-        var finalLessons = lessons.Select(l => new LessonDto
+        var finalLessons = lessons.Select(l => new LessonResponse
         {
             Id = l.Id,
             ModuleId = l.ModuleId,
@@ -119,9 +123,10 @@ public class GetLessonsByModuleHandler
                 ? previewUrlsDict[l.AutoPreviewId.ToString()]
                 : null,
             Position = l.Position,
+            IsCompleted = l.IsCompleted ?? false,
         }).ToList();
 
-        return new PagedList<LessonDto>
+        return new PagedList<LessonResponse>
         {
             Items = finalLessons, TotalCount = totalCount, PageSize = query.PageSize, Page = query.Page,
         };

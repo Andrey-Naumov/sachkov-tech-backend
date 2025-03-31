@@ -14,13 +14,17 @@ public class LessonDto
 
     public int Experience { get; init; }
 
-    public Guid ProcessedVideoId { get; init; }
-
     public string? HlsVideoUrl { get; init; } = string.Empty;
 
     public Guid AutoPreviewId { get; init; }
 
     public string? AutoPreviewUrl { get; init; } = string.Empty;
+
+    public Guid ProcessedVideoId { get; init; }
+
+    public string ProcessedVideoLocation { get; init; } = string.Empty;
+
+    public bool? IsCompleted { get; init; }
 
     public Guid[] Tags { get; init; } = [];
 

@@ -16,15 +16,14 @@ namespace SachkovTech.Issues.Presentation.Issues;
 public class IssuesController : ApplicationController
 {
     [Permission(Permissions.Issues.READ_ISSUE)]
-    [HttpGet("module/{moduleId:guid}")]
-    public async Task<ActionResult> GetByModule(
-        [FromRoute] Guid moduleId,
+    [HttpGet]
+    public async Task<ActionResult> GetIssues(
         [FromQuery] GetIssuesByModuleWithPaginationRequest request,
         [FromServices] GetIssuesByModuleWithPaginationHandler handler,
         CancellationToken cancellationToken)
     {
         var query = new GetFilteredIssuesByModuleWithPaginationQuery(
-            moduleId,
+            request.ModuleId,
             request.Title,
             request.SortBy,
             request.SortDirection,

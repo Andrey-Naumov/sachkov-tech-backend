@@ -65,7 +65,7 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
         int invalidPage = -1;
         int invalidPageSize = -1;
         var moduleId = ModuleId.NewModuleId();
-        var invalidQuery = new GetLessonsByModuleQuery(invalidPage, invalidPageSize, moduleId, string.Empty);
+        var invalidQuery = new GetLessonsByModuleQuery(invalidPage, invalidPageSize, moduleId, Guid.Empty, string.Empty);
 
         SetupFailureValidationResult(invalidQuery, cancellationToken);
 
