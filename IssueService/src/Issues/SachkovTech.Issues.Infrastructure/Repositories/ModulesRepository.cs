@@ -20,7 +20,8 @@ public class ModulesRepository : IModulesRepository
 
     public async Task<Guid> Add(Module issue, CancellationToken cancellationToken = default)
     {
-        await _dbContext.Modules.AddAsync(issue, cancellationToken);
+        await _dbContext.Modules
+            .AddAsync(issue, cancellationToken);
         return issue.Id;
     }
 
@@ -42,6 +43,8 @@ public class ModulesRepository : IModulesRepository
         CancellationToken cancellationToken = default)
     {
         var module = await _dbContext.Modules
+            .Include(m => m.IssuesPosition)
+            .Include(m => m.LessonsPosition)
             .FirstOrDefaultAsync(m => m.Id == moduleId, cancellationToken);
 
         if (module is null)

@@ -53,10 +53,9 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
 
         await using var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
 
-        (_, bool isFailure, Module? module, Error? error) =
-            await _modulesRepository.GetById(command.ModuleId, cancellationToken);
-        if (isFailure)
-            return error.ToErrorList();
+        var moduleResult = await _modulesRepository.GetById(command.ModuleId, cancellationToken);
+        if (moduleResult.IsFailure)
+            return moduleResult.Error.ToErrorList();
 
         var title = Title.Create(command.Title).Value;
         var isLessonExists = await _lessonsRepository.GetByTitle(title, cancellationToken);
@@ -77,7 +76,7 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
         await _unitOfWork.SaveChanges(cancellationToken);
 
         // TODO: реализовать через доменное событие
-        module.AddLesson(lesson.Id);
+        moduleResult.Value.AddLesson(lesson.Id);
 
         await _unitOfWork.SaveChanges(cancellationToken);
 
