@@ -10,6 +10,7 @@ public class AccountsMigrator(AccountsDbContext context, ILogger<AccountsMigrato
     public async Task Migrate(CancellationToken cancellationToken = default)
     {
         logger.Log(LogLevel.Information, "Applying accounts migrations...");
+        logger.LogCritical(context.Database.GetConnectionString());
 
         if (await context.Database.CanConnectAsync(cancellationToken) is false)
         {
