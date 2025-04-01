@@ -8,11 +8,10 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SachkovTech.Framework.Authorization;
-using SachkovTech.Framework.HttpHandlers;
+using SachkovTech.Framework.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Я знаю что ты напишешь что оно итак подтягиваться поэтому я отвечу что так будет лучше
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);

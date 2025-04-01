@@ -7,9 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CSharpFunctionalExtensions" Version="3.4.3" />
+      <PackageReference Include="CSharpFunctionalExtensions" Version="3.5.1" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="SharedKernel" Version="1.1.1" />
+      <PackageReference Include="SharedKernel" Version="1.1.8" />
     </ItemGroup>
 
 </Project>
