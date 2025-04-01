@@ -2,5 +2,5 @@
 
 public static class SecretKeyDefaults
 {
-    public const string AuthenticationScheme = "Bearer";
+    public const string AuthenticationScheme = "SecretKey";
 }

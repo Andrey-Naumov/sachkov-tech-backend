@@ -1,5 +1,7 @@
 ﻿using FileService.Contracts;
 using FileService.FilesManagement;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SachkovTech.Framework.Authorization;
 using SachkovTech.Framework.Endpoints;
 using SharedKernel;
 
@@ -12,7 +14,9 @@ public static class GetDownloadUrl
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapPost("api/files/url", Handler)
-                .RequireAuthorization(Permissions.Files.READ_FILES);
+                .RequireAuthorization(policy => policy
+                    .AddAuthenticationSchemes(SecretKeyDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme)
+                    .AddRequirements(new PermissionAttribute(Permissions.Files.READ_FILES)));
         }
     }
 
