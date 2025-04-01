@@ -58,7 +58,7 @@ public class S3Provider : IS3Provider
             Expires = DateTime.UtcNow.AddMinutes(60),
             PartNumber = partNumber,
             UploadId = uploadId,
-            Protocol = Protocol.HTTP,
+            Protocol = Protocol.HTTPS,
         };
 
         return await _s3Client.GetPreSignedURLAsync(request);
@@ -74,7 +74,7 @@ public class S3Provider : IS3Provider
             Key = location.FileId,
             Verb = HttpVerb.PUT,
             Expires = DateTime.UtcNow.AddMinutes(60),
-            Protocol = Protocol.HTTP,
+            Protocol = Protocol.HTTPS,
         };
 
         request.Metadata.Add("file-name", fileName);
@@ -136,7 +136,7 @@ public class S3Provider : IS3Provider
             Key = location.FileId,
             Verb = HttpVerb.GET,
             Expires = DateTime.UtcNow.AddHours(expirationHours),
-            Protocol = Protocol.HTTP,
+            Protocol = Protocol.HTTPS,
         };
 
         return await _s3Client.GetPreSignedURLAsync(request);
@@ -159,7 +159,7 @@ public class S3Provider : IS3Provider
                     Key = location.FileId,
                     Verb = HttpVerb.GET,
                     Expires = DateTime.UtcNow.AddHours(expirationHours),
-                    Protocol = Protocol.HTTP,
+                    Protocol = Protocol.HTTPS,
                 };
 
                 string? url = await _s3Client.GetPreSignedURLAsync(request);
