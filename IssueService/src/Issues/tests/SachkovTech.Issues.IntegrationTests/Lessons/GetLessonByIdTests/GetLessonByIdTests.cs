@@ -1,12 +1,16 @@
-﻿using FluentAssertions;
+﻿using System.Reflection;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonById;
 using SachkovTech.Issues.Contracts.Lesson;
 using SachkovTech.Issues.Domain.Issue.ValueObjects;
 using SachkovTech.Issues.Domain.Lesson;
+using SachkovTech.Issues.Domain.LessonsViewing;
 using SachkovTech.Issues.Domain.ValueObjects;
 using SachkovTech.Issues.Infrastructure.DbContexts;
+using SharedKernel;
 
 namespace SachkovTech.Issues.IntegrationTests.Lessons.GetLessonByIdTests;
 
@@ -28,7 +32,9 @@ public class GetLessonByIdTest : LessonsTestsBase
 
         var lesson = await SeedLessonToDatabase(DbContext, cancellationToken);
 
-        var query = Fixture.CreateGetLessonByIdQuery(lesson.Id);
+        await SeedModuleToDatabase(lesson.Id, DbContext, cancellationToken);
+
+        var query = Fixture.CreateGetLessonByIdQuery(Guid.NewGuid(), lesson.Id);
 
         Factory.SetupSuccessFileServiceMock([lesson.ProcessedVideo.FileId]);
 
@@ -55,14 +61,14 @@ public class GetLessonByIdTest : LessonsTestsBase
 
         var lesson = await SeedLessonToDatabase(DbContext, cancellationToken);
 
-        var query = Fixture.CreateGetLessonByIdQuery(lesson.Id);
+        var query = Fixture.CreateGetLessonByIdQuery(Guid.NewGuid(), lesson.Id);
 
         // Act
         var result = await _sut.Handle(query, cancellationToken);
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().ContainSingle(e => e.Message == "запись не найдена");
+        result.Error.Should().ContainSingle(e => e.Type == ErrorType.NOT_FOUND);
     }
 
     private async Task<Lesson> SeedLessonToDatabase(
@@ -85,5 +91,21 @@ public class GetLessonByIdTest : LessonsTestsBase
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return lesson;
+    }
+
+    private async Task SeedModuleToDatabase(
+        Guid lessonId,
+        IssuesDbContext dbContext,
+        CancellationToken cancellationToken = default)
+    {
+        var module = new Domain.Module.Module(
+            Guid.NewGuid(),
+            Title.Create("test title").Value,
+            Description.Create("test description").Value);
+
+        module.AddLesson(lessonId);
+
+        await dbContext.Modules.AddAsync(module, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

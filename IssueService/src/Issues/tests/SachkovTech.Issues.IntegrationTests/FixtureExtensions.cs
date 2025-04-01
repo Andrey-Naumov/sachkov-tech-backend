@@ -77,10 +77,12 @@ public static class FixtureExtensions
 
     public static GetLessonByIdQuery CreateGetLessonByIdQuery(
         this IFixture fixture,
+        Guid userid,
         Guid lessonId)
     {
         return fixture.Build<GetLessonByIdQuery>()
             .With(g => g.LessonId, lessonId)
+            .With(g => g.UserId, userid)
             .Create();
     }
 

@@ -54,6 +54,10 @@ public class LessonTestWebFactory : IntegrationTestsWebFactory
             .GetDownloadUrls(Arg.Any<GetDownloadUrlsRequest>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success<GetDownloadUrlsResponse, ErrorList>(new GetDownloadUrlsResponse(urls)));
 
+        _fileServiceMock
+            .GetHlsPlaylistUrl(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Success<GetHlsPlaylistUrlResponse, ErrorList>(new GetHlsPlaylistUrlResponse($"test/{Guid.Empty}")));
+
         _cacheServiceMock
             .GetAsync<string>(Arg.Any<string>(), Arg.Any<CancellationToken>())!
             .Returns(Task.FromResult<string>(null));
