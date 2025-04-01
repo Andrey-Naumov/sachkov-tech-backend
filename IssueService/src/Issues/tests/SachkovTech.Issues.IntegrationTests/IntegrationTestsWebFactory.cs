@@ -1,4 +1,6 @@
 using System.Data.Common;
+using DotNet.Testcontainers.Builders;
+using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -8,9 +10,11 @@ using Npgsql;
 using Respawn;
 using SachkovTech.Core.Database;
 using SachkovTech.Issues.Application.Interfaces;
+using SachkovTech.Issues.Infrastructure.Consumers;
 using SachkovTech.Issues.Infrastructure.DbContexts;
 using SachkovTech.Web;
 using Testcontainers.PostgreSql;
+using Testcontainers.RabbitMq;
 
 namespace SachkovTech.Issues.IntegrationTests;
 
@@ -23,11 +27,16 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
         .WithPassword("postgres")
         .Build();
 
+    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder()
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5672))
+        .Build();
+
     private Respawner _respawner = default!;
     private DbConnection _dbConnection = default!;
 
     public async Task InitializeAsync()
     {
+        await _rabbitMqContainer.StartAsync();
         await _dbContainer.StartAsync();
 
         using var scope = Services.CreateScope();
@@ -47,6 +56,7 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
 
     public new async Task DisposeAsync()
     {
+        await _rabbitMqContainer.StopAsync();
         await _dbContainer.StopAsync();
         await _dbContainer.DisposeAsync();
     }
@@ -70,6 +80,18 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
 
         services.AddScoped<ISqlConnectionFactory>(_ =>
             new SqlConnectionFactory(_dbContainer.GetConnectionString()));
+
+        services.AddMassTransitTestHarness(configure =>
+        {
+            configure.AddConsumer<LessonVideoProcessedConsumer>();
+
+            configure.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(_rabbitMqContainer.GetConnectionString());
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
     }
 
     private async Task InitializeRespawner()
@@ -77,6 +99,9 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
         await _dbConnection.OpenAsync();
         _respawner = await Respawner.CreateAsync(
             _dbConnection,
-            new RespawnerOptions { DbAdapter = DbAdapter.Postgres, SchemasToInclude = ["issues"] });
+            new RespawnerOptions
+            {
+                DbAdapter = DbAdapter.Postgres, SchemasToInclude = ["issues"]
+            });
     }
 }

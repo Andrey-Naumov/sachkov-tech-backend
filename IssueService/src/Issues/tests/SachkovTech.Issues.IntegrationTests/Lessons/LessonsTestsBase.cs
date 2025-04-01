@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using SachkovTech.Issues.Application.Interfaces;
 using SachkovTech.Issues.Domain.Module;
@@ -15,6 +16,7 @@ public class LessonsTestsBase : IClassFixture<LessonTestWebFactory>, IAsyncLifet
     protected readonly IIssuesReadDbContext ReadDbContext;
     protected readonly IServiceScope Scope;
     protected readonly Fixture Fixture;
+    protected ITestHarness MasstransitHarness;
 
     private readonly Func<Task> _resetDatabase;
 
@@ -22,6 +24,7 @@ public class LessonsTestsBase : IClassFixture<LessonTestWebFactory>, IAsyncLifet
     {
         _resetDatabase = factory.ResetDatabaseAsync;
 
+        MasstransitHarness = factory.Services.GetRequiredService<ITestHarness>();
         Scope = factory.Services.CreateScope();
         DbContext = Scope.ServiceProvider.GetRequiredService<IssuesDbContext>();
         ReadDbContext = Scope.ServiceProvider.GetRequiredService<IIssuesReadDbContext>();
@@ -29,11 +32,15 @@ public class LessonsTestsBase : IClassFixture<LessonTestWebFactory>, IAsyncLifet
         Factory = factory;
     }
 
-    public Task InitializeAsync() => Task.CompletedTask;
+    public async Task InitializeAsync()
+    {
+        await MasstransitHarness.Start();
+    }
 
     async Task IAsyncLifetime.DisposeAsync()
     {
         await _resetDatabase();
+        await MasstransitHarness.Stop();
         Scope.Dispose();
     }
 

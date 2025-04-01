@@ -1,8 +1,11 @@
 using FluentAssertions;
+using MassTransit.Internals;
+using MassTransit.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Issues.Application.Features.Lessons.Command.CreateLesson;
+using SachkovTech.Issues.Contracts.Lesson.IntegrationEvents;
 
 namespace SachkovTech.Issues.IntegrationTests.Lessons.AddLessonTests;
 
@@ -37,8 +40,13 @@ public class AddLessonTests : LessonsTestsBase
         var lesson = await ReadDbContext.ReadLessons
             .FirstOrDefaultAsync(l => l.Id == result.Value, cancellationToken);
 
+        var eventSent = await MasstransitHarness.Published
+            .SelectAsync<LessonVideoUploadedIntegrationEvent>(cancellationToken)
+            .FirstOrDefault();
+
         lesson.Should().NotBeNull();
-        lesson?.ModuleId.Should().Be(moduleId);
+        lesson.ModuleId.Should().Be(moduleId);
+        eventSent.Context.Message.LessonId.Should().Be(lesson.Id);
     }
 
     [Fact]
