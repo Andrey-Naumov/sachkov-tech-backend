@@ -1,6 +1,8 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using FileService.Contracts;
+using FileService.Contracts.Options;
+using Microsoft.Extensions.Options;
 using CompleteMultipartUploadRequest = Amazon.S3.Model.CompleteMultipartUploadRequest;
 
 namespace FileService.FilesManagement;
@@ -9,11 +11,13 @@ public class S3Provider : IS3Provider
 {
     private readonly IAmazonS3 _s3Client;
     private readonly ILogger<S3Provider> _logger;
+    private readonly MinioOptions _minioOptions;
 
-    public S3Provider(IAmazonS3 s3Client, ILogger<S3Provider> logger)
+    public S3Provider(IAmazonS3 s3Client, ILogger<S3Provider> logger, IOptions<MinioOptions> minioOptions)
     {
         _s3Client = s3Client;
         _logger = logger;
+        _minioOptions = minioOptions.Value;
     }
 
     public async Task<List<string>> ListBucketsAsync(CancellationToken cancellationToken)
@@ -58,7 +62,7 @@ public class S3Provider : IS3Provider
             Expires = DateTime.UtcNow.AddMinutes(60),
             PartNumber = partNumber,
             UploadId = uploadId,
-            Protocol = Protocol.HTTPS,
+            Protocol = _minioOptions.WithSsl ? Protocol.HTTPS : Protocol.HTTP,
         };
 
         return await _s3Client.GetPreSignedURLAsync(request);
@@ -74,7 +78,7 @@ public class S3Provider : IS3Provider
             Key = location.FileId,
             Verb = HttpVerb.PUT,
             Expires = DateTime.UtcNow.AddMinutes(60),
-            Protocol = Protocol.HTTPS,
+            Protocol = _minioOptions.WithSsl ? Protocol.HTTPS : Protocol.HTTP,
         };
 
         request.Metadata.Add("file-name", fileName);
@@ -136,7 +140,7 @@ public class S3Provider : IS3Provider
             Key = location.FileId,
             Verb = HttpVerb.GET,
             Expires = DateTime.UtcNow.AddHours(expirationHours),
-            Protocol = Protocol.HTTPS,
+            Protocol = _minioOptions.WithSsl ? Protocol.HTTPS : Protocol.HTTP,
         };
 
         return await _s3Client.GetPreSignedURLAsync(request);
@@ -159,7 +163,7 @@ public class S3Provider : IS3Provider
                     Key = location.FileId,
                     Verb = HttpVerb.GET,
                     Expires = DateTime.UtcNow.AddHours(expirationHours),
-                    Protocol = Protocol.HTTPS,
+                    Protocol = _minioOptions.WithSsl ? Protocol.HTTPS : Protocol.HTTP,
                 };
 
                 string? url = await _s3Client.GetPreSignedURLAsync(request);
