@@ -8,7 +8,6 @@ using FileService.Contracts;
 using Microsoft.EntityFrameworkCore;
 using SachkovTech.Core.Abstractions;
 using SharedKernel;
-using Volo.Abp.Http;
 
 namespace AccountService.Application.Queries.GetUserById;
 

@@ -1,4 +1,5 @@
 using FileService;
+using SachkovTech.Framework.Cors;
 using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Middlewares;
 using Serilog;
@@ -24,13 +25,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment(dockerEnv))
     app.UseSwaggerUI();
 }
 
-app.UseCors(config =>
-{
-    config.WithOrigins("http://192.168.1.222:4173", "https://192.168.1.222:4173")
-        .AllowCredentials()
-        .AllowAnyHeader()
-        .AllowAnyMethod();
-});
+app.ConfigureCors();
 
 app.UseAuthentication();
 app.UseScopeDataMiddleware();

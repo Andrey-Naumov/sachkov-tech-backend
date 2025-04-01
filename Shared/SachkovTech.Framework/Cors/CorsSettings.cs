@@ -1,4 +1,4 @@
-﻿namespace AccountService.Api.Cors;
+﻿namespace SachkovTech.Framework.Cors;
 
 public class CorsSettings
 {

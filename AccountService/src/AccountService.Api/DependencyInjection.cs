@@ -1,5 +1,4 @@
 using System.Reflection;
-using AccountService.Api.Cors;
 using AccountService.Api.Providers;
 using AccountService.Application;
 using AccountService.Infrastructure;
@@ -9,6 +8,7 @@ using MassTransit.Monitoring;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Caching;
 using SachkovTech.Framework.Authorization;
+using SachkovTech.Framework.Cors;
 using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Logging;
 using SachkovTech.Framework.Observability;
@@ -24,7 +24,7 @@ public static class DependencyInjection
 
         services.AddControllers();
         services.AddLowerCaseRouting();
-        services.Configure<CorsSettings>(configuration.GetSection(CorsSettings.CORS));
+        services.AddCors(configuration);
 
         services
             .AddInfrastructure(configuration)

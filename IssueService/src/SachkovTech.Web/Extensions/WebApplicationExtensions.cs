@@ -1,4 +1,5 @@
 ﻿using SachkovTech.Core.Database;
+using SachkovTech.Framework.Cors;
 using SachkovTech.Framework.Middlewares;
 using Serilog;
 
@@ -31,16 +32,5 @@ public static class WebApplicationExtensions
         {
             app.MapGet("/", () => "Hello World!");
         }
-    }
-
-    private static void ConfigureCors(this WebApplication app)
-    {
-        app.UseCors(config =>
-        {
-            config.WithOrigins("http://localhost:5173", "https://192.168.1.222:4173")
-                .AllowCredentials()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
     }
 }

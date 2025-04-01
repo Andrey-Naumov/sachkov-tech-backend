@@ -10,6 +10,7 @@ using MassTransit.Logging;
 using MassTransit.Monitoring;
 using SachkovTech.Core.Caching;
 using SachkovTech.Framework.Authorization;
+using SachkovTech.Framework.Cors;
 using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Logging;
 using SachkovTech.Framework.Observability;
@@ -24,6 +25,7 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddLowerCaseRouting();
+        services.AddCors(configuration);
 
         services
             .AddInfrastructure(configuration)

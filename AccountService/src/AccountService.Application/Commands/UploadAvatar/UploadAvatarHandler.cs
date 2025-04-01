@@ -1,5 +1,4 @@
-﻿using AccountService.Application.Database;
-using AccountService.Domain;
+﻿using AccountService.Domain;
 using CSharpFunctionalExtensions;
 using FileService.Communication;
 using Microsoft.AspNetCore.Identity;
