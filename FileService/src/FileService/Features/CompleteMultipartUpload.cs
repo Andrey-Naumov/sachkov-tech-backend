@@ -12,7 +12,7 @@ public static class CompleteMultipartUpload
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapPost("api/files/multipart/end", Handler)
-                .RequireAuthorization(Permissions.Files.UPLOAD_FILES);
+                .RequirePermissions(Permissions.Files.UPLOAD_FILES);
         }
     }
 

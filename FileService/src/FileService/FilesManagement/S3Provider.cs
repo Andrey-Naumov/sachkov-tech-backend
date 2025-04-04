@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using System.Net;
+using Amazon.S3;
 using Amazon.S3.Model;
 using FileService.Contracts;
 using FileService.Contracts.Options;
@@ -68,7 +69,8 @@ public class S3Provider : IS3Provider
         return await _s3Client.GetPreSignedURLAsync(request);
     }
 
-    public async Task<string> GenerateUploadUrl(string fileName, FileLocation location, CancellationToken cancellationToken)
+    public async Task<string> GenerateUploadUrl(string fileName, FileLocation location,
+        CancellationToken cancellationToken)
     {
         await CreateBucketIfNotExists(location.BucketName, cancellationToken);
 
@@ -122,10 +124,7 @@ public class S3Provider : IS3Provider
         string bucketName,
         CancellationToken cancellationToken)
     {
-        var listRequest = new ListMultipartUploadsRequest
-        {
-            BucketName = bucketName,
-        };
+        var listRequest = new ListMultipartUploadsRequest { BucketName = bucketName, };
 
         var response = await _s3Client.ListMultipartUploadsAsync(listRequest, cancellationToken);
 
@@ -185,12 +184,10 @@ public class S3Provider : IS3Provider
         return await Task.WhenAll(tasks);
     }
 
-    public async Task<string> DownloadFileAsync(FileLocation location, string tempInputPath, CancellationToken cancellationToken)
+    public async Task<string> DownloadFileAsync(FileLocation location, string tempInputPath,
+        CancellationToken cancellationToken)
     {
-        var request = new GetObjectRequest
-        {
-            BucketName = location.BucketName, Key = location.FileId,
-        };
+        var request = new GetObjectRequest { BucketName = location.BucketName, Key = location.FileId, };
 
         var response = await _s3Client.GetObjectAsync(request, cancellationToken);
 
@@ -204,7 +201,8 @@ public class S3Provider : IS3Provider
         return fileDirectory;
     }
 
-    public async Task UploadFileAsync(FileLocation location, string? contentType, Stream file, CancellationToken cancellationToken)
+    public async Task UploadFileAsync(FileLocation location, string? contentType, Stream file,
+        CancellationToken cancellationToken)
     {
         await CreateBucketIfNotExists(location.BucketName, cancellationToken);
 
@@ -219,6 +217,16 @@ public class S3Provider : IS3Provider
         await _s3Client.PutObjectAsync(request, cancellationToken);
     }
 
+    public async Task<string> DeleteFileAsync(FileLocation fileLocation, CancellationToken cancellationToken)
+    {
+        var request = new DeleteObjectRequest { BucketName = fileLocation.BucketName, Key = fileLocation.FileId };
+
+        await _s3Client.DeleteObjectAsync(request, cancellationToken);
+
+        return fileLocation.FileId;
+    }
+
+
     private async Task CreateBucketIfNotExists(string bucketName, CancellationToken cancellationToken)
     {
         var response = await _s3Client.ListBucketsAsync(cancellationToken);
@@ -227,10 +235,7 @@ public class S3Provider : IS3Provider
             return;
         }
 
-        var bucketRequest = new PutBucketRequest
-        {
-            BucketName = bucketName, UseClientRegion = true,
-        };
+        var bucketRequest = new PutBucketRequest { BucketName = bucketName, UseClientRegion = true, };
 
         await _s3Client.PutBucketAsync(bucketRequest, cancellationToken);
     }

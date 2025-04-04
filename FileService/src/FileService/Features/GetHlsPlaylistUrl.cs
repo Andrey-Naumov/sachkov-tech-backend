@@ -12,7 +12,7 @@ public static class GetHlsPlaylistUrl
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapGet("api/files/hls/{videoId}/playlist", Handler)
-                .RequireAuthorization(Permissions.Files.READ_FILES);
+                .RequirePermissions(Permissions.Files.READ_FILES);
         }
     }
 

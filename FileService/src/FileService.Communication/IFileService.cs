@@ -59,4 +59,12 @@ public interface IFileService
     /// <returns>Ответ с URL для скачивания плейлиста HLS.</returns>
     Task<Result<GetHlsPlaylistUrlResponse, ErrorList>> GetHlsPlaylistUrl(
         Guid videoId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Удаление файла.
+    /// </summary>
+    /// <param name="request">Содержит идентификатор файла и имя бакета.</param>
+    /// <param name="cancellationToken">Токен отмены.</param>
+    /// <returns>Ответ с результатом удаления.</returns>
+    Task<UnitResult<ErrorList>> DeleteFile(DeleteFileRequest request, CancellationToken cancellationToken);
 }

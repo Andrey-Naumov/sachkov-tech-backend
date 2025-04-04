@@ -118,4 +118,12 @@ public interface IS3Provider
     /// <param name="cancellationToken">Токен отметы.</param>
     /// <returns>Task.</returns>
     Task UploadFileAsync(FileLocation fileLocation, string? contentType, Stream file, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Удаление файла из S3.
+    /// </summary>
+    /// <param name="fileLocation">Локация файла.</param>
+    /// <param name="cancellationToken">Токен отмены.</param>
+    /// <returns>Id удалённого файла.</returns>
+    Task<string> DeleteFileAsync(FileLocation fileLocation, CancellationToken cancellationToken);
 }

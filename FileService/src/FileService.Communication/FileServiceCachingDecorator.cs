@@ -110,8 +110,22 @@ public class FileServiceCachingDecorator : IFileService
         return new GetDownloadUrlsResponse(fileUrls);
     }
 
-    public Task<Result<GetHlsPlaylistUrlResponse, ErrorList>> GetHlsPlaylistUrl(Guid videoId, CancellationToken cancellationToken)
+    public Task<Result<GetHlsPlaylistUrlResponse, ErrorList>> GetHlsPlaylistUrl(
+        Guid videoId, CancellationToken cancellationToken)
     {
         return _fileService.GetHlsPlaylistUrl(videoId, cancellationToken);
+    }
+
+    public async Task<UnitResult<ErrorList>> DeleteFile(DeleteFileRequest request, CancellationToken cancellationToken)
+    {
+        string cacheKey = request.FileId.ToString();
+
+        string? cachedUrl = await _cacheService.GetAsync<string>(cacheKey, cancellationToken);
+        if (cachedUrl is not null)
+        {
+            await _cacheService.RemoveAsync(cacheKey, cancellationToken);
+        }
+
+        return await _fileService.DeleteFile(request, cancellationToken);
     }
 }

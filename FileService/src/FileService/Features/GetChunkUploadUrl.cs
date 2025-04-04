@@ -12,7 +12,7 @@ public static class GetChunkUploadUrl
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapPost("api/files/multipart/url", Handler)
-                .RequireAuthorization(Permissions.Files.READ_FILES);
+                .RequirePermissions(Permissions.Files.READ_FILES);
         }
     }
 

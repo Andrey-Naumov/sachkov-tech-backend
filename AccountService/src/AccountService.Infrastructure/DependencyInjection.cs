@@ -2,6 +2,7 @@ using AccountService.Application.Database;
 using AccountService.Application.Managers;
 using AccountService.Application.Providers;
 using AccountService.Domain;
+using AccountService.Infrastructure.Consumers;
 using AccountService.Infrastructure.DbContexts;
 using AccountService.Infrastructure.IdentityManagers;
 using AccountService.Infrastructure.Migrator;
@@ -46,6 +47,8 @@ public static class DependencyInjection
         services.AddMassTransit(configure =>
         {
             configure.SetKebabCaseEndpointNameFormatter();
+
+            configure.AddConsumer<AvatarUploadedConsumer>();
 
             configure.UsingRabbitMq((context, cfg) =>
             {

@@ -14,9 +14,7 @@ public static class GetDownloadUrl
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapPost("api/files/url", Handler)
-                .RequireAuthorization(policy => policy
-                    .AddAuthenticationSchemes(SecretKeyDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme)
-                    .AddRequirements(new PermissionAttribute(Permissions.Files.READ_FILES)));
+                .RequirePermissions(Permissions.Files.READ_FILES);
         }
     }
 

@@ -12,7 +12,7 @@ public static class GetDownloadUrls
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapPost("api/files/urls", Handler)
-                .RequireAuthorization(Permissions.Files.READ_FILES);
+                .RequirePermissions(Permissions.Files.READ_FILES);
         }
     }
 

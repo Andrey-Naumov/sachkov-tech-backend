@@ -1,7 +1,9 @@
 ﻿using System.Net.Http.Json;
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using Microsoft.Extensions.Logging;
 using SachkovTech.Framework.Http;
+using Serilog;
 using SharedKernel;
 
 namespace FileService.Communication;
@@ -51,5 +53,12 @@ public class FileHttpClient(HttpClient httpClient) : IFileService
     {
         var response = await httpClient.GetAsync($"api/files/hls/{videoId}/playlist", cancellationToken);
         return await response.HandleResponseAsync<GetHlsPlaylistUrlResponse>(cancellationToken);
+    }
+
+    public async Task<UnitResult<ErrorList>> DeleteFile(DeleteFileRequest request, CancellationToken cancellationToken)
+    {
+        var requestUrl = $"api/files/{request.FileId}/delete?bucketName={request.BucketName}";
+        var response = await httpClient.DeleteAsync(requestUrl, cancellationToken);
+        return await response.HandleResponseAsync<string>(cancellationToken);
     }
 }

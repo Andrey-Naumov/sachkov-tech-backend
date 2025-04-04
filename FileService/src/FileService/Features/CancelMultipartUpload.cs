@@ -11,7 +11,7 @@ public class CancelMultipartUpload
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapPost("api/files/multipart/cancel", Handler)
-                .RequireAuthorization(Permissions.Files.UPLOAD_FILES);
+                .RequirePermissions(Permissions.Files.UPLOAD_FILES);
         }
     }
 

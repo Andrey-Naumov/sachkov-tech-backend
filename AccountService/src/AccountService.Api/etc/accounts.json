@@ -18,6 +18,7 @@
       "review.issues.comment",
       "files.read",
       "files.upload",
+      "files.delete",
       "accounts.enroll",
       "accounts.read",
       "accounts.update",
@@ -39,7 +40,8 @@
       "review.issues.read",
       "review.issues.comment",
       "files.read",
-      "files.upload"
+      "files.upload",
+      "files.delete"
     ],
     "Participant": [
       "accounts.enroll",
@@ -54,7 +56,8 @@
       "review.issues.update",
       "review.issues.comment",
       "files.read",
-      "files.upload"
+      "files.upload",
+      "files.delete"
     ]
   },
   "Permissions": {
@@ -95,7 +98,8 @@
     ],
     "Files": [
       "files.read",
-      "files.upload"
+      "files.upload",
+      "files.delete"
     ],
     "Accounts": [
       "accounts.enroll",
