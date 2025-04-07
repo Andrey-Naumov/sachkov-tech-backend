@@ -13,7 +13,9 @@ using SachkovTech.Issues.Application.Features.Modules.Commands.UpdateIssuePositi
 using SachkovTech.Issues.Application.Features.Modules.Commands.UpdateLessonPosition;
 using SachkovTech.Issues.Application.Features.Modules.Commands.UpdateMainInfo;
 using SachkovTech.Issues.Application.Features.Modules.Queries.GetModules;
+using SachkovTech.Issues.Application.Features.ModulesComplition.Command.StartModuleExecution;
 using SachkovTech.Issues.Domain.Module;
+using SachkovTech.Issues.Domain.ModulesComplition;
 using SachkovTech.Issues.Domain.ValueObjects;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 
@@ -150,6 +152,28 @@ public static class FixtureExtensions
     {
         return fixture.Build<GetModulesQuery>()
             .Create();
+    }
+
+    public static StartModuleExecutionCommand CreateStartModuleExecutionCommand(
+        this IFixture fixture,
+        Guid moduleId = default,
+        Guid userId = default)
+    {
+        return fixture.Build<StartModuleExecutionCommand>()
+            .With(c => c.ModuleId, moduleId)
+            .With(c => c.UserId, userId)
+            .Create();
+    }
+
+    public static UserModule CreateUserModule(
+        this IFixture fixture,
+        Guid moduleId,
+        Guid userId)
+    {
+        return new UserModule(
+            UserModuleId.NewUserModuleId(),
+            userId,
+            moduleId);
     }
 
     public static Module CreateModule(this IFixture fixture)

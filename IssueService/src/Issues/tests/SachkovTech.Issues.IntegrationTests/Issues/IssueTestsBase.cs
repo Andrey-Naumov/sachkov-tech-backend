@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using MassTransit.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SachkovTech.Issues.Application.Interfaces;
@@ -19,6 +20,7 @@ public class IssueTestsBase : IClassFixture<IntegrationTestsWebFactory>, IAsyncL
     protected readonly IIssuesReadDbContext ReadDbContext;
     protected readonly IServiceScope Scope;
     protected readonly Fixture Fixture;
+    protected ITestHarness MasstransitHarness;
 
     private readonly Func<Task> _resetDatabase;
 
@@ -27,17 +29,22 @@ public class IssueTestsBase : IClassFixture<IntegrationTestsWebFactory>, IAsyncL
         _resetDatabase = factory.ResetDatabaseAsync;
 
         Scope = factory.Services.CreateScope();
+        MasstransitHarness = factory.Services.GetRequiredService<ITestHarness>();
         DbContext = Scope.ServiceProvider.GetRequiredService<IssuesDbContext>();
         ReadDbContext = Scope.ServiceProvider.GetRequiredService<IIssuesReadDbContext>();
         Fixture = new Fixture();
         Factory = factory;
     }
 
-    public Task InitializeAsync() => Task.CompletedTask;
+    public async Task InitializeAsync()
+    {
+        await MasstransitHarness.Start();
+    }
 
     async Task IAsyncLifetime.DisposeAsync()
     {
         await _resetDatabase();
+        await MasstransitHarness.Stop();
         Scope.Dispose();
     }
 
@@ -113,5 +120,14 @@ public class IssueTestsBase : IClassFixture<IntegrationTestsWebFactory>, IAsyncL
         await DbContext.SaveChangesAsync();
 
         return lesson.Id;
+    }
+
+    protected async Task SeedUserModule(Guid moduleId, Guid userId)
+    {
+        var userModule = Fixture.CreateUserModule(moduleId, userId);
+
+        await DbContext.UserModules.AddAsync(userModule);
+
+        await DbContext.SaveChangesAsync();
     }
 }

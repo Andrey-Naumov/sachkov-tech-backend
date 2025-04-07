@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
 using SachkovTech.Issues.Application.Interfaces;
-using SachkovTech.Issues.Domain.Lesson;
+using SachkovTech.Issues.Domain.Lesson.ValueObjects;
 using SachkovTech.Issues.Domain.ValueObjects;
 using SharedKernel;
 

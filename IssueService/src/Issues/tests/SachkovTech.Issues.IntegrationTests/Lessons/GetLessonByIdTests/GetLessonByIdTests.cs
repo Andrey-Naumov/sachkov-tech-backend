@@ -1,13 +1,10 @@
-﻿using System.Reflection;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
+﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonById;
 using SachkovTech.Issues.Contracts.Lesson;
 using SachkovTech.Issues.Domain.Issue.ValueObjects;
 using SachkovTech.Issues.Domain.Lesson;
-using SachkovTech.Issues.Domain.LessonsViewing;
 using SachkovTech.Issues.Domain.ValueObjects;
 using SachkovTech.Issues.Infrastructure.DbContexts;
 using SharedKernel;

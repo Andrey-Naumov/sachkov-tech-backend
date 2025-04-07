@@ -8,7 +8,7 @@ using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
 using SachkovTech.Core.Validation;
 using SachkovTech.Issues.Contracts.Lesson;
-using SachkovTech.Issues.Domain.Lesson;
+using SachkovTech.Issues.Domain.Lesson.ValueObjects;
 using SharedKernel;
 
 namespace SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonsByModuleWithPagination;

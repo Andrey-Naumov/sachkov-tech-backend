@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using SachkovTech.Issues.Application.Interfaces;
-using SachkovTech.Issues.Domain.IssueSolving.Entities;
+using SachkovTech.Issues.Domain.IssuesComplition;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 using SachkovTech.Issues.Infrastructure.DbContexts;
 using SharedKernel;
@@ -29,8 +29,8 @@ public class UserIssueRepository : IUserIssueRepository
         UserIssueId userIssueId,
         CancellationToken cancellationToken = default)
     {
-        var userIssue =
-            await _dbContext.UserIssues.SingleOrDefaultAsync(ui => ui.Id == userIssueId, cancellationToken);
+        var userIssue = await _dbContext.UserIssues
+            .SingleOrDefaultAsync(ui => ui.Id == userIssueId, cancellationToken);
 
         if (userIssue is null)
             return Errors.General.NotFound();

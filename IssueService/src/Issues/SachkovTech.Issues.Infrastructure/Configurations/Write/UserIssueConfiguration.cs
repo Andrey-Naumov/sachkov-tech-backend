@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SachkovTech.Issues.Domain.IssueSolving.Entities;
+using SachkovTech.Issues.Domain.IssuesComplition;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 
 namespace SachkovTech.Issues.Infrastructure.Configurations.Write;

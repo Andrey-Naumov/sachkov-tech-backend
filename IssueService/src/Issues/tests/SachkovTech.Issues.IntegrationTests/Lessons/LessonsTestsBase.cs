@@ -57,4 +57,13 @@ public class LessonsTestsBase : IClassFixture<LessonTestWebFactory>, IAsyncLifet
 
         return module.Id;
     }
+
+    protected async Task SeedUserModule(Guid moduleId, Guid userId)
+    {
+        var userModule = Fixture.CreateUserModule(moduleId, userId);
+
+        await DbContext.UserModules.AddAsync(userModule);
+
+        await DbContext.SaveChangesAsync();
+    }
 }

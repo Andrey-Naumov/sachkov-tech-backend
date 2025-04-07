@@ -9,7 +9,6 @@ using SachkovTech.Core.Validation;
 using SachkovTech.Issues.Application.Interfaces;
 using SachkovTech.Issues.Domain.Issue.ValueObjects;
 using SachkovTech.Issues.Domain.Lesson;
-using SachkovTech.Issues.Domain.Module;
 using SachkovTech.Issues.Domain.ValueObjects;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 using SharedKernel;
@@ -20,7 +19,6 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
 {
     private readonly IValidator<CreateLessonCommand> _validator;
     private readonly ILessonsRepository _lessonsRepository;
-    private readonly IModulesRepository _modulesRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPublisher _publisher;
     private readonly ILogger<CreateLessonHandler> _logger;
@@ -29,7 +27,6 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
     public CreateLessonHandler(
         IValidator<CreateLessonCommand> validator,
         ILessonsRepository lessonsRepository,
-        IModulesRepository modulesRepository,
         IUnitOfWork unitOfWork,
         IPublisher publisher,
         IFileService fileService,
@@ -37,7 +34,6 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
     {
         _validator = validator;
         _lessonsRepository = lessonsRepository;
-        _modulesRepository = modulesRepository;
         _unitOfWork = unitOfWork;
         _publisher = publisher;
         _logger = logger;
@@ -52,10 +48,6 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
             return validationResult.ToList();
 
         await using var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
-
-        var moduleResult = await _modulesRepository.GetById(command.ModuleId, cancellationToken);
-        if (moduleResult.IsFailure)
-            return moduleResult.Error.ToErrorList();
 
         var title = Title.Create(command.Title).Value;
         var isLessonExists = await _lessonsRepository.GetByTitle(title, cancellationToken);
@@ -75,11 +67,6 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
 
         await _unitOfWork.SaveChanges(cancellationToken);
 
-        // TODO: реализовать через доменное событие
-        moduleResult.Value.AddLesson(lesson.Id);
-
-        await _unitOfWork.SaveChanges(cancellationToken);
-
         var result = await _fileService.CompleteMultipartUpload(command.MultipartRequest, cancellationToken);
         if (result.IsFailure)
             return result.Error;
@@ -94,7 +81,7 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
 
         await transaction.CommitAsync(cancellationToken);
 
-        _logger.Log(LogLevel.Information, "Added new lesson with {LessonId}", lesson.Id);
+        _logger.LogInformation("Added new lesson with {LessonId}", lesson.Id);
 
         return lesson.Id.Value;
     }

@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using SachkovTech.Issues.Application.Interfaces;
-using SachkovTech.Issues.Domain.LessonsViewing;
+using SachkovTech.Issues.Domain.LessonsComplition;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 using SachkovTech.Issues.Infrastructure.DbContexts;
 using SharedKernel;

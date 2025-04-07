@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>SharedKernel</PackageId>
-    <Version>1.1.8</Version>
+    <Version>1.1.9</Version>
     <Authors>SachkovTech</Authors>
     <Company>SachkovTech</Company>
     <PackageDescription>SharedKernel</PackageDescription>

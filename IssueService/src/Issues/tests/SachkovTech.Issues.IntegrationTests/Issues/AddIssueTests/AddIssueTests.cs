@@ -3,17 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Issues.Application.Features.Issue.Commands.AddIssue;
+using SachkovTech.Issues.Domain.ValueObjects.Ids;
 
 namespace SachkovTech.Issues.IntegrationTests.Issues.AddIssueTests;
 
 public class AddIssueTests : IssueTestsBase
 {
-    private readonly ICommandHandler<Guid, CreateIssueCommand> sut;
+    private readonly ICommandHandler<Guid, CreateIssueCommand> _sut;
 
     public AddIssueTests(IntegrationTestsWebFactory factory)
         : base(factory)
     {
-        sut = Scope.ServiceProvider.GetRequiredService<ICommandHandler<Guid, CreateIssueCommand>>();
+        _sut = Scope.ServiceProvider.GetRequiredService<ICommandHandler<Guid, CreateIssueCommand>>();
     }
 
     [Fact]
@@ -28,7 +29,7 @@ public class AddIssueTests : IssueTestsBase
         var command = Fixture.CreateAddIssueCommand(moduleId, lessonId);
 
         // Act
-        var result = await sut.Handle(command, cancellationToken);
+        var result = await _sut.Handle(command, cancellationToken);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -38,7 +39,7 @@ public class AddIssueTests : IssueTestsBase
             .FirstOrDefaultAsync(l => l.Id == result.Value, cancellationToken);
 
         issue.Should().NotBeNull();
-        issue?.ModuleId.Value.Should().Be(moduleId);
+        issue.ModuleId.Value.Should().Be(moduleId);
 
         var module = await ReadDbContext.ReadModules
             .Include(m => m.IssuesPosition)
@@ -71,5 +72,39 @@ public class AddIssueTests : IssueTestsBase
 
         result.IsFailure.Should().BeTrue();
         issue.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task AddIssue_sends_event_and_increases_total_issue_count()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        var moduleId = await SeedModule();
+
+        var userId = UserId.NewUserId();
+
+        await SeedUserModule(moduleId, userId);
+
+        var lessonId = await SeedLesson(moduleId);
+
+        var command = Fixture.CreateAddIssueCommand(moduleId, lessonId);
+
+        // Act
+        var result = await _sut.Handle(command, cancellationToken);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+
+        var modules = await ReadDbContext.ReadUserModules
+            .Where(ui => ui.ModuleId == moduleId)
+            .ToListAsync(cancellationToken);
+
+        foreach (var module in modules)
+        {
+            module.IsModuleCompleted.Should().BeFalse();
+            module.CompletedIssues.Count.Should().Be(0);
+        }
     }
 }

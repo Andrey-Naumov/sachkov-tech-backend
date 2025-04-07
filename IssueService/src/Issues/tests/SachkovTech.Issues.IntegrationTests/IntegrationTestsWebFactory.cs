@@ -101,7 +101,7 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
             _dbConnection,
             new RespawnerOptions
             {
-                DbAdapter = DbAdapter.Postgres, SchemasToInclude = ["issues"]
+                DbAdapter = DbAdapter.Postgres, SchemasToInclude = ["issues"],
             });
     }
 }

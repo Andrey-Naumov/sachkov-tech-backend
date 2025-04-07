@@ -69,7 +69,7 @@ public sealed class IssueReview : DomainEntity<IssueReviewId>
 
         IssueReviewStatus = IssueReviewStatus.AskedForRevision;
 
-        AddDomainEvent(new IssueSentForRevisionEvent(UserIssueId));
+        AddDomainEvent(new IssueSentForRevisionDomainEvent(UserIssueId));
 
         return UnitResult.Success<Error>();
     }

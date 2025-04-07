@@ -1,0 +1,12 @@
+﻿namespace SharedKernel.Exeptions;
+
+public class ValidationException : Exception
+{
+    public Error Error { get; }
+
+    public ValidationException(Error error)
+        : base(error.Message)
+    {
+        Error = error;
+    }
+}

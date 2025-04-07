@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SachkovTech.Framework;
 using SachkovTech.Framework.Authorization;
-using SachkovTech.Issues.Application.Features.IssueSolving.Commands.SendOnReview;
-using SachkovTech.Issues.Application.Features.IssueSolving.Commands.StopWorking;
-using SachkovTech.Issues.Application.Features.IssueSolving.Commands.TakeOnWork;
-using SachkovTech.Issues.Application.Features.IssueSolving.Queries.GetUserIssuesByModuleWithPagination;
+using SachkovTech.Issues.Application.Features.IssuesComplition.Commands.SendOnReview;
+using SachkovTech.Issues.Application.Features.IssuesComplition.Commands.StopWorking;
+using SachkovTech.Issues.Application.Features.IssuesComplition.Commands.TakeOnWork;
+using SachkovTech.Issues.Application.Features.IssuesComplition.Queries.GetUserIssuesByModuleWithPagination;
 using SachkovTech.Issues.Contracts.IssueReview;
 using SachkovTech.Issues.Contracts.IssueSolving;
 

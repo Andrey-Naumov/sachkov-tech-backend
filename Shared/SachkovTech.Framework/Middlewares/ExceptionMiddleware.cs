@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SharedKernel;
+using SharedKernel.Exeptions;
 
 namespace SachkovTech.Framework.Middlewares;
 
@@ -35,6 +36,14 @@ public class ExceptionMiddleware
 
         (int statusCode, Error error) = exception switch
         {
+            NotFoundException ex => (StatusCodes.Status404NotFound, ex.Error),
+
+            ValidationException ex => (StatusCodes.Status400BadRequest, ex.Error),
+
+            ConflictException ex => (StatusCodes.Status409Conflict, ex.Error),
+
+            FailureException ex => (StatusCodes.Status500InternalServerError, ex.Error),
+
             AuthenticationException => (StatusCodes.Status401Unauthorized,
                 Error.Failure("authentication.failed", exception.Message)),
 

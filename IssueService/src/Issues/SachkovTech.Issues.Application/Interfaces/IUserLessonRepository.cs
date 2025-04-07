@@ -1,5 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using SachkovTech.Issues.Domain.LessonsViewing;
+using SachkovTech.Issues.Domain.LessonsComplition;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 using SharedKernel;
 

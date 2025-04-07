@@ -44,6 +44,37 @@ public class ForceDeleteIssueTests : IssueTestsBase
             .FirstOrDefaultAsync(m => m.Id == moduleId, cancellationToken);
 
         module.Should().NotBeNull();
-        module!.IssuesPosition.Should().BeEmpty();
+        module.IssuesPosition.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Force_delete()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        var moduleId = await SeedModule();
+
+        var issueId = await SeedIssue(moduleId);
+
+        await SeedUserModule(moduleId, Guid.NewGuid());
+
+        var command = Fixture.CreateDeleteIssueCommand(issueId);
+
+        // Act
+        var result = await sut.Handle(command, cancellationToken);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeEmpty();
+
+        var issueIdJson = $"[\"{issueId}\"]";
+
+        var userModules = await ReadDbContext.ReadUserModules
+            .Where(um => um.ModuleId == moduleId
+                         && EF.Functions.JsonContains(um.CompletedIssues, issueIdJson))
+            .ToListAsync(cancellationToken);
+
+        userModules.Count.Should().Be(0);
     }
 }

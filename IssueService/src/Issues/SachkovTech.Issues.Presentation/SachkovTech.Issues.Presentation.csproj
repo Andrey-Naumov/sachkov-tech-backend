@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="framework" Version="1.3.9" />
+      <PackageReference Include="framework" Version="1.4.5" />
     </ItemGroup>
 
 </Project>

@@ -48,9 +48,9 @@ public class UpdateLessonPositionHandler : ICommandHandler<Guid, UpdateLessonPos
         var newPosition = Position.Create(command.Position).Value;
 
         var result = moduleResult.Value.MoveLesson(lessonResult, newPosition);
-        if(result.IsFailure)
+        if (result.IsFailure)
             return result.Error.ToErrorList();
-
+        
         await _unitOfWork.SaveChanges(cancellationToken);
 
         _logger.LogInformation(

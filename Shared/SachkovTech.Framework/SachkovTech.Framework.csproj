@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>Framework</PackageId>
-    <Version>1.4.3</Version>
+    <Version>1.4.5</Version>
     <Authors>SachkovTech</Authors>
     <Company>SachkovTech</Company>
     <PackageDescription>Framework project</PackageDescription>

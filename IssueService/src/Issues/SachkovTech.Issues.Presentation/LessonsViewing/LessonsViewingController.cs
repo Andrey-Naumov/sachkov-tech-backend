@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SachkovTech.Framework;
 using SachkovTech.Framework.Authorization;
-using SachkovTech.Issues.Application.Features.LessonsViewing.Command.CompletedView;
-using SachkovTech.Issues.Application.Features.LessonsViewing.Command.UncompletedViewed;
+using SachkovTech.Issues.Application.Features.LessonsComplition.Command.CompleteView;
+using SachkovTech.Issues.Application.Features.LessonsComplition.Command.UncompleteViewed;
 using SachkovTech.Issues.Contracts.LessonsViewing;
 
 namespace SachkovTech.Issues.Presentation.LessonsViewing;
@@ -12,7 +12,7 @@ public class LessonsViewingController : ApplicationController
     [HttpPost("completed-view")]
     public async Task<ActionResult> CompletedView(
         [FromBody] CompletedViewRequest request,
-        [FromServices] CompletedViewHandler handler,
+        [FromServices] CompleteViewHandler handler,
         [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
@@ -28,11 +28,11 @@ public class LessonsViewingController : ApplicationController
     [HttpPut("uncompleted-view")]
     public async Task<ActionResult> UncompletedView(
         [FromBody] UncompletedViewedLessonRequest request,
-        [FromServices] UncompletedViewedLessonHandler handler,
+        [FromServices] UncompleteViewedLessonHandler handler,
         [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var command = new UncompletedViewedLessonCommand(userScopedData.UserId, request.LessonId);
+        var command = new UncompleteViewedLessonCommand(userScopedData.UserId, request.LessonId);
 
         var result = await handler.Handle(command, cancellationToken);
         if (result.IsFailure)

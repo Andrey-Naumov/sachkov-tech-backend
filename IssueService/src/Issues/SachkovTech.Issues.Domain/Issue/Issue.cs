@@ -34,7 +34,7 @@ public class Issue : DomainEntity<IssueId>, ISoftDeletable
         Experience = experience;
         _files = files?.ToList() ?? [];
 
-        AddDomainEvent(new IssueCreatedEvent(id, moduleId));
+        AddDomainEvent(new IssueCreatedDomainEvent(id, moduleId));
     }
 
     public Experience Experience { get; private set; } = default!;

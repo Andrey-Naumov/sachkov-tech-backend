@@ -1,5 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using SachkovTech.Issues.Domain.Issue.ValueObjects;
+using SachkovTech.Issues.Domain.Lesson.Events;
+using SachkovTech.Issues.Domain.Lesson.ValueObjects;
 using SachkovTech.Issues.Domain.ValueObjects;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 using SharedKernel;
@@ -55,7 +57,7 @@ public class Lesson : DomainEntity<LessonId>, ISoftDeletable
         Tags = tags;
         Issues = issues;
 
-        AddDomainEvent(new LessonCreatedDomainEvent(id));
+        AddDomainEvent(new LessonCreatedDomainEvent(id, moduleId));
     }
 
     /// <summary>

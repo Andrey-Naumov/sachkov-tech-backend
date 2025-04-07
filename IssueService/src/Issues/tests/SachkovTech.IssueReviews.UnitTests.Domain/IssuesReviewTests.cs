@@ -40,7 +40,7 @@ public class IssuesReviewTests
         var result = issueReview.SendIssueForRevision(reviewerId);
 
         // Assert
-        var domainEvent = issueReview.DomainEvents.SingleOrDefault() as IssueSentForRevisionEvent;
+        var domainEvent = issueReview.DomainEvents.SingleOrDefault() as IssueSentForRevisionDomainEvent;
 
         result.IsSuccess.Should().BeTrue();
         domainEvent.Should().NotBeNull();

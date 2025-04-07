@@ -38,6 +38,10 @@ public class Module : Entity<ModuleId>, ISoftDeletable
 
     public IReadOnlyList<LessonPosition> LessonsPosition => _lessonsPosition.AsReadOnly();
 
+    public int TotalIssuesCount() => _issuesPosition.Count;
+
+    public int TotalLessonsCount() => _lessonsPosition.Count;
+
     public void SoftDelete()
     {
         IsDeleted = true;

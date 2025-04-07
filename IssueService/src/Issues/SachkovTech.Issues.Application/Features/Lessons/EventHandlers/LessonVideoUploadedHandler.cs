@@ -1,7 +1,7 @@
 ﻿using MassTransit;
 using MediatR;
 using SachkovTech.Issues.Contracts.Lesson.IntegrationEvents;
-using SachkovTech.Issues.Domain.Lesson;
+using SachkovTech.Issues.Domain.Lesson.Events;
 
 namespace SachkovTech.Issues.Application.Features.Lessons.EventHandlers;
 
