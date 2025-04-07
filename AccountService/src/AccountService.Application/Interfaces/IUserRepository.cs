@@ -1,8 +1,8 @@
-﻿using AccountService.Domain;
+﻿using AccountService.Domain.Users;
 using CSharpFunctionalExtensions;
 using SharedKernel;
 
-namespace AccountService.Application.Database;
+namespace AccountService.Application.Interfaces;
 
 public interface IUserRepository
 {
@@ -12,6 +12,7 @@ public interface IUserRepository
         string phoneNumber,
         CancellationToken cancellationToken = default);
 
-
-    Task<bool> IsUserExistsByUserName(string userName, CancellationToken cancellationToken);
+    Task<bool> UserNameExists(
+        string userName,
+        CancellationToken cancellationToken = default);
 }

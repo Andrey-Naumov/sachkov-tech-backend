@@ -1,8 +1,8 @@
-using AccountService.Contracts.Messaging;
-using AccountService.Domain;
+﻿using AccountService.Contracts.Messaging;
+using AccountService.Domain.Users;
+using AccountService.Domain.Users.ValueObjects;
 using CSharpFunctionalExtensions;
 using FileService.Communication;
-using FileService.Contracts;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;

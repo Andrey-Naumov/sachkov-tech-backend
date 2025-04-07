@@ -1,4 +1,4 @@
-using AccountService.Application.Managers;
+﻿using AccountService.Application.Interfaces;
 using AccountService.Application.Providers;
 using AccountService.Contracts.Responses;
 using CSharpFunctionalExtensions;
@@ -10,12 +10,12 @@ namespace AccountService.Application.Commands.RefreshTokens;
 
 public class RefreshTokensHandler : ICommandHandler<LoginResponse, RefreshTokensCommand>
 {
-    private readonly IRefreshSessionManager _refreshSessionManager;
+    private readonly IRefreshSessionsRepository _refreshSessionManager;
     private readonly ITokenProvider _tokenProvider;
     private readonly IUnitOfWork _unitOfWork;
 
     public RefreshTokensHandler(
-        IRefreshSessionManager refreshSessionManager,
+        IRefreshSessionsRepository refreshSessionManager,
         ITokenProvider tokenProvider,
         IUnitOfWork unitOfWork)
     {

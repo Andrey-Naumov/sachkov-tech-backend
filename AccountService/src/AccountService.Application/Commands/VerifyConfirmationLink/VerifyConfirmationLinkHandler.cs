@@ -1,5 +1,5 @@
-using AccountService.Application.Extensions;
-using AccountService.Domain;
+﻿using AccountService.Application.Extensions;
+using AccountService.Domain.Users;
 using CSharpFunctionalExtensions;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;

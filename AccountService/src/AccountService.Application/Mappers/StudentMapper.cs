@@ -1,6 +1,6 @@
-using AccountService.Contracts.Dtos;
+﻿using AccountService.Contracts.Dtos;
 using AccountService.Contracts.Responses;
-using AccountService.Domain;
+using AccountService.Domain.Users;
 
 namespace AccountService.Application.Mappers;
 
@@ -30,7 +30,9 @@ public static class StudentMapper
         => user.StudentAccount is not null
             ? new StudentAccountDto
             {
-                Id = user.StudentAccount.Id, UserId = user.Id, DateStartedStudying = user.StudentAccount.DateStartedStudying,
+                Id = user.StudentAccount.Id,
+                UserId = user.Id,
+                DateStartedStudying = user.StudentAccount.DateStartedStudying,
             }
             : null;
 
@@ -38,7 +40,9 @@ public static class StudentMapper
         => user.SupportAccount is not null
             ? new SupportAccountDto
             {
-                Id = user.SupportAccount.Id, UserId = user.Id, AboutSelf = user.SupportAccount.AboutSelf,
+                Id = user.SupportAccount.Id,
+                UserId = user.Id,
+                AboutSelf = user.SupportAccount.AboutSelf,
             }
             : null;
 
@@ -46,7 +50,8 @@ public static class StudentMapper
         => user.AdminAccount is not null
             ? new AdminAccountDto
             {
-                Id = user.AdminAccount.Id, UserId = user.Id,
+                Id = user.AdminAccount.Id,
+                UserId = user.Id,
             }
             : null;
 }

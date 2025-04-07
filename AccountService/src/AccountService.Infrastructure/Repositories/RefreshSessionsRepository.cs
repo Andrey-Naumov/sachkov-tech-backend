@@ -1,13 +1,13 @@
-using AccountService.Application.Managers;
-using AccountService.Domain;
+﻿using AccountService.Application.Interfaces;
+using AccountService.Domain.RefreshTokens;
 using AccountService.Infrastructure.DbContexts;
 using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace AccountService.Infrastructure.IdentityManagers;
+namespace AccountService.Infrastructure.Repositories;
 
-public class RefreshSessionManager(AccountsDbContext accountsContext) : IRefreshSessionManager
+public class RefreshSessionsRepository(AccountsDbContext accountsContext) : IRefreshSessionsRepository
 {
     public async Task<Result<RefreshSession, Error>> GetByRefreshToken(
         Guid refreshToken, CancellationToken cancellationToken)

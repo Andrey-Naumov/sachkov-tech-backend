@@ -1,4 +1,4 @@
-using AccountService.Application.Managers;
+﻿using AccountService.Application.Interfaces;
 using CSharpFunctionalExtensions;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
@@ -8,11 +8,11 @@ namespace AccountService.Application.Commands.Logout;
 
 public class LogoutHandler : ICommandHandler<LogoutCommand>
 {
-    private readonly IRefreshSessionManager _refreshSessionManager;
+    private readonly IRefreshSessionsRepository _refreshSessionManager;
     private readonly IUnitOfWork _unitOfWork;
 
     public LogoutHandler(
-        IRefreshSessionManager refreshSessionManager,
+        IRefreshSessionsRepository refreshSessionManager,
         IUnitOfWork unitOfWork)
     {
         _refreshSessionManager = refreshSessionManager;

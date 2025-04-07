@@ -1,6 +1,6 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using AccountService.Application.Models;
-using AccountService.Domain;
+using AccountService.Domain.Users;
 using CSharpFunctionalExtensions;
 using SharedKernel;
 

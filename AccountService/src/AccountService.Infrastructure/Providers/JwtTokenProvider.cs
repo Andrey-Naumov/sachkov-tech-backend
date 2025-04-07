@@ -1,9 +1,10 @@
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using AccountService.Application.Managers;
+using AccountService.Application.Interfaces;
 using AccountService.Application.Models;
 using AccountService.Application.Providers;
-using AccountService.Domain;
+using AccountService.Domain.RefreshTokens;
+using AccountService.Domain.Users;
 using AccountService.Infrastructure.DbContexts;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Options;
@@ -16,14 +17,14 @@ namespace AccountService.Infrastructure.Providers;
 
 public class JwtTokenProvider : ITokenProvider
 {
-    private readonly IPermissionManager _permissionManager;
+    private readonly IRolesRepository _permissionManager;
     private readonly AccountsDbContext _accountContext;
     private readonly IRsaKeyProvider _rsaKeyProvider;
     private readonly AuthOptions _authOptions;
 
     public JwtTokenProvider(
         IOptions<AuthOptions> options,
-        IPermissionManager permissionManager,
+        IRolesRepository permissionManager,
         AccountsDbContext accountContext,
         IRsaKeyProvider rsaKeyProvider)
     {
@@ -43,7 +44,7 @@ public class JwtTokenProvider : ITokenProvider
 
         var roleClaims = user.Roles.Select(r => new Claim(CustomClaims.ROLE, r.Name ?? string.Empty));
 
-        var permissions = await _permissionManager.GetUserPermissionCodes(user.Id, cancellationToken);
+        var permissions = await _permissionManager.GetPermissionCodesByUserId(user.Id, cancellationToken);
         var permissionClaims = permissions.Select(p => new Claim(CustomClaims.PERMISSION, p));
 
         Claim[] claims =

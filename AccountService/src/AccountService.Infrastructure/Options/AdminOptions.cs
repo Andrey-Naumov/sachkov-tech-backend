@@ -1,4 +1,4 @@
-using AccountService.Domain;
+﻿using AccountService.Domain.Users.ValueObjects;
 
 namespace AccountService.Infrastructure.Options;
 

@@ -1,6 +1,6 @@
-using AccountService.Application.Providers;
+﻿using AccountService.Application.Providers;
 using AccountService.Contracts.Responses;
-using AccountService.Domain;
+using AccountService.Domain.Users;
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

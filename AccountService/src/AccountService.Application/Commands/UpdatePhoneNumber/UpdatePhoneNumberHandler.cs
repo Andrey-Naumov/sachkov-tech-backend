@@ -1,5 +1,5 @@
-﻿using AccountService.Application.Database;
-using AccountService.Domain;
+﻿using AccountService.Application.Interfaces;
+using AccountService.Domain.Users;
 using CSharpFunctionalExtensions;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
@@ -70,7 +70,7 @@ public class UpdatePhoneNumberHandler : ICommandHandler<Guid, UpdatePhoneNumberC
         // }
         await _unitOfWork.SaveChanges(cancellationToken);
 
-        _logger.LogInformation("Updated user phone number successfully for {UserId}.", command.UserId);
+        _logger.LogInformation("Successfully updated user phone number for {UserId}.", command.UserId);
 
         return user.Id;
     }

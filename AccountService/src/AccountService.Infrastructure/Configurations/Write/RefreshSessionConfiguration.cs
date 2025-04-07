@@ -1,4 +1,4 @@
-using AccountService.Domain;
+﻿using AccountService.Domain.RefreshTokens;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,7 +1,8 @@
-using System.Text.Json;
-using AccountService.Application.Managers;
-using AccountService.Domain;
-using AccountService.Infrastructure.IdentityManagers;
+﻿using System.Text.Json;
+using AccountService.Application.Interfaces;
+using AccountService.Domain.Roles;
+using AccountService.Domain.Users;
+using AccountService.Domain.Users.ValueObjects;
 using AccountService.Infrastructure.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,7 @@ namespace AccountService.Infrastructure.Seeding;
 
 public class AccountsSeederService(
     UserManager<User> userManager,
-    RoleManager<Role> roleManager,
-    AccountsManager accountsManager,
-    IPermissionManager permissionManager,
-    RolePermissionManager rolePermissionManager,
+    IRolesRepository rolesPermissionsRepository,
     IOptions<AdminOptions> adminOptions,
     ILogger<AccountsSeederService> logger,
     IUnitOfWork unitOfWork)
@@ -29,54 +27,53 @@ public class AccountsSeederService(
 
         var json = await File.ReadAllTextAsync("etc/accounts.json");
 
-        var seedData = JsonSerializer.Deserialize<RolePermissionOptions>(json)
-                       ?? throw new ApplicationException("Could not deserialize role permission config.");
+        var seedData = JsonSerializer.Deserialize<RolesPermissionsToSeed>(json)
+                       ?? throw new ApplicationException("Could not deserialize roles and permissions to seed.");
 
-        await SeedPermissions(seedData);
+        await rolesPermissionsRepository.ClearRolesAndPermissions();
 
-        await SeedRoles(seedData);
+        await SeedPermissions(seedData.Permissions);
 
-        await SeedRolePermissions(seedData);
+        await unitOfWork.SaveChanges();
+
+        await SeedRolesPermissionsRelationship(seedData.Roles);
+
+        await unitOfWork.SaveChanges();
 
         await SeedAdminAccount();
+
+        await unitOfWork.SaveChanges();
     }
 
-    private async Task SeedRolePermissions(RolePermissionOptions seedData)
+    private async Task SeedPermissions(Dictionary<string, string[]> permissions)
     {
-        foreach (var roleName in seedData.Roles.Keys)
-        {
-            var role = await roleManager.FindByNameAsync(roleName);
-
-            var rolePermissions = seedData.Roles[roleName];
-
-            await rolePermissionManager.AddRangeIfExist(role!.Id, rolePermissions);
-        }
-
-        logger.LogInformation("Role permissions added to database.");
+        var permissionEntities = permissions.SelectMany(x => x.Value.Select(y => new Permission { Code = y }));
+        await rolesPermissionsRepository.AddRange(permissionEntities);
     }
 
-    private async Task SeedRoles(RolePermissionOptions seedData)
+    private async Task SeedRolesPermissionsRelationship(
+        Dictionary<string, string[]> roles, CancellationToken cancellationToken = default)
     {
-        foreach (var roleName in seedData.Roles.Keys)
-        {
-            var role = await roleManager.FindByNameAsync(roleName);
+        var existingPermissions = await rolesPermissionsRepository.GetAllPermissions(cancellationToken);
+        if (existingPermissions is null)
+            throw new ApplicationException("Could not find permissions in database");
 
-            if (role is null)
+        List<Role> rolesEntities = [];
+
+        foreach (var role in roles)
+        {
+            Role roleEntity = new() { Name = role.Key };
+
+            foreach (var permission in role.Value)
             {
-                await roleManager.CreateAsync(new Role { Name = roleName });
+                Permission permissionEntity = existingPermissions.First(x => x.Code == permission);
+                roleEntity.Permissions.Add(permissionEntity);
             }
+
+            rolesEntities.Add(roleEntity);
         }
 
-        logger.LogInformation("Roles added to database.");
-    }
-
-    private async Task SeedPermissions(RolePermissionOptions seedData)
-    {
-        var permissionsToAdd = seedData.Permissions.SelectMany(permissionGroup => permissionGroup.Value);
-
-        await permissionManager.AddRangeIfExist(permissionsToAdd);
-
-        logger.LogInformation("Permissions added to database.");
+        await rolesPermissionsRepository.AddRolesWithPermissions(rolesEntities, cancellationToken);
     }
 
     private async Task SeedAdminAccount()
@@ -87,44 +84,29 @@ public class AccountsSeederService(
         if (adminExists is not null)
             return;
 
-        var adminRole = await roleManager.FindByNameAsync(AdminAccount.ADMIN)
+        var adminRole = await rolesPermissionsRepository.GetRoleByName(AdminAccount.ADMIN)
                         ?? throw new ApplicationException("Could not find admin role.");
 
-        var transaction = await unitOfWork.BeginTransaction();
+        using var transaction = await unitOfWork.BeginTransaction();
 
-        try
-        {
-            var fullName = FullName.Create(_adminOptions.UserName, _adminOptions.UserName, _adminOptions.UserName)
-                .Value;
+        var fullName = FullName.Create(_adminOptions.UserName, _adminOptions.UserName, _adminOptions.UserName)
+            .Value;
 
-            var adminUser = User.CreateAdmin(
-                _adminOptions.UserName,
-                _adminOptions.Email,
-                fullName,
-                adminRole);
+        var adminUser = User.CreateAdmin(
+            _adminOptions.UserName,
+            _adminOptions.Email,
+            fullName,
+            adminRole);
 
-            if (adminUser.IsFailure)
-                throw new ApplicationException(adminUser.Error.Message);
+        if (adminUser.IsFailure)
+            throw new ApplicationException(adminUser.Error.Message);
 
-            await userManager.CreateAsync(adminUser.Value, _adminOptions.Password);
+        await userManager.CreateAsync(adminUser.Value, _adminOptions.Password);
 
-            var adminAccount = new AdminAccount(adminUser.Value);
+        await unitOfWork.SaveChanges();
 
-            await accountsManager.CreateAdminAccount(adminAccount);
+        transaction.Commit();
 
-            await unitOfWork.SaveChanges();
-
-            transaction.Commit();
-
-            logger.LogInformation("Admin account added to database");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError("Creating admin was failed");
-
-            transaction.Rollback();
-
-            throw new ApplicationException(ex.Message);
-        }
+        logger.LogInformation("Admin account added to database");
     }
 }

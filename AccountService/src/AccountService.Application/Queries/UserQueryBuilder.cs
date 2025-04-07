@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using AccountService.Domain;
+using AccountService.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace AccountService.Application.Queries;

@@ -1,5 +1,5 @@
-﻿using AccountService.Application.Database;
-using AccountService.Domain;
+﻿using AccountService.Application.Interfaces;
+using AccountService.Domain.Users;
 using AccountService.Infrastructure.DbContexts;
 using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +19,7 @@ public class UserRepository : IUserRepository
 
     public async Task<Result<User, Error>> GetById(Guid userId, CancellationToken cancellationToken = default)
     {
-        var user = await _dbContext.ReadUsers.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
         if (user is null)
             return Errors.General.NotFound(userId, nameof(userId));
 
@@ -30,18 +30,15 @@ public class UserRepository : IUserRepository
         string phoneNumber,
         CancellationToken cancellationToken = default)
     {
-        var user = await _dbContext.ReadUsers.FirstOrDefaultAsync(p => p.PhoneNumber == phoneNumber, cancellationToken);
+        var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.PhoneNumber == phoneNumber, cancellationToken);
 
         return user;
     }
 
-    public async Task<bool> IsUserExistsByUserName(string userName, CancellationToken cancellationToken)
+    public async Task<bool> UserNameExists(
+        string userName,
+        CancellationToken cancellationToken = default)
     {
-        var user = await _dbContext.ReadUsers.FirstOrDefaultAsync(p => p.UserName == userName, cancellationToken);
-
-        if (user is null)
-            return false;
-
-        return true;
+        return await _dbContext.Users.AnyAsync(u => u.UserName == userName, cancellationToken);
     }
 }

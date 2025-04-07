@@ -1,4 +1,5 @@
 ﻿using AccountService.Domain;
+using AccountService.Domain.Users.ValueObjects;
 using CSharpFunctionalExtensions;
 using FileService.Communication;
 using FileService.Contracts;

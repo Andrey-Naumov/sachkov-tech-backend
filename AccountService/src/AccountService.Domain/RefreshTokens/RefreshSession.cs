@@ -1,4 +1,6 @@
-namespace AccountService.Domain;
+﻿using AccountService.Domain.Users;
+
+namespace AccountService.Domain.RefreshTokens;
 
 public class RefreshSession
 {

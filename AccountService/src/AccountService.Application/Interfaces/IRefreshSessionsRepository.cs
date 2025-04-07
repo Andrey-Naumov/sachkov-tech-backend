@@ -1,10 +1,10 @@
-using AccountService.Domain;
+﻿using AccountService.Domain.RefreshTokens;
 using CSharpFunctionalExtensions;
 using SharedKernel;
 
-namespace AccountService.Application.Managers;
+namespace AccountService.Application.Interfaces;
 
-public interface IRefreshSessionManager
+public interface IRefreshSessionsRepository
 {
     Task<Result<RefreshSession, Error>> GetByRefreshToken(
         Guid refreshToken, CancellationToken cancellationToken);

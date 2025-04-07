@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using SharedKernel;
 
-namespace AccountService.Domain;
+namespace AccountService.Domain.Users.ValueObjects;
 
 public class Avatar : ComparableValueObject
 {

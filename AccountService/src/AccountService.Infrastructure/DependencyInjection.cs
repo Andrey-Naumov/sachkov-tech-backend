@@ -1,13 +1,14 @@
-using AccountService.Application.Database;
-using AccountService.Application.Managers;
+﻿using AccountService.Application.Database;
+using AccountService.Application.Interfaces;
 using AccountService.Application.Providers;
-using AccountService.Domain;
+using AccountService.Domain.Roles;
+using AccountService.Domain.Users;
 using AccountService.Infrastructure.Consumers;
 using AccountService.Infrastructure.DbContexts;
-using AccountService.Infrastructure.IdentityManagers;
 using AccountService.Infrastructure.Migrator;
 using AccountService.Infrastructure.Options;
 using AccountService.Infrastructure.Providers;
+using AccountService.Infrastructure.Repositories;
 using AccountService.Infrastructure.Repository;
 using AccountService.Infrastructure.Seeding;
 using MassTransit;
@@ -83,11 +84,9 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<AccountsDbContext>()
             .AddDefaultTokenProviders();
 
-        services.AddScoped<RolePermissionManager>();
-        services.AddScoped<IAccountsManager, AccountsManager>();
-        services.AddScoped<IPermissionManager, PermissionManager>();
-        services.AddScoped<AccountsManager>();
-        services.AddScoped<IRefreshSessionManager, RefreshSessionManager>();
+        services.AddScoped<RolesRepository>();
+        services.AddScoped<IRolesRepository, RolesRepository>();
+        services.AddScoped<IRefreshSessionsRepository, RefreshSessionsRepository>();
 
         return services;
     }

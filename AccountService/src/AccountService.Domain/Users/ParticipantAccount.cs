@@ -1,17 +1,18 @@
-namespace AccountService.Domain;
+﻿namespace AccountService.Domain.Users;
 
 public class ParticipantAccount
 {
     public const string PARTICIPANT = "Participant";
 
-    private ParticipantAccount()
-    {
-    }
-
     public ParticipantAccount(User user)
     {
         Id = Guid.NewGuid();
         User = user;
+    }
+
+    // ef core ctor
+    private ParticipantAccount()
+    {
     }
 
     public Guid Id { get; set; }

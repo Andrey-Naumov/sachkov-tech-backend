@@ -1,6 +1,6 @@
-namespace AccountService.Infrastructure.Options;
+﻿namespace AccountService.Infrastructure.Options;
 
-public class RolePermissionOptions
+public class RolesPermissionsToSeed
 {
     public Dictionary<string, string[]> Permissions { get; set; } = [];
 

@@ -1,18 +1,19 @@
-namespace AccountService.Domain;
+﻿namespace AccountService.Domain.Users;
 
 public class StudentAccount
 {
     public const string STUDENT = "Student";
-
-    private StudentAccount()
-    {
-    }
 
     public StudentAccount(User user)
     {
         Id = Guid.NewGuid();
         User = user;
         DateStartedStudying = DateTime.UtcNow;
+    }
+
+    // ef core ctor
+    private StudentAccount()
+    {
     }
 
     public Guid Id { get; set; }

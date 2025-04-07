@@ -1,5 +1,5 @@
 ﻿using AccountService.Contracts.Requests;
-using AccountService.Domain;
+using AccountService.Domain.Users.ValueObjects;
 using FluentValidation;
 using SachkovTech.Core.Validation;
 using SharedKernel;

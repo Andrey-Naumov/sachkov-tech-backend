@@ -7,6 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Configurations\Read\**" />
+      <EmbeddedResource Remove="Configurations\Read\**" />
+      <None Remove="Configurations\Read\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\AccountService.Application\AccountService.Application.csproj" />
     </ItemGroup>
 
@@ -22,13 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Configurations\Read\RoleDtoConfiguration.cs" />
     <Compile Remove="DbContexts\AccountsReadDbContext.cs" />
-    <Compile Remove="Configurations\Read\AdminAccountDtoConfiguration.cs" />
-    <Compile Remove="Configurations\Read\StudentAccountDtoConfiguration.cs" />
-    <Compile Remove="Configurations\Read\PermissionDtoConfiguration.cs" />
-    <Compile Remove="Configurations\Read\SupportAccountDtoConfiguration.cs" />
-    <Compile Remove="Configurations\Read\UserRoleDtoConfiguration.cs" />
   </ItemGroup>
 
 </Project>

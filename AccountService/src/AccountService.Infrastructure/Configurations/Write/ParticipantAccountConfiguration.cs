@@ -1,4 +1,4 @@
-using AccountService.Domain;
+﻿using AccountService.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,9 +9,5 @@ public class ParticipantAccountConfiguration : IEntityTypeConfiguration<Particip
     public void Configure(EntityTypeBuilder<ParticipantAccount> builder)
     {
         builder.ToTable("participant_accounts");
-
-        builder.HasOne(p => p.User)
-            .WithOne()
-            .HasForeignKey<ParticipantAccount>(p => p.UserId);
     }
 }

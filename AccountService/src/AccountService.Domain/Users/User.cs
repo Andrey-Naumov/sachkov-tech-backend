@@ -1,15 +1,17 @@
+﻿using AccountService.Domain.Roles;
+using AccountService.Domain.Users.ValueObjects;
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Identity;
 using SharedKernel;
 
-namespace AccountService.Domain;
+namespace AccountService.Domain.Users;
 
 public class User : IdentityUser<Guid>
 {
     private List<Role> _roles = [];
     private List<SocialNetwork> _socialNetworks = [];
 
-    // ef core
+    // ef core ctor
     private User()
     {
     }
@@ -30,6 +32,8 @@ public class User : IdentityUser<Guid>
 
     public AdminAccount? AdminAccount { get; private set; }
 
+    public ParticipantAccount? ParticipantAccount { get; private set; }
+
     public static Result<User, Error> CreateAdmin(
         string userName,
         string email,
@@ -39,7 +43,7 @@ public class User : IdentityUser<Guid>
         if (role.Name != AdminAccount.ADMIN)
             return Errors.Auth.InvalidRole();
 
-        return new User
+        User user = new ()
         {
             UserName = userName,
             Email = email,
@@ -48,6 +52,11 @@ public class User : IdentityUser<Guid>
             _roles = [role],
             _socialNetworks = [],
         };
+
+        AdminAccount adminAccount = new(user);
+        user.AdminAccount = adminAccount;
+
+        return user;
     }
 
     public static Result<User, Error> CreateParticipant(
@@ -58,7 +67,7 @@ public class User : IdentityUser<Guid>
         if (role.Name != ParticipantAccount.PARTICIPANT)
             return Errors.Auth.InvalidRole();
 
-        return new User
+        User user = new ()
         {
             UserName = userName,
             Email = email,
@@ -67,6 +76,11 @@ public class User : IdentityUser<Guid>
             _roles = [role],
             _socialNetworks = [],
         };
+
+        ParticipantAccount participantAccount = new(user);
+        user.ParticipantAccount = participantAccount;
+
+        return user;
     }
 
     public void EnrollParticipant(Role role)
@@ -81,7 +95,7 @@ public class User : IdentityUser<Guid>
 
         if (socialsList.Count > 5)
         {
-            return Errors.General.ValueIsInvalid("Социальные сети").ToErrorList();
+            return Errors.General.ValueIsInvalid("Слишком много социальных сетей").ToErrorList();
         }
 
         UserName = userName;

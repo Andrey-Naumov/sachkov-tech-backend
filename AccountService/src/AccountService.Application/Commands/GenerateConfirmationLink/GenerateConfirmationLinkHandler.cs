@@ -1,6 +1,6 @@
-using System.Text;
+﻿using System.Text;
 using AccountService.Contracts.Responses;
-using AccountService.Domain;
+using AccountService.Domain.Users;
 using CSharpFunctionalExtensions;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;

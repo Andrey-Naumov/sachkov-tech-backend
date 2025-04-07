@@ -2,6 +2,7 @@
 using AccountService.Application.Mappers;
 using AccountService.Contracts.Responses;
 using AccountService.Domain;
+using AccountService.Domain.Users.ValueObjects;
 using CSharpFunctionalExtensions;
 using FileService.Communication;
 using FileService.Contracts;

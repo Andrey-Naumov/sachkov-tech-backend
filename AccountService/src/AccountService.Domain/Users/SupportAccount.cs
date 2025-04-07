@@ -1,13 +1,8 @@
-namespace AccountService.Domain;
+﻿namespace AccountService.Domain.Users;
 
 public class SupportAccount
 {
     public const string SUPPORT = "Support";
-
-    // ef core
-    private SupportAccount()
-    {
-    }
 
     public SupportAccount(
         User user,
@@ -16,6 +11,11 @@ public class SupportAccount
         Id = Guid.NewGuid();
         User = user;
         AboutSelf = aboutSelf;
+    }
+
+    // ef core ctor
+    private SupportAccount()
+    {
     }
 
     public Guid Id { get; set; }

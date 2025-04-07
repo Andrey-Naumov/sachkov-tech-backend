@@ -1,13 +1,8 @@
-namespace AccountService.Domain;
+﻿namespace AccountService.Domain.Users;
 
 public class AdminAccount
 {
     public const string ADMIN = "Admin";
-
-    // ef core
-    private AdminAccount()
-    {
-    }
 
     public AdminAccount(User user)
     {
@@ -15,7 +10,14 @@ public class AdminAccount
         User = user;
     }
 
+    // ef core ctor
+    private AdminAccount()
+    {
+    }
+
     public Guid Id { get; set; }
+
+    public Guid UserId { get; set; }
 
     public User User { get; set; }
 }

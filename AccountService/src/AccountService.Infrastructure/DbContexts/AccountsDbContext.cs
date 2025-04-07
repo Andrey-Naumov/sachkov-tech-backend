@@ -1,5 +1,7 @@
-using AccountService.Application.Database;
-using AccountService.Domain;
+﻿using AccountService.Application.Database;
+using AccountService.Domain.RefreshTokens;
+using AccountService.Domain.Roles;
+using AccountService.Domain.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +19,6 @@ public class AccountsDbContext : IdentityDbContext<User, Role, Guid>, IAccountsR
         _connectionString = connectionString;
     }
 
-    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
-
     public DbSet<Permission> Permissions => Set<Permission>();
 
     public DbSet<AdminAccount> AdminAccounts => Set<AdminAccount>();
@@ -29,7 +29,6 @@ public class AccountsDbContext : IdentityDbContext<User, Role, Guid>, IAccountsR
 
     public DbSet<RefreshSession> RefreshSessions => Set<RefreshSession>();
 
-
     public IQueryable<User> ReadUsers => Set<User>().AsQueryable().AsNoTracking();
 
     public IQueryable<Role> ReadRoles => Set<Role>().AsQueryable().AsNoTracking();
@@ -37,7 +36,6 @@ public class AccountsDbContext : IdentityDbContext<User, Role, Guid>, IAccountsR
     public IQueryable<StudentAccount> ReadStudentAccounts => Set<StudentAccount>().AsQueryable().AsNoTracking();
 
     public IQueryable<SupportAccount> ReadSupportAccounts => Set<SupportAccount>().AsQueryable().AsNoTracking();
-
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

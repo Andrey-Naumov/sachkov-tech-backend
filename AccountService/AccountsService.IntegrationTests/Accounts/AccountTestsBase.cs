@@ -1,7 +1,8 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using AccountService.Application.Database;
-using AccountService.Application.Managers;
-using AccountService.Domain;
+using AccountService.Application.Interfaces;
+using AccountService.Domain.Roles;
+using AccountService.Domain.Users;
 using AccountService.Infrastructure.DbContexts;
 using AccountService.Infrastructure.Options;
 using AutoFixture;
@@ -18,7 +19,7 @@ public abstract class AccountTestsBase : IClassFixture<IntegrationTestsWebFactor
     protected readonly IAccountsReadDbContext ReadDbContext;
     protected readonly UserManager<User> UserManager;
     protected readonly RoleManager<Role> RoleManager;
-    protected readonly IRefreshSessionManager RefreshSessionManager;
+    protected readonly IRefreshSessionsRepository RefreshSessionManager;
     protected readonly Fixture Fixture;
 
     private readonly Func<Task> _resetDatabase;
@@ -31,7 +32,7 @@ public abstract class AccountTestsBase : IClassFixture<IntegrationTestsWebFactor
         UserManager = Scope.ServiceProvider.GetRequiredService<UserManager<User>>();
         RoleManager = Scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 
-        RefreshSessionManager = Scope.ServiceProvider.GetRequiredService<IRefreshSessionManager>();
+        RefreshSessionManager = Scope.ServiceProvider.GetRequiredService<IRefreshSessionsRepository>();
 
         DbContext = Scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
         ReadDbContext = Scope.ServiceProvider.GetRequiredService<IAccountsReadDbContext>();
@@ -71,7 +72,7 @@ public abstract class AccountTestsBase : IClassFixture<IntegrationTestsWebFactor
     {
         var json = await File.ReadAllTextAsync("etc/accounts.json");
 
-        var seedData = JsonSerializer.Deserialize<RolePermissionOptions>(json)
+        var seedData = JsonSerializer.Deserialize<RolesPermissionsToSeed>(json)
                        ?? throw new ApplicationException("Could not deserialize role permission config.");
 
         foreach (var roleName in seedData.Roles.Keys)

@@ -1,5 +1,5 @@
-using AccountService.Application;
-using AccountService.Domain;
+﻿using AccountService.Application;
+using AccountService.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

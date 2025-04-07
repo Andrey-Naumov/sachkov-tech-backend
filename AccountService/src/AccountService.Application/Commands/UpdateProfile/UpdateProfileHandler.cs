@@ -1,5 +1,8 @@
 ﻿using AccountService.Application.Database;
+using AccountService.Application.Interfaces;
 using AccountService.Domain;
+using AccountService.Domain.Users;
+using AccountService.Domain.Users.ValueObjects;
 using CSharpFunctionalExtensions;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
@@ -22,9 +25,9 @@ public class UpdateProfileHandler : ICommandHandler<Guid, UpdateProfileCommand>
     public UpdateProfileHandler(
         IValidator<UpdateProfileCommand> validator,
         IUserRepository userRepository,
-        UserManager<User> userManager,
         IUnitOfWork unitOfWork,
-        ILogger<UpdateProfileHandler> logger)
+        ILogger<UpdateProfileHandler> logger,
+        UserManager<User> userManager)
     {
         _validator = validator;
         _userRepository = userRepository;
@@ -41,9 +44,9 @@ public class UpdateProfileHandler : ICommandHandler<Guid, UpdateProfileCommand>
         if (validationResult.IsValid == false)
             return validationResult.ToList();
 
-        bool isUserExist = await _userRepository.IsUserExistsByUserName(command.Dto.UserName, cancellationToken);
-        if (isUserExist)
-            return UserErrors.UserAlreadyExist();
+        bool userNameAlreadyExists = await _userRepository.UserNameExists(command.Dto.UserName, cancellationToken);
+        if (userNameAlreadyExists)
+            return UserErrors.UserNameAlreadyExist();
 
         var user = await _userManager.FindByIdAsync(command.UserId.ToString());
         if (user is null)

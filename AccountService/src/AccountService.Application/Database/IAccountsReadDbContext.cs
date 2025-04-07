@@ -1,4 +1,5 @@
-using AccountService.Domain;
+﻿using AccountService.Domain.Roles;
+using AccountService.Domain.Users;
 
 namespace AccountService.Application.Database;
 
