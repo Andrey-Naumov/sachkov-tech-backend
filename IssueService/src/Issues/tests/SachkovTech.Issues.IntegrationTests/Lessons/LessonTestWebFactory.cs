@@ -56,7 +56,7 @@ public class LessonTestWebFactory : IntegrationTestsWebFactory
 
         _fileServiceMock
             .GetHlsPlaylistUrl(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success<GetHlsPlaylistUrlResponse, ErrorList>(new GetHlsPlaylistUrlResponse($"test/{Guid.Empty}")));
+            .Returns(Result.Success<GetHlsPlaylistUrlResponse, ErrorList>(new GetHlsPlaylistUrlResponse($"test/{fileIds.First()}")));
 
         _cacheServiceMock
             .GetAsync<string>(Arg.Any<string>(), Arg.Any<CancellationToken>())!

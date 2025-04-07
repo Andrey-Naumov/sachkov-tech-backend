@@ -14,17 +14,21 @@ public class LessonDto
 
     public int Experience { get; init; }
 
-    public string? HlsVideoUrl { get; init; } = string.Empty;
+    public string? HlsVideoUrl { get; set; } = string.Empty;
 
     public Guid AutoPreviewId { get; init; }
 
-    public string? AutoPreviewUrl { get; init; } = string.Empty;
+    public string? AutoPreviewUrl { get; set; } = string.Empty;
 
-    public Guid ProcessedVideoId { get; init; }
+    public Guid ProcessedFileId { get; init; }
 
     public string ProcessedVideoLocation { get; init; } = string.Empty;
 
-    public bool? IsCompleted { get; init; }
+    public bool IsProcessed { get; init; }
+
+    public Guid OriginalFileId { get; init; }
+
+    public bool IsCompleted { get; init; }
 
     public Guid[] Tags { get; init; } = [];
 

@@ -9,7 +9,7 @@ using SharedKernel;
 
 namespace SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonById;
 
-public class GetLessonByIdHandler : IQueryHandlerWithResult<LessonResponse, GetLessonByIdQuery>
+public class GetLessonByIdHandler : IQueryHandlerWithResult<LessonDto, GetLessonByIdQuery>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
     private readonly IFileService _fileService;
@@ -22,7 +22,7 @@ public class GetLessonByIdHandler : IQueryHandlerWithResult<LessonResponse, GetL
         _fileService = fileService;
     }
 
-    public async Task<Result<LessonResponse, ErrorList>> Handle(
+    public async Task<Result<LessonDto, ErrorList>> Handle(
         GetLessonByIdQuery query, CancellationToken cancellationToken = default)
     {
         using var connection = _sqlConnectionFactory.Create();
@@ -60,24 +60,12 @@ public class GetLessonByIdHandler : IQueryHandlerWithResult<LessonResponse, GetL
         if (lesson is null)
             return Errors.General.NotFound(query.LessonId).ToErrorList();
 
-        var videoUrlResult = await _fileService.GetHlsPlaylistUrl(lesson.ProcessedVideoId, cancellationToken);
+        var videoUrlResult = await _fileService.GetHlsPlaylistUrl(lesson.ProcessedFileId, cancellationToken);
         if (videoUrlResult.IsFailure)
             return Errors.General.NotFound().ToErrorList();
 
-        var response = new LessonResponse
-        {
-            Id = lesson.Id,
-            ModuleId = lesson.ModuleId,
-            Title = lesson.Title,
-            Description = lesson.Description,
-            Experience = lesson.Experience,
-            Position = lesson.Position,
-            IsCompleted = lesson.IsCompleted ?? false,
-            Tags = lesson.Tags,
-            Issues = lesson.Issues,
-            HlsVideoUrl = videoUrlResult.Value.PlaylistUrl,
-        };
+        lesson.HlsVideoUrl = videoUrlResult.Value.PlaylistUrl;
 
-        return response;
+        return lesson;
     }
 }

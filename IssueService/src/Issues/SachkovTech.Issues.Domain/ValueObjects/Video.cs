@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text.Json.Serialization;
+using CSharpFunctionalExtensions;
 using SharedKernel;
 
 namespace SachkovTech.Issues.Domain.ValueObjects;
@@ -7,7 +8,7 @@ public class Video : ComparableValueObject
 {
     public const string LOCATION = "videos";
 
-    public static readonly Video None = new(Guid.Empty);
+    public static readonly Video None = new Video(null, null, false);
 
     private const long MAX_FILE_SIZE_BYTES = 5_368_709_120;
     private const string AVAILABLE_CONTENT_TYPE = "video";
@@ -15,14 +16,25 @@ public class Video : ComparableValueObject
     private static readonly string[] _availableExtensions =
         ["mp4", "mkv", "avi", "mov"];
 
-    public Video(Guid fileId)
+    [JsonConstructor]
+    private Video(Guid? originalFileId, Guid? processedFileId, bool isProcessed)
     {
-        FileId = fileId;
+        OriginalFileId = originalFileId;
+        ProcessedFileId = processedFileId;
+        IsProcessed = isProcessed;
     }
 
-    public Guid FileId { get; }
+    public Guid? OriginalFileId { get; }
 
-    public string FileLocation { get; } = LOCATION;
+    public Guid? ProcessedFileId { get; }
+
+    public bool IsProcessed { get; } = false;
+
+    public string Location { get; } = LOCATION;
+
+    public static Video CreateUnprocessed(Guid fileId) => new Video(fileId, null, false);
+
+    public static Video CreateProcessed(Guid fileId) => new Video(null, fileId, true);
 
     public static UnitResult<Error> Validate(string fileName, string contentType, long size)
     {
@@ -59,7 +71,8 @@ public class Video : ComparableValueObject
 
     protected override IEnumerable<IComparable> GetComparableEqualityComponents()
     {
-        yield return FileId;
-        yield return FileLocation;
+        yield return OriginalFileId ?? Guid.Empty;
+        yield return ProcessedFileId ?? Guid.Empty;
+        yield return Location;
     }
 }

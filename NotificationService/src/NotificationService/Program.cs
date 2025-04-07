@@ -26,8 +26,6 @@ builder.Services.AddScoped<NotificationSettingsDbContext>();
 
 builder.Services.AddHandlers();
 
-builder.Services.AddNotificationService();
-
 builder.Services.AddMassTransit(configure =>
 {
     configure.SetKebabCaseEndpointNameFormatter();

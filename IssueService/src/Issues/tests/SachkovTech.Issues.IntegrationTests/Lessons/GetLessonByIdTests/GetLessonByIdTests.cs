@@ -16,10 +16,10 @@ public class GetLessonByIdTest : LessonsTestsBase
     public GetLessonByIdTest(LessonTestWebFactory factory)
         : base(factory)
     {
-        _sut = Scope.ServiceProvider.GetRequiredService<IQueryHandlerWithResult<LessonResponse, GetLessonByIdQuery>>();
+        _sut = Scope.ServiceProvider.GetRequiredService<IQueryHandlerWithResult<LessonDto, GetLessonByIdQuery>>();
     }
 
-    private readonly IQueryHandlerWithResult<LessonResponse, GetLessonByIdQuery> _sut;
+    private readonly IQueryHandlerWithResult<LessonDto, GetLessonByIdQuery> _sut;
 
     [Fact]
     public async Task Get_existing_lesson_by_id()
@@ -33,7 +33,7 @@ public class GetLessonByIdTest : LessonsTestsBase
 
         var query = Fixture.CreateGetLessonByIdQuery(Guid.NewGuid(), lesson.Id);
 
-        Factory.SetupSuccessFileServiceMock([lesson.ProcessedVideo.FileId]);
+        Factory.SetupSuccessFileServiceMock([lesson.Video.OriginalFileId!.Value]);
 
         // Act
         var result = await _sut.Handle(query, cancellationToken);
@@ -43,7 +43,7 @@ public class GetLessonByIdTest : LessonsTestsBase
         var lessonResponse = result.Value;
         lessonResponse.Should().NotBeNull();
         lessonResponse.Id.Should().Be(query.LessonId);
-        lessonResponse.HlsVideoUrl.Should().Be($"test/{lesson.ProcessedVideo.FileId}");
+        lessonResponse.HlsVideoUrl.Should().Be($"test/{lesson.Video.OriginalFileId!.Value}");
         // TODO: нужно доделать LessonMapper, а потом поставить тестовые данные
         // lessonResponse.PreviewUrl.Should().Be(string.Empty);
     }
@@ -81,9 +81,7 @@ public class GetLessonByIdTest : LessonsTestsBase
             [Guid.NewGuid()],
             [Guid.NewGuid()]);
 
-        var video = new Video(Guid.NewGuid());
-
-        lesson.AddOriginalVideo(video);
+        lesson.AddOriginalVideo(Guid.NewGuid());
         await dbContext.Lessons.AddAsync(lesson, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 

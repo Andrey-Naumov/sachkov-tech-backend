@@ -3,7 +3,6 @@ using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
 using SachkovTech.Issues.Application.Interfaces;
 using SachkovTech.Issues.Domain.Lesson.ValueObjects;
-using SachkovTech.Issues.Domain.ValueObjects;
 using SharedKernel;
 
 namespace SachkovTech.Issues.Application.Features.Lessons.Command.AddProcessedVideoToLesson;
@@ -25,11 +24,12 @@ public class AddProcessedVideoToLessonHandler : ICommandHandler<AddProcessedVide
         if (lesson.IsFailure)
             return lesson.Error.ToErrorList();
 
-        var processedVideo = new Video(command.ProcessedVideoId);
-
         var autoPreview = new Preview(command.PreviewId);
 
-        lesson.Value.AddProcessedVideo(processedVideo);
+        var addVideoResult = lesson.Value.AddProcessedVideo(command.ProcessedVideoId);
+        if (addVideoResult.IsFailure)
+            return addVideoResult.Error.ToErrorList();
+
         lesson.Value.AddAutoPreview(autoPreview);
 
         await _unitOfWork.SaveChanges(cancellationToken);

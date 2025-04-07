@@ -36,7 +36,7 @@ public class GetUserIssuesByModuleWithPaginationHandler
                 ModuleId = userIssue.ModuleId,
                 IssueTitle = issue.Title.Value,
                 IssueDescription = issue.Description.Value,
-                Status = userIssue.Status.ToString(), //TODO: enum to russian string method
+                Status = userIssue.Status.ToString(), // TODO: enum to russian string method
                 StartDateOfExecution = userIssue.StartDateOfExecution,
                 EndDateOfExecution = userIssue.EndDateOfExecution,
                 Attempts = userIssue.Attempts.Value,

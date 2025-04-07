@@ -5,6 +5,7 @@ using FileService.Consumers;
 using FileService.Contracts.Options;
 using FileService.FilesManagement;
 using FileService.VideoProcessing;
+using FileService.VideoProcessing.Steps;
 using MassTransit;
 using MassTransit.Logging;
 using MassTransit.Monitoring;
@@ -24,6 +25,8 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddSignalR();
+
         services.AddLowerCaseRouting();
         services.AddCors(configuration);
 
@@ -33,7 +36,16 @@ public static class DependencyInjection
 
         services.Configure<VideoProcessOptions>(configuration.GetSection(nameof(VideoProcessOptions)));
 
+        services.AddTransient<CreateTempDirectoryStep>();
+        services.AddTransient<BaseVideoProcessingStep, DownloadVideoStep>();
+        services.AddTransient<BaseVideoProcessingStep, GenerateHlsStep>();
+        services.AddTransient<BaseVideoProcessingStep, UploadHlsStep>();
+        services.AddTransient<BaseVideoProcessingStep, GeneratePreviewStep>();
+        services.AddTransient<CleanupTempDirectoryStep>();
+
         services.AddTransient<VideoProcessor>();
+        services.AddTransient<VideoProcessor>();
+
         services.AddTransient<ProcessRunner>();
 
         return services;
@@ -95,7 +107,7 @@ public static class DependencyInjectionInfrastructure
 
             var config = new AmazonS3Config
             {
-                ServiceURL = minioOptions.Endpoint, ForcePathStyle = true, UseHttp = true,
+                ServiceURL = minioOptions.Endpoint, ForcePathStyle = true, UseHttp = !minioOptions.WithSsl,
             };
 
             return new AmazonS3Client(minioOptions.AccessKey, minioOptions.SecretKey, config);

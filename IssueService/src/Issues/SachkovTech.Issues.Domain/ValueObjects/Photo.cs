@@ -5,11 +5,17 @@ namespace SachkovTech.Issues.Domain.ValueObjects;
 
 public class Photo : ComparableValueObject
 {
-    private static string[] PERMITED_FILES_TYPE = { "image/jpg", "image/jpeg", "image/png", "image/gif" };
+    private const long MAX_FILE_SIZE = 5242880;
 
-    private static string[] PERMITED_EXTENSIONS = { "jpg", "jpeg", "png", "gif" };
+    private static readonly string[] _permitedFilesType =
+    {
+        "image/jpg", "image/jpeg", "image/png", "image/gif",
+    };
 
-    private static long MAX_FILE_SIZE = 5242880;
+    private static readonly string[] _permitedExtensions =
+    {
+        "jpg", "jpeg", "png", "gif"
+    };
 
     public Photo(Guid fileId)
     {
@@ -31,12 +37,12 @@ public class Photo : ComparableValueObject
 
         string? fileExtension = fileName[fileName.LastIndexOf('.')..];
 
-        if (PERMITED_EXTENSIONS.All(x => x != fileExtension))
+        if (_permitedExtensions.All(x => x != fileExtension))
         {
             return Errors.General.Failure();
         }
 
-        if (PERMITED_FILES_TYPE.All(x => x != contentType))
+        if (_permitedFilesType.All(x => x != contentType))
         {
             return Errors.General.ValueIsInvalid(contentType);
         }

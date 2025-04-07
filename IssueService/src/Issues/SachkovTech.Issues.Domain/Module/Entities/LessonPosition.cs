@@ -6,11 +6,6 @@ namespace SachkovTech.Issues.Domain.Module.Entities;
 
 public class LessonPosition : Entity<LessonPositionId>, IPositionable
 {
-    // ef core
-    private LessonPosition()
-    {
-    }
-
     public LessonPosition(LessonPositionId id, LessonId lessonId, Position position)
         : base(id)
     {
@@ -18,9 +13,14 @@ public class LessonPosition : Entity<LessonPositionId>, IPositionable
         Position = position;
     }
 
-    public LessonId LessonId { get; private set; }
+    // ef core
+    private LessonPosition()
+    {
+    }
 
-    public Position Position { get; private set; }
+    public LessonId LessonId { get; private set; } = null!;
+
+    public Position Position { get; private set; } = null!;
 
     public void SetPosition(Position position)
     {

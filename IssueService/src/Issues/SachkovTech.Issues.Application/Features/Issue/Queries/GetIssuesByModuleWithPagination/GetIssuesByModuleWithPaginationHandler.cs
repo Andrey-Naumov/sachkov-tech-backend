@@ -63,7 +63,7 @@ public class GetIssuesByModuleWithPaginationHandler
             "Title",
         };
 
-        string? sortBy = allowedSortColumns.Contains(query.SortBy) ? query.SortBy : "Id";
+        string? sortBy = query.SortBy != null && allowedSortColumns.Contains(query.SortBy) ? query.SortBy : "Id";
         string sortDirection = query.SortDirection?.ToUpper() == "DESC" ? "DESC" : "ASC";
         sqlBuilder.ApplySorting(sortBy, sortDirection);
         sqlBuilder.ApplyPagination(parameters, query.Page, query.PageSize);

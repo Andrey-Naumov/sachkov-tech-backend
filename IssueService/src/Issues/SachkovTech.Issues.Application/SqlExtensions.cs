@@ -13,10 +13,10 @@ public static class SqlExtensions
     {
         if (string.IsNullOrWhiteSpace(sortBy) || string.IsNullOrWhiteSpace(sortDirection)) return;
 
-        string[]? validSortDirections = new[]
-        {
+        string[]? validSortDirections =
+        [
             "asc", "desc"
-        };
+        ];
 
         if (validSortDirections.Contains(sortDirection.ToLower()))
         {

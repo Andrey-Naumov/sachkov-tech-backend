@@ -10,9 +10,6 @@ namespace SachkovTech.Issues.Domain.IssuesReviews;
 
 public sealed class IssueReview : DomainEntity<IssueReviewId>
 {
-    // ef core
-    private IssueReview(IssueReviewId id) : base(id) { }
-
     public IssueReview(
         IssueReviewId issueReviewId,
         UserIssueId userIssueId,
@@ -27,7 +24,13 @@ public sealed class IssueReview : DomainEntity<IssueReviewId>
         PullRequestUrl = pullRequestUrl;
     }
 
-    public UserIssueId UserIssueId { get; private set; }
+    // ef core
+    private IssueReview(IssueReviewId id)
+        : base(id)
+    {
+    }
+
+    public UserIssueId UserIssueId { get; private set; } = null!;
 
     public Guid UserId { get; private set; }
 
@@ -35,7 +38,7 @@ public sealed class IssueReview : DomainEntity<IssueReviewId>
 
     public IssueReviewStatus IssueReviewStatus { get; private set; }
 
-    private List<Comment> _comments = [];
+    private readonly List<Comment> _comments = [];
 
     public IReadOnlyList<Comment> Comments => _comments;
 
@@ -45,7 +48,7 @@ public sealed class IssueReview : DomainEntity<IssueReviewId>
 
     public DateTime? IssueApprovedTime { get; private set; }
 
-    public PullRequestUrl PullRequestUrl { get; private set; }
+    public PullRequestUrl PullRequestUrl { get; private set; } = null!;
 
     public void StartReview(UserId reviewerId)
     {
@@ -112,8 +115,7 @@ public sealed class IssueReview : DomainEntity<IssueReviewId>
             return Errors.General.NotFound(commentId.Value, "comment_id");
         }
 
-        if (UserId != userId && ReviewerId != null && ReviewerId != userId
-            || comment.UserId != userId)
+        if ((UserId != userId && ReviewerId != null && ReviewerId != userId) || comment.UserId != userId)
         {
             return Errors.General.ValueIsInvalid("userId");
         }

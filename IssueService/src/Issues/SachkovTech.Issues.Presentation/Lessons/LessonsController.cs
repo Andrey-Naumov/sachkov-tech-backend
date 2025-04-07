@@ -11,7 +11,7 @@ using SachkovTech.Issues.Application.Features.Lessons.Command.SoftDeleteLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.StartUploadVideo;
 using SachkovTech.Issues.Application.Features.Lessons.Command.UpdateLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonById;
-using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonsByModuleWithPagination;
+using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonsByModule;
 using SachkovTech.Issues.Application.Features.Modules.Commands.UpdateLessonPosition;
 using SachkovTech.Issues.Contracts.Lesson;
 
@@ -73,7 +73,7 @@ public class LessonsController : ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
-            result.Error.ToResponse();
+            return result.Error.ToResponse();
 
         return Ok(result.Value);
     }

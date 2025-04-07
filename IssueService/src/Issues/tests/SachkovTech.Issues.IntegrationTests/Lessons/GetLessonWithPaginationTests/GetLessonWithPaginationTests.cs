@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
-using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonsByModuleWithPagination;
+using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonsByModule;
 using SachkovTech.Issues.Contracts.Lesson;
 using SachkovTech.Issues.Domain.Issue.ValueObjects;
 using SachkovTech.Issues.Domain.Lesson;
@@ -23,10 +23,10 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
         : base(factory)
     {
         _sut = Scope.ServiceProvider
-            .GetRequiredService<IQueryHandlerWithResult<PagedList<LessonResponse>, GetLessonsByModuleQuery>>();
+            .GetRequiredService<IQueryHandlerWithResult<PagedList<LessonDto>, GetLessonsByModuleQuery>>();
     }
 
-    private IQueryHandlerWithResult<PagedList<LessonResponse>, GetLessonsByModuleQuery> _sut;
+    private IQueryHandlerWithResult<PagedList<LessonDto>, GetLessonsByModuleQuery> _sut;
 
     [Fact]
     public async Task Get_lessons_with_pagination()
@@ -35,9 +35,9 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
         var cancellationToken = new CancellationTokenSource().Token;
 
         const int countLessons = 5;
-        var (moduleId, lessons) = await SeedLessonsToDatabase(DbContext, countLessons, cancellationToken);
+        (Guid moduleId, List<Lesson> lessons) = await SeedLessonsToDatabase(DbContext, countLessons, cancellationToken);
 
-        var fileIds = lessons.Select(l => l.ProcessedVideo.FileId);
+        var fileIds = lessons.Select(l => l.Video.OriginalFileId!.Value);
         Factory.SetupSuccessFileServiceMock(fileIds);
 
         const int page = 1;
@@ -119,6 +119,7 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
 
         foreach (var lesson in lessons)
         {
+            lesson.AddOriginalVideo(Guid.NewGuid());
             module?.AddLesson(lesson.Id);
         }
 

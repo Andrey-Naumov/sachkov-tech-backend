@@ -2,8 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using NotificationService.Features.GetNotificationSettings;
 using NotificationService.Features.UpdateUserNotificationSettings;
 using NotificationService.Infrastructure;
-using NotificationService.Services.Factories;
-using NotificationService.Services.Senders;
 
 namespace NotificationService.Extensions;
 
@@ -23,18 +21,5 @@ public static class AppExtensions
     {
         services.AddScoped<UpdateNotificationSettingsHandler>();
         services.AddScoped<GetNotificationSettingsHandler>();
-    }
-
-    public static void AddNotificationService(this IServiceCollection services)
-    {
-        services.AddScoped<INotificationSender, TelegramNotificationSender>();
-        services.AddScoped<INotificationSender, WebNotificationSender>();
-        services.AddScoped<INotificationSender, EmailNotificationSender>();
-
-        services.AddScoped<NotificationSettingsFactory>(provider =>
-        {
-            var senders = provider.GetService<IEnumerable<INotificationSender>>();
-            return new NotificationSettingsFactory(senders!);
-        });
     }
 }

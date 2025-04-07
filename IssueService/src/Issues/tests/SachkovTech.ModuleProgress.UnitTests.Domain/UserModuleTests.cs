@@ -147,7 +147,6 @@ public class UserModuleTests
         userModule.CompleteModule(totalCount, totalCount);
 
         // Assert
-
         userModule.IsModuleCompleted.Should().BeFalse();
 
         foreach (var issue in userModule.CompletedIssues)
@@ -173,7 +172,6 @@ public class UserModuleTests
         userModule.CompleteModule(totalCount, totalCount);
 
         // Assert
-
         userModule.IsModuleCompleted.Should().BeFalse();
 
         foreach (var issue in userModule.CompletedLessons)

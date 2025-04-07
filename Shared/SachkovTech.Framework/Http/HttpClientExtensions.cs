@@ -13,7 +13,8 @@ public static class HttpResponseMessageExtensions
     {
         if (!response.IsSuccessStatusCode)
         {
-            return Error.Failure("server.internal", "Server error").ToErrorList();
+            var error = await response.Content.ReadFromJsonAsync<Envelope<TResponse>>(cancellationToken);
+            return error?.Errors ?? Error.Failure("server.internal", "Server error").ToErrorList();
         }
 
         var result = await response.Content.ReadFromJsonAsync<Envelope<TResponse>>(cancellationToken);

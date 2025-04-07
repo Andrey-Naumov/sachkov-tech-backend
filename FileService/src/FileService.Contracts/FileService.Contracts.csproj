@@ -15,7 +15,7 @@
     </PropertyGroup>
   
     <ItemGroup>
-      <PackageReference Include="Framework" Version="1.4.3" />
+      <PackageReference Include="Framework" Version="1.4.4" />
       <PackageReference Include="SharedKernel" Version="1.1.8" />
     </ItemGroup>
     

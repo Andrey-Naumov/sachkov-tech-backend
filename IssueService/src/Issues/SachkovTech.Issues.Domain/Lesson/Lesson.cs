@@ -30,11 +30,7 @@ public class Lesson : DomainEntity<LessonId>, ISoftDeletable
 
     public Preview AutoPreview { get; private set; } = Preview.None;
 
-    public Video OriginalVideo { get; private set; } = Video.None;
-
-    public bool IsProcessed { get; private set; } = false;
-
-    public Video ProcessedVideo { get; private set; } = Video.None;
+    public Video Video { get; private set; } = Video.None;
 
     public bool IsDeleted { get; private set; }
 
@@ -97,26 +93,27 @@ public class Lesson : DomainEntity<LessonId>, ISoftDeletable
     /// <summary>
     /// Добавить оригинальное видео к уроку.
     /// </summary>
-    /// <param name="video">Видео.</param>
+    /// <param name="fileId">Id файла.</param>
     /// <returns>Выполненную операцию либо ошибку, если видео есть.</returns>
-    public UnitResult<Error> AddOriginalVideo(Video video)
+    public UnitResult<Error> AddOriginalVideo(Guid fileId)
     {
-        if (OriginalVideo != Video.None)
-            return Errors.General.AlreadyExist();
+        var unprocessedVideo = Video.CreateUnprocessed(fileId);
 
-        OriginalVideo = video;
+        Video = unprocessedVideo;
+        if (Video.OriginalFileId is null)
+            return Errors.General.ValueIsRequired();
 
-        AddDomainEvent(new LessonVideoUploadedDomainEvent(Id, video.FileId, video.FileLocation));
+        AddDomainEvent(new LessonVideoUploadedDomainEvent(Id, Video.OriginalFileId.Value, Video.Location));
         return UnitResult.Success<Error>();
     }
 
-    public UnitResult<Error> AddProcessedVideo(Video processedVideo)
+    public UnitResult<Error> AddProcessedVideo(Guid fileId)
     {
-        if (ProcessedVideo != Video.None)
-            return Errors.General.AlreadyExist();
+        var processedVideo = Video.CreateProcessed(fileId);
+        Video = processedVideo;
 
-        ProcessedVideo = processedVideo;
-        IsProcessed = true;
+        if (Video.ProcessedFileId is null || Video.IsProcessed is false)
+            return Errors.General.ValueIsRequired();
 
         return UnitResult.Success<Error>();
     }

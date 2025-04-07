@@ -10,11 +10,6 @@ public sealed class UserModule : DomainEntity<UserModuleId>
 
     private readonly List<IssueId> _completedIssues = [];
 
-    private UserModule(UserModuleId id)
-        : base(id)
-    {
-    }
-
     public UserModule(
         UserModuleId id,
         UserId userId,
@@ -25,9 +20,14 @@ public sealed class UserModule : DomainEntity<UserModuleId>
         ModuleId = moduleId;
     }
 
-    public UserId UserId { get; private set; }
+    private UserModule(UserModuleId id)
+        : base(id)
+    {
+    }
 
-    public ModuleId ModuleId { get; private set; }
+    public UserId UserId { get; private set; } = null!;
+
+    public ModuleId ModuleId { get; private set; } = null!;
 
     public IReadOnlyList<LessonId> CompletedLessons => _completedLessons.AsReadOnly();
 

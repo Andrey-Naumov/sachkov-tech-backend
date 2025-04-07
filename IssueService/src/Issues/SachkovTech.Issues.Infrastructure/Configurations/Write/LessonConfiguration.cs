@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SachkovTech.Issues.Domain.Lesson;
 using SachkovTech.Issues.Domain.ValueObjects;
@@ -66,28 +67,10 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
                     .HasColumnName("auto_preview_location");
             });
 
-        builder
-            .ComplexProperty(l => l.OriginalVideo, vb =>
-            {
-                vb.Property(t => t.FileId)
-                    .IsRequired()
-                    .HasColumnName("original_video_id");
-
-                vb.Property(t => t.FileLocation)
-                    .IsRequired()
-                    .HasColumnName("original_video_location");
-            });
-
-        builder
-            .ComplexProperty(l => l.ProcessedVideo, vb =>
-            {
-                vb.Property(t => t.FileId)
-                    .IsRequired()
-                    .HasColumnName("processed_video_id");
-
-                vb.Property(t => t.FileLocation)
-                    .IsRequired()
-                    .HasColumnName("processed_video_location");
-            });
+        builder.Property(l => l.Video)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
+                json => JsonSerializer.Deserialize<Video>(json, JsonSerializerOptions.Default)!)
+            .HasColumnType("jsonb");
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using SachkovTech.Framework.Authorization;
 using Volo.Abp.Authorization;
@@ -14,6 +15,6 @@ public static class PolicyExtension
         return builder.RequireAuthorization(policy
             => policy
                 .AddAuthenticationSchemes(SecretKeyDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme)
-                .AddRequirements(new PermissionAttribute(permissions.ToString())));
+                .AddRequirements(permissions.Select(p => new PermissionAttribute(p)).ToArray<IAuthorizationRequirement>()));
     }
 }

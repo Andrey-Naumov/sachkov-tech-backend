@@ -23,4 +23,10 @@ public class LessonResponse
     public required Guid[] Tags { get; init; }
 
     public required Guid[] Issues { get; init; }
+
+    public Guid? OriginalFileId { get; set; }
+
+    public bool IsProcessed { get; init; }
+
+    public Guid? ProcessedFileId { get; init; }
 }

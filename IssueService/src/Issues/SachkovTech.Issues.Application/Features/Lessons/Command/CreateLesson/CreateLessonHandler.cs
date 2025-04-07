@@ -67,13 +67,13 @@ public class CreateLessonHandler : ICommandHandler<Guid, CreateLessonCommand>
 
         await _unitOfWork.SaveChanges(cancellationToken);
 
-        var result = await _fileService.CompleteMultipartUpload(command.MultipartRequest, cancellationToken);
-        if (result.IsFailure)
-            return result.Error;
+        var fileResult = await _fileService.CompleteMultipartUpload(command.MultipartRequest, cancellationToken);
+        if (fileResult.IsFailure)
+            return fileResult.Error;
 
-        var video = new Video(Guid.Parse(result.Value.FileId));
-
-        lesson.AddOriginalVideo(video);
+        var addVideoResult = lesson.AddOriginalVideo(Guid.Parse(fileResult.Value.FileId));
+        if (addVideoResult.IsFailure)
+            return addVideoResult.Error.ToErrorList();
 
         await _unitOfWork.SaveChanges(cancellationToken);
 
