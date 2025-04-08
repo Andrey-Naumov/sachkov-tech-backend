@@ -8,7 +8,6 @@ public class SupportAccount
         User user,
         string aboutSelf)
     {
-        Id = Guid.NewGuid();
         User = user;
         AboutSelf = aboutSelf;
     }

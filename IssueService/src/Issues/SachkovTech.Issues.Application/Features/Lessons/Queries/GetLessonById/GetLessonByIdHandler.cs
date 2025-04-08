@@ -42,6 +42,9 @@ public class GetLessonByIdHandler : IQueryHandlerWithResult<LessonDto, GetLesson
                    l.issues          AS Issues,
                    l.auto_preview_id AS AutoPreviewId,
                    lp.position       AS Position,
+                   (l.video->>'OriginalFileId')::uuid AS OriginalFileId,
+                   (l.video->>'ProcessedFileId')::uuid AS ProcessedFileId,
+                   l.video->>'IsProcessed' AS IsProcessed,
                    ul.is_completed AS IsCompleted
             FROM issues.lessons AS l
                      JOIN issues.lesson_position AS lp

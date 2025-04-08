@@ -45,7 +45,7 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         if (!validationResult.IsValid)
             return validationResult.ToList();
 
-        using var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
+        await using var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
 
         var role = await _rolesRepository
             .GetRoleByName(ParticipantAccount.PARTICIPANT, cancellationToken);

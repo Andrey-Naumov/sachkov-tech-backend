@@ -10,12 +10,12 @@ public class RolesRepository(AccountsDbContext accountsContext) : IRolesReposito
     public async Task<Permission?> GetPermissionByCode(string code)
         => await accountsContext.Permissions.FirstOrDefaultAsync(p => p.Code == code);
 
-    public async Task<IEnumerable<Permission>?> GetAllPermissions(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Permission>> GetAllPermissions(CancellationToken cancellationToken = default)
         => await accountsContext.Permissions.ToListAsync(cancellationToken);
 
-    public async Task<IEnumerable<string>> GetAllExistingPermissionsCodes(
+    public async Task<IReadOnlyList<string>> GetAllExistingPermissionsCodes(
         CancellationToken cancellationToken = default)
-        => await accountsContext.Permissions.Select(p => p.Code).ToListAsync();
+        => await accountsContext.Permissions.Select(p => p.Code).ToListAsync(cancellationToken);
 
     public async Task AddRange(
         IEnumerable<Permission> permissions, CancellationToken cancellationToken = default)
@@ -26,7 +26,7 @@ public class RolesRepository(AccountsDbContext accountsContext) : IRolesReposito
     public async Task<HashSet<string>> GetPermissionCodesByUserId(
         Guid userId, CancellationToken cancellationToken = default)
     {
-        var perms = await accountsContext.ReadUsers
+        var perms = await accountsContext.Users
             .Include(u => u.Roles)
             .ThenInclude(r => r.Permissions)
             .Where(u => u.Id == userId)
@@ -52,6 +52,6 @@ public class RolesRepository(AccountsDbContext accountsContext) : IRolesReposito
 
     public async Task<Role?> GetRoleByName(string name, CancellationToken cancellationToken = default)
     {
-        return await accountsContext.Roles.FirstOrDefaultAsync(r => r.Name == name);
+        return await accountsContext.Roles.FirstOrDefaultAsync(r => r.Name == name, cancellationToken);
     }
 }

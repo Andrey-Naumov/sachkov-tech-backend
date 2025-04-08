@@ -6,7 +6,6 @@ public class AdminAccount
 
     public AdminAccount(User user)
     {
-        Id = Guid.NewGuid();
         User = user;
     }
 
@@ -19,5 +18,5 @@ public class AdminAccount
 
     public Guid UserId { get; set; }
 
-    public User User { get; set; }
+    public User User { get; set; } = null!;
 }

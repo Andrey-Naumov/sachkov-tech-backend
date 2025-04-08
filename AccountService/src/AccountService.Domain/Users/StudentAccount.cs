@@ -6,7 +6,6 @@ public class StudentAccount
 
     public StudentAccount(User user)
     {
-        Id = Guid.NewGuid();
         User = user;
         DateStartedStudying = DateTime.UtcNow;
     }

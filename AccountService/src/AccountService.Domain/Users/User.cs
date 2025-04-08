@@ -43,7 +43,7 @@ public class User : IdentityUser<Guid>
         if (role.Name != AdminAccount.ADMIN)
             return Errors.Auth.InvalidRole();
 
-        User user = new ()
+        User user = new()
         {
             UserName = userName,
             Email = email,
@@ -67,7 +67,7 @@ public class User : IdentityUser<Guid>
         if (role.Name != ParticipantAccount.PARTICIPANT)
             return Errors.Auth.InvalidRole();
 
-        User user = new ()
+        User user = new()
         {
             UserName = userName,
             Email = email,

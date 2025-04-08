@@ -6,9 +6,9 @@ public interface IRolesRepository
 {
     Task<Permission?> GetPermissionByCode(string code);
 
-    Task<IEnumerable<Permission>?> GetAllPermissions(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Permission>> GetAllPermissions(CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<string>> GetAllExistingPermissionsCodes(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<string>> GetAllExistingPermissionsCodes(CancellationToken cancellationToken = default);
 
     Task AddRange(IEnumerable<Permission> permissions, CancellationToken cancellationToken = default);
 

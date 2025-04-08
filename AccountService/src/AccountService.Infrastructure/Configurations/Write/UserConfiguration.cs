@@ -41,5 +41,25 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(s => s.SocialNetworks)
             .ValueObjectsCollectionJsonConversion()
             .HasColumnName("social_networks");
+
+        builder.HasOne(u => u.StudentAccount)
+            .WithOne(pa => pa.User)
+            .HasForeignKey<StudentAccount>(s => s.UserId)
+            .IsRequired(false);
+
+        builder.HasOne(u => u.SupportAccount)
+            .WithOne(pa => pa.User)
+            .HasForeignKey<SupportAccount>(s => s.UserId)
+            .IsRequired(false);
+
+        builder.HasOne(u => u.AdminAccount)
+            .WithOne(pa => pa.User)
+            .HasForeignKey<AdminAccount>(a => a.UserId)
+            .IsRequired(false);
+
+        builder.HasOne(u => u.ParticipantAccount)
+            .WithOne(pa => pa.User)
+            .HasForeignKey<ParticipantAccount>(pa => pa.UserId)
+            .IsRequired(false);
     }
 }

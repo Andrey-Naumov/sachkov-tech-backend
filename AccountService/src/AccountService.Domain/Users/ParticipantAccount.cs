@@ -6,7 +6,6 @@ public class ParticipantAccount
 
     public ParticipantAccount(User user)
     {
-        Id = Guid.NewGuid();
         User = user;
     }
 

@@ -25,12 +25,10 @@ public class AccountsSeederService(
     {
         logger.LogInformation("Seeding accounts...");
 
-        var json = await File.ReadAllTextAsync("etc/accounts.json");
+        string json = await File.ReadAllTextAsync("etc/accounts.json");
 
         var seedData = JsonSerializer.Deserialize<RolesPermissionsToSeed>(json)
                        ?? throw new ApplicationException("Could not deserialize roles and permissions to seed.");
-
-        await rolesPermissionsRepository.ClearRolesAndPermissions();
 
         await SeedPermissions(seedData.Permissions);
 
@@ -47,26 +45,41 @@ public class AccountsSeederService(
 
     private async Task SeedPermissions(Dictionary<string, string[]> permissions)
     {
-        var permissionEntities = permissions.SelectMany(x => x.Value.Select(y => new Permission { Code = y }));
-        await rolesPermissionsRepository.AddRange(permissionEntities);
+        var existingPermissions = await rolesPermissionsRepository.GetAllPermissions();
+        if (existingPermissions is null)
+            throw new ApplicationException("Could not find permissions in database");
+
+        var permissionEntities = permissions.SelectMany(x => x.Value
+            .Where(c => !existingPermissions.Select(p => p.Code).Contains(c))
+            .Select(y => new Permission
+            {
+                Code = y,
+            }));
+
+        await rolesPermissionsRepository.AddRange(permissionEntities.Except(existingPermissions));
     }
 
     private async Task SeedRolesPermissionsRelationship(
-        Dictionary<string, string[]> roles, CancellationToken cancellationToken = default)
+        Dictionary<string, string[]> roles,
+        CancellationToken cancellationToken = default)
     {
         var existingPermissions = await rolesPermissionsRepository.GetAllPermissions(cancellationToken);
         if (existingPermissions is null)
             throw new ApplicationException("Could not find permissions in database");
 
+        var permissions = existingPermissions.ToList();
         List<Role> rolesEntities = [];
 
         foreach (var role in roles)
         {
-            Role roleEntity = new() { Name = role.Key };
-
-            foreach (var permission in role.Value)
+            Role roleEntity = new()
             {
-                Permission permissionEntity = existingPermissions.First(x => x.Code == permission);
+                Name = role.Key,
+            };
+
+            foreach (string permission in role.Value)
+            {
+                Permission permissionEntity = permissions.First(x => x.Code == permission);
                 roleEntity.Permissions.Add(permissionEntity);
             }
 
@@ -87,10 +100,7 @@ public class AccountsSeederService(
         var adminRole = await rolesPermissionsRepository.GetRoleByName(AdminAccount.ADMIN)
                         ?? throw new ApplicationException("Could not find admin role.");
 
-        using var transaction = await unitOfWork.BeginTransaction();
-
-        var fullName = FullName.Create(_adminOptions.UserName, _adminOptions.UserName, _adminOptions.UserName)
-            .Value;
+        var fullName = FullName.Create(_adminOptions.UserName, _adminOptions.UserName, _adminOptions.UserName).Value;
 
         var adminUser = User.CreateAdmin(
             _adminOptions.UserName,
@@ -104,8 +114,6 @@ public class AccountsSeederService(
         await userManager.CreateAsync(adminUser.Value, _adminOptions.Password);
 
         await unitOfWork.SaveChanges();
-
-        transaction.Commit();
 
         logger.LogInformation("Admin account added to database");
     }

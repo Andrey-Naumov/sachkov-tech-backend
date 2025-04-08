@@ -17,18 +17,18 @@ namespace AccountService.Infrastructure.Providers;
 
 public class JwtTokenProvider : ITokenProvider
 {
-    private readonly IRolesRepository _permissionManager;
+    private readonly IRolesRepository _rolesRepository;
     private readonly AccountsDbContext _accountContext;
     private readonly IRsaKeyProvider _rsaKeyProvider;
     private readonly AuthOptions _authOptions;
 
     public JwtTokenProvider(
         IOptions<AuthOptions> options,
-        IRolesRepository permissionManager,
+        IRolesRepository rolesRepository,
         AccountsDbContext accountContext,
         IRsaKeyProvider rsaKeyProvider)
     {
-        _permissionManager = permissionManager;
+        _rolesRepository = rolesRepository;
         _accountContext = accountContext;
         _rsaKeyProvider = rsaKeyProvider;
         _authOptions = options.Value;
@@ -44,7 +44,7 @@ public class JwtTokenProvider : ITokenProvider
 
         var roleClaims = user.Roles.Select(r => new Claim(CustomClaims.ROLE, r.Name ?? string.Empty));
 
-        var permissions = await _permissionManager.GetPermissionCodesByUserId(user.Id, cancellationToken);
+        var permissions = await _rolesRepository.GetPermissionCodesByUserId(user.Id, cancellationToken);
         var permissionClaims = permissions.Select(p => new Claim(CustomClaims.PERMISSION, p));
 
         Claim[] claims =
