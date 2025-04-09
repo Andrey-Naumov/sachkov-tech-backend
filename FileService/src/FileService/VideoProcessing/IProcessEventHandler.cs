@@ -6,7 +6,7 @@ public interface IProcessEventHandler
 
     Task OnOutputReceivedAsync(string data);
 
-    Task OnErrorReceivedAsync(string data);
+    Task OnProcessExecuting(string data);
 
     Task OnProcessExitedAsync(int exitCode);
 }

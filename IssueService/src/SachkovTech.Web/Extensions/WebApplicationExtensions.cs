@@ -1,6 +1,7 @@
 ﻿using SachkovTech.Core.Database;
 using SachkovTech.Framework.Cors;
 using SachkovTech.Framework.Middlewares;
+using SachkovTech.Issues.Presentation.Hubs;
 using Serilog;
 
 namespace SachkovTech.Web.Extensions;
@@ -32,5 +33,7 @@ public static class WebApplicationExtensions
         {
             app.MapGet("/", () => "Hello World!");
         }
+
+        app.MapHub<LessonVideoProcessingHub>("/api/hubs/lessons/video-processing");
     }
 }

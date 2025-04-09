@@ -25,8 +25,6 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddSignalR();
-
         services.AddLowerCaseRouting();
         services.AddCors(configuration);
 

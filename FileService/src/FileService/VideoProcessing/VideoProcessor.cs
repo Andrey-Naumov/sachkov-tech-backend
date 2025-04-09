@@ -1,44 +1,29 @@
 ﻿using FileService.Contracts;
-using FileService.Hubs;
 using FileService.VideoProcessing.Steps;
-using Microsoft.AspNetCore.SignalR;
 
 namespace FileService.VideoProcessing;
 
 public class VideoProcessor
 {
     private readonly IEnumerable<BaseVideoProcessingStep> _processingSteps;
-    private readonly IHubContext<VideoProcessingHub, IVideoProcessingClient> _hubContext;
     private readonly ILogger<VideoProcessor> _logger;
 
     public VideoProcessor(
         IEnumerable<BaseVideoProcessingStep> processingSteps,
-        ILogger<VideoProcessor> logger,
-        IHubContext<VideoProcessingHub, IVideoProcessingClient> hubContext)
+        ILogger<VideoProcessor> logger)
     {
         _processingSteps = processingSteps;
+        _logger = logger;
 
         double totalWeight = _processingSteps.Sum(s => s.Weight);
-
-        _logger = logger;
-        _hubContext = hubContext;
-
-        _logger.LogInformation($"Total weight of all steps: {totalWeight}");
+        _logger.LogInformation("Total weight of all steps: {TotalWeight}", totalWeight);
     }
 
     public async Task<ProcessVideoResult> ProcessVideoAsync(
         FileLocation videoLocation,
+        AsyncProgress<double> progress,
         CancellationToken cancellationToken = default)
     {
-        var progress = new AsyncProgress<double>(async p =>
-        {
-            double roundedProgress = Math.Round(p * 100, 2);
-
-            await _hubContext.Clients.Group(videoLocation.FileId).ProgressUpdate(roundedProgress, cancellationToken);
-
-            _logger.LogInformation("Overall progress: {Progress}%", roundedProgress);
-        });
-
         var context = new VideoProcessingContext
         {
             VideoLocation = videoLocation, Progress = progress,
@@ -51,12 +36,12 @@ public class VideoProcessor
                 await step.ExecuteAsync(context, cancellationToken);
             }
 
-            await context.Progress.ReportAsync(1.0);
-
             if (!context.HlsGuid.HasValue || !context.PreviewGuid.HasValue)
             {
                 throw new FfmpegProcessingException($"Failed to process video {videoLocation.FileId}");
             }
+
+            await progress.ReportAsync(1.0);
 
             return new ProcessVideoResult(context.HlsGuid.Value, context.PreviewGuid.Value);
         }

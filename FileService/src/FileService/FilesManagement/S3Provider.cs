@@ -1,9 +1,9 @@
-﻿using System.Net;
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
 using FileService.Contracts;
 using FileService.Contracts.Options;
 using Microsoft.Extensions.Options;
+using SachkovTech.Framework.Authorization;
 using CompleteMultipartUploadRequest = Amazon.S3.Model.CompleteMultipartUploadRequest;
 
 namespace FileService.FilesManagement;
@@ -124,7 +124,10 @@ public class S3Provider : IS3Provider
         string bucketName,
         CancellationToken cancellationToken)
     {
-        var listRequest = new ListMultipartUploadsRequest { BucketName = bucketName, };
+        var listRequest = new ListMultipartUploadsRequest
+        {
+            BucketName = bucketName,
+        };
 
         var response = await _s3Client.ListMultipartUploadsAsync(listRequest, cancellationToken);
 
@@ -187,7 +190,10 @@ public class S3Provider : IS3Provider
     public async Task<string> DownloadFileAsync(FileLocation location, string tempInputPath,
         CancellationToken cancellationToken)
     {
-        var request = new GetObjectRequest { BucketName = location.BucketName, Key = location.FileId, };
+        var request = new GetObjectRequest
+        {
+            BucketName = location.BucketName, Key = location.FileId,
+        };
 
         var response = await _s3Client.GetObjectAsync(request, cancellationToken);
 
@@ -219,7 +225,10 @@ public class S3Provider : IS3Provider
 
     public async Task<string> DeleteFileAsync(FileLocation fileLocation, CancellationToken cancellationToken)
     {
-        var request = new DeleteObjectRequest { BucketName = fileLocation.BucketName, Key = fileLocation.FileId };
+        var request = new DeleteObjectRequest
+        {
+            BucketName = fileLocation.BucketName, Key = fileLocation.FileId,
+        };
 
         await _s3Client.DeleteObjectAsync(request, cancellationToken);
 
@@ -235,7 +244,10 @@ public class S3Provider : IS3Provider
             return;
         }
 
-        var bucketRequest = new PutBucketRequest { BucketName = bucketName, UseClientRegion = true, };
+        var bucketRequest = new PutBucketRequest
+        {
+            BucketName = bucketName, UseClientRegion = true,
+        };
 
         await _s3Client.PutBucketAsync(bucketRequest, cancellationToken);
     }

@@ -66,7 +66,8 @@ public class GenerateHlsStep : BaseVideoProcessingStep
                 "-hls_segment_type mpegts " +
                 $"-hls_segment_filename {outputPath}/%v_%06d.ts " +
                 "-master_pl_name master.m3u8 " +
-                $"{outputPath}/%v_stream.m3u8");
+                $"{outputPath}/%v_stream.m3u8",
+                FfmpegErrorDetectors.HlsErrorDetector);
 
             var result = await _processRunner.RunCommandAsync(command, progressHandler);
             if (result.HasError)

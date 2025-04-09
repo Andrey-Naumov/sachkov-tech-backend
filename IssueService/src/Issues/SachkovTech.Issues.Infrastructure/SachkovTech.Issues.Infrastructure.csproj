@@ -8,6 +8,7 @@
 
 	<ItemGroup>
       <ProjectReference Include="..\SachkovTech.Issues.Application\SachkovTech.Issues.Application.csproj" />
+      <ProjectReference Include="..\SachkovTech.Issues.Presentation\SachkovTech.Issues.Presentation.csproj" />
     </ItemGroup>
 
 	<ItemGroup>

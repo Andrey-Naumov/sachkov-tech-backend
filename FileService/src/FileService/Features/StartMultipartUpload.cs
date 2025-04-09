@@ -10,6 +10,7 @@ public static class StartMultipartUpload
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
+            // TODO: сделать доступным только для jwt аутентификации
             app.MapPost("api/files/multipart/start", Handler)
                 .RequirePermissions(Permissions.Files.UPLOAD_FILES);
         }

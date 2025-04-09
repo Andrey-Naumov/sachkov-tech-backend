@@ -1,5 +1,4 @@
 using FileService;
-using FileService.Hubs;
 using SachkovTech.Framework.Cors;
 using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Middlewares;
@@ -34,8 +33,6 @@ app.UseAuthentication();
 app.UseScopeDataMiddleware();
 app.UseAuthorization();
 app.MapEndpoints();
-
-app.MapHub<VideoProcessingHub>("/video-processing");
 
 app.Run();
 

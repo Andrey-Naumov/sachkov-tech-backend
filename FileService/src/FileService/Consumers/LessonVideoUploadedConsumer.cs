@@ -9,20 +9,38 @@ namespace FileService.Consumers;
 public class LessonVideoUploadedConsumer : IConsumer<LessonVideoUploadedIntegrationEvent>
 {
     private readonly VideoProcessor _videoProcessor;
+    private readonly ILogger<LessonVideoUploadedConsumer> _logger;
 
-    public LessonVideoUploadedConsumer(VideoProcessor videoProcessor)
+    public LessonVideoUploadedConsumer(
+        VideoProcessor videoProcessor,
+        ILogger<LessonVideoUploadedConsumer> logger)
     {
         _videoProcessor = videoProcessor;
+        _logger = logger;
     }
 
     public async Task Consume(ConsumeContext<LessonVideoUploadedIntegrationEvent> context)
     {
-        var uploadedEvent = context.Message;
+        var lessonVideo = context.Message;
+        string fileId = lessonVideo.VideoId.ToString();
+
+        var progress = new AsyncProgress<double>(async p =>
+        {
+            double roundedProgress = Math.Round(p * 100, 2);
+
+            await context.Publish(new LessonVideoProgressReceivedIntegrationEvent(lessonVideo.LessonId, roundedProgress));
+
+            _logger.LogInformation("Progress for lesson {LessonId}: {Progress}%", lessonVideo.LessonId, roundedProgress);
+        });
 
         var result = await _videoProcessor.ProcessVideoAsync(
-            new FileLocation(uploadedEvent.VideoId.ToString(), uploadedEvent.FileLocation),
+            new FileLocation(fileId, lessonVideo.FileLocation),
+            progress,
             context.CancellationToken);
 
-        await context.Publish(new LessonVideoProcessedIntegrationEvent(uploadedEvent.LessonId, result.HlsId, result.PreviewId));
+        await context.Publish(new LessonVideoProcessedIntegrationEvent(
+            lessonVideo.LessonId,
+            result.HlsId,
+            result.PreviewId));
     }
 }

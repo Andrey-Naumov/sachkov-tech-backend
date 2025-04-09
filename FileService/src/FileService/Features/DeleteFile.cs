@@ -1,8 +1,6 @@
 ﻿using FileService.Contracts;
 using FileService.FilesManagement;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
-using SachkovTech.Framework.Authorization;
 using SachkovTech.Framework.Endpoints;
 using SharedKernel;
 

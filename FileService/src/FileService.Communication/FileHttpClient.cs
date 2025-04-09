@@ -1,9 +1,7 @@
 ﻿using System.Net.Http.Json;
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
-using Microsoft.Extensions.Logging;
 using SachkovTech.Framework.Http;
-using Serilog;
 using SharedKernel;
 
 namespace FileService.Communication;
