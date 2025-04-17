@@ -5,8 +5,8 @@ using SachkovTech.Issues.Application.Features.Issue.Commands.DeleteIssue;
 using SachkovTech.Issues.Application.Features.Issue.Commands.RestoreIssue;
 using SachkovTech.Issues.Application.Features.Issue.Commands.UpdateIssueMainInfo;
 using SachkovTech.Issues.Application.Features.Lessons.Command.CreateLesson;
-using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonById;
-using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonsByModule;
+using SachkovTech.Issues.Application.Features.Lessons.Queries.GetUserLessonById;
+using SachkovTech.Issues.Application.Features.Lessons.Queries.GetUserLessonsByModule;
 using SachkovTech.Issues.Application.Features.Modules.Commands.Create;
 using SachkovTech.Issues.Application.Features.Modules.Commands.Delete;
 using SachkovTech.Issues.Application.Features.Modules.Commands.UpdateIssuePosition;
@@ -77,25 +77,25 @@ public static class FixtureExtensions
             .Create();
     }
 
-    public static GetLessonByIdQuery CreateGetLessonByIdQuery(
+    public static GetUserLessonByIdQuery CreateGetLessonUserByIdQuery(
         this IFixture fixture,
         Guid userid,
         Guid lessonId)
     {
-        return fixture.Build<GetLessonByIdQuery>()
+        return fixture.Build<GetUserLessonByIdQuery>()
             .With(g => g.LessonId, lessonId)
             .With(g => g.UserId, userid)
             .Create();
     }
 
-    public static GetLessonsByModuleQuery CreateGetLessonsWithPaginationQuery(
+    public static GetUserLessonsByModuleQuery CreateGetLessonsWithPaginationQuery(
         this IFixture fixture,
         Guid moduleId,
         int page,
         int pageSize,
         string? search = null)
     {
-        return fixture.Build<GetLessonsByModuleQuery>()
+        return fixture.Build<GetUserLessonsByModuleQuery>()
             .With(g => g.ModuleId, moduleId)
             .With(g => g.Page, page)
             .With(g => g.PageSize, pageSize)

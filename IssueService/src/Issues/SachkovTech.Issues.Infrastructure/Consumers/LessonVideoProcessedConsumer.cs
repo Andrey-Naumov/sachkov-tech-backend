@@ -28,7 +28,11 @@ public class LessonVideoProcessedConsumer : IConsumer<LessonVideoProcessedIntegr
     {
         var processedVideoEvent = context.Message;
 
-        var command = new AddProcessedVideoToLessonCommand(processedVideoEvent.LessonId, processedVideoEvent.VideoId, processedVideoEvent.PreviewId);
+        var command = new AddProcessedVideoToLessonCommand(
+            processedVideoEvent.LessonId,
+            processedVideoEvent.VideoId,
+            processedVideoEvent.PreviewId);
+
         await _handler.Handle(command, context.CancellationToken);
 
         await _hubContext.Clients.Group(processedVideoEvent.LessonId.ToString())

@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SachkovTech.Issues.UnitTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SachkovTech.ModuleProgress.UnitTests.Domain", "src\Issues\tests\SachkovTech.ModuleProgress.UnitTests.Domain\SachkovTech.ModuleProgress.UnitTests.Domain.csproj", "{08513FDF-F12A-4C74-9884-72A41FA4AE89}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IssueService.Communication", "IssueService.Communication\IssueService.Communication.csproj", "{58BAA6A6-4EE0-4816-BAF9-8CD3A74ED4E0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,6 +96,10 @@ Global
 		{08513FDF-F12A-4C74-9884-72A41FA4AE89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08513FDF-F12A-4C74-9884-72A41FA4AE89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08513FDF-F12A-4C74-9884-72A41FA4AE89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58BAA6A6-4EE0-4816-BAF9-8CD3A74ED4E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58BAA6A6-4EE0-4816-BAF9-8CD3A74ED4E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58BAA6A6-4EE0-4816-BAF9-8CD3A74ED4E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58BAA6A6-4EE0-4816-BAF9-8CD3A74ED4E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,6 +119,7 @@ Global
 		{3858CC35-4A3D-48AD-93E7-6C6BDC73FAB7} = {C05ECE0D-33EF-49E2-A9FC-4B2110708813}
 		{DBB34D63-8A28-47A4-86E9-D2518F81ED3F} = {C05ECE0D-33EF-49E2-A9FC-4B2110708813}
 		{08513FDF-F12A-4C74-9884-72A41FA4AE89} = {C05ECE0D-33EF-49E2-A9FC-4B2110708813}
+		{58BAA6A6-4EE0-4816-BAF9-8CD3A74ED4E0} = {1955B47D-2627-4897-9AF0-863F215DA712}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {06591CB3-5D76-4012-AA6A-ACA4A8D2D8DF}

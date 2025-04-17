@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using SachkovTech.Core.Abstractions;
-using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonById;
+using SachkovTech.Issues.Application.Features.Lessons.Queries.GetUserLessonById;
 using SachkovTech.Issues.Contracts.Lesson;
 using SachkovTech.Issues.Domain.Issue.ValueObjects;
 using SachkovTech.Issues.Domain.Lesson;
@@ -16,10 +16,10 @@ public class GetLessonByIdTest : LessonsTestsBase
     public GetLessonByIdTest(LessonTestWebFactory factory)
         : base(factory)
     {
-        _sut = Scope.ServiceProvider.GetRequiredService<IQueryHandlerWithResult<LessonDto, GetLessonByIdQuery>>();
+        _sut = Scope.ServiceProvider.GetRequiredService<IQueryHandlerWithResult<LessonDto, GetUserLessonByIdQuery>>();
     }
 
-    private readonly IQueryHandlerWithResult<LessonDto, GetLessonByIdQuery> _sut;
+    private readonly IQueryHandlerWithResult<LessonDto, GetUserLessonByIdQuery> _sut;
 
     [Fact]
     public async Task Get_existing_lesson_by_id()
@@ -31,7 +31,7 @@ public class GetLessonByIdTest : LessonsTestsBase
 
         await SeedModuleToDatabase(lesson.Id, DbContext, cancellationToken);
 
-        var query = Fixture.CreateGetLessonByIdQuery(Guid.NewGuid(), lesson.Id);
+        var query = Fixture.CreateGetLessonUserByIdQuery(Guid.NewGuid(), lesson.Id);
 
         Factory.SetupSuccessFileServiceMock([lesson.Video.OriginalFileId!.Value]);
 
@@ -58,7 +58,7 @@ public class GetLessonByIdTest : LessonsTestsBase
 
         var lesson = await SeedLessonToDatabase(DbContext, cancellationToken);
 
-        var query = Fixture.CreateGetLessonByIdQuery(Guid.NewGuid(), lesson.Id);
+        var query = Fixture.CreateGetLessonUserByIdQuery(Guid.NewGuid(), lesson.Id);
 
         // Act
         var result = await _sut.Handle(query, cancellationToken);

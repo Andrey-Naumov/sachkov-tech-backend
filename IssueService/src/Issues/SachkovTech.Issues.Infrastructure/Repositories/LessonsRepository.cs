@@ -24,19 +24,6 @@ public class LessonsRepository : ILessonsRepository
         return lesson.Id;
     }
 
-    public Guid Save(Lesson module)
-    {
-        _dbContext.Lessons.Attach(module);
-        return module.Id.Value;
-    }
-
-    public Guid Delete(Lesson module)
-    {
-        _dbContext.Lessons.Remove(module);
-
-        return module.Id;
-    }
-
     public async Task<Result<Lesson, Error>> GetById(
         LessonId lessonId, CancellationToken cancellationToken = default)
     {
@@ -59,5 +46,15 @@ public class LessonsRepository : ILessonsRepository
             return Errors.General.NotFound();
 
         return module;
+    }
+
+    public async Task<Result<IReadOnlyList<Lesson>, Error>> GetLessonsByTagId(
+        Guid tagId, CancellationToken cancellationToken = default)
+    {
+        var lessons = await _dbContext.Lessons
+            .Where(l => l.Tags.Any(t => t == tagId))
+            .ToListAsync(cancellationToken);
+
+        return lessons;
     }
 }

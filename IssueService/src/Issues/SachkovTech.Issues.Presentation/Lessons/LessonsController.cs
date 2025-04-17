@@ -6,12 +6,15 @@ using SachkovTech.Issues.Application.Features.Lessons.Command.AddIssueToLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.AddTagToLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.CreateLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.RemoveIssueFromLesson;
+using SachkovTech.Issues.Application.Features.Lessons.Command.RemoveTagFromLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.RestoreLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.SoftDeleteLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.StartUploadVideo;
 using SachkovTech.Issues.Application.Features.Lessons.Command.UpdateLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonById;
 using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonsByModule;
+using SachkovTech.Issues.Application.Features.Lessons.Queries.GetUserLessonById;
+using SachkovTech.Issues.Application.Features.Lessons.Queries.GetUserLessonsByModule;
 using SachkovTech.Issues.Application.Features.Modules.Commands.UpdateLessonPosition;
 using SachkovTech.Issues.Contracts.Lesson;
 
@@ -21,17 +24,15 @@ public class LessonsController : ApplicationController
 {
     [HttpGet]
     [Permission(Permissions.Lessons.READ_LESSON)]
-    public async Task<IActionResult> GetLessons(
+    public async Task<IActionResult> GetLessonsByModule(
         [FromQuery] GetLessonsRequest request,
         [FromServices] GetLessonsByModuleHandler handler,
-        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken)
     {
         var query = new GetLessonsByModuleQuery(
             request.Page,
             request.PageSize,
             request.ModuleId,
-            userScopedData.UserId,
             request.Search);
 
         var result = await handler.Handle(query, cancellationToken);
@@ -47,10 +48,50 @@ public class LessonsController : ApplicationController
     public async Task<IActionResult> GetLessonById(
         [FromRoute] Guid lessonId,
         [FromServices] GetLessonByIdHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.Handle(new GetLessonByIdQuery(lessonId), cancellationToken);
+
+        if (result.IsFailure)
+            return result.Error.ToResponse();
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet("/user")]
+    [Permission(Permissions.Lessons.READ_LESSON)]
+    public async Task<IActionResult> GetUserLessonsByModule(
+        [FromQuery] GetLessonsRequest request,
+        [FromServices] GetUserLessonsByModuleHandler handler,
         [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken)
     {
-        var result = await handler.Handle(new GetLessonByIdQuery(lessonId, userScopedData.UserId), cancellationToken);
+        var query = new GetUserLessonsByModuleQuery(
+            request.Page,
+            request.PageSize,
+            request.ModuleId,
+            userScopedData.UserId,
+            request.Search);
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Error.ToResponse();
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet("{lessonId:guid}/user")]
+    [Permission(Permissions.Lessons.READ_LESSON)]
+    public async Task<IActionResult> GetUserLessonById(
+        [FromRoute] Guid lessonId,
+        [FromServices] GetUserLessonByIdHandler handler,
+        [FromServices] UserScopedData userScopedData,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.Handle(
+            new GetUserLessonByIdQuery(lessonId, userScopedData.UserId),
+            cancellationToken);
 
         if (result.IsFailure)
             return result.Error.ToResponse();
@@ -214,10 +255,10 @@ public class LessonsController : ApplicationController
     public async Task<IActionResult> RemoveTagFromLesson(
         [FromRoute] Guid lessonId,
         [FromBody] Guid tagId,
-        [FromServices] RemoveIssueFromLessonHandler handler,
+        [FromServices] RemoveTagFromLessonHandler handler,
         CancellationToken cancellationToken)
     {
-        var result = await handler.Handle(new RemoveIssueFromLessonCommand(lessonId, tagId), cancellationToken);
+        var result = await handler.Handle(new RemoveTagFromLessonCommand(lessonId, tagId), cancellationToken);
 
         if (result.IsFailure)
             return result.Error.ToResponse();

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
-using SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonsByModule;
+using SachkovTech.Issues.Application.Features.Lessons.Queries.GetUserLessonsByModule;
 using SachkovTech.Issues.Contracts.Lesson;
 using SachkovTech.Issues.Domain.Issue.ValueObjects;
 using SachkovTech.Issues.Domain.Lesson;
@@ -23,10 +23,10 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
         : base(factory)
     {
         _sut = Scope.ServiceProvider
-            .GetRequiredService<IQueryHandlerWithResult<PagedList<LessonDto>, GetLessonsByModuleQuery>>();
+            .GetRequiredService<IQueryHandlerWithResult<PagedList<LessonDto>, GetUserLessonsByModuleQuery>>();
     }
 
-    private IQueryHandlerWithResult<PagedList<LessonDto>, GetLessonsByModuleQuery> _sut;
+    private IQueryHandlerWithResult<PagedList<LessonDto>, GetUserLessonsByModuleQuery> _sut;
 
     [Fact]
     public async Task Get_lessons_with_pagination()
@@ -66,7 +66,7 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
         int invalidPage = -1;
         int invalidPageSize = -1;
         var moduleId = ModuleId.NewModuleId();
-        var invalidQuery = new GetLessonsByModuleQuery(invalidPage, invalidPageSize, moduleId, Guid.Empty, string.Empty);
+        var invalidQuery = new GetUserLessonsByModuleQuery(invalidPage, invalidPageSize, moduleId, Guid.Empty, string.Empty);
 
         SetupFailureValidationResult(invalidQuery, cancellationToken);
 
@@ -81,9 +81,9 @@ public class GetLessonWithPaginationTests : LessonsTestsBase
     }
 
     private void SetupFailureValidationResult(
-        GetLessonsByModuleQuery query, CancellationToken cancellationToken)
+        GetUserLessonsByModuleQuery query, CancellationToken cancellationToken)
     {
-        var validatorMock = Substitute.For<IValidator<GetLessonsByModuleQuery>>();
+        var validatorMock = Substitute.For<IValidator<GetUserLessonsByModuleQuery>>();
 
         var validationFailures = new List<ValidationFailure>
         {

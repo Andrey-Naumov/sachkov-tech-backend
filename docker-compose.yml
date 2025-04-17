@@ -60,7 +60,26 @@ services:
       - ASPNETCORE_ENVIRONMENT=Docker
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - ASPNETCORE_URLS=http://+:8003
-  
+
+  tags:
+    container_name: tags
+    build:
+      context: ./TagService
+      dockerfile: ./src/TagService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    ports:
+      - "8004:8004"
+    depends_on:
+      - minio
+      - postgres
+      - seq
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - ASPNETCORE_URLS=http://+:8004
   # emails:
   #   build:
   #     context: ./EmailNotificationService

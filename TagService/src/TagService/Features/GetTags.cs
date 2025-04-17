@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SachkovTech.Core.Database;
 using SachkovTech.Framework.Endpoints;
+using SachkovTech.Issues.Contracts.Issue;
 using SharedKernel;
 using TagService.Entities;
-using TagService.Extensions;
 using TagService.Infrastructure;
+using YamlDotNet.Core;
 using Permissions = TagService.API.Permissions;
 
 namespace TagService.Features;
 
-public class GetTagById
+public class GetTags
 {
     public sealed class Endpoint : IEndpoint
     {
@@ -29,35 +31,47 @@ public class GetTagById
             if (limit < 1)
                 return ResultResponse.BadRequest<ErrorList>(Errors.General.ValueIsInvalid());
 
-            var query = context.Tags.AsNoTracking().AsQueryable();
+            var queryTags = context.Tags.AsNoTracking().AsQueryable();
+            var queryCount = context.Tags.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(cursor))
             {
-                var decodedCursor = Cursor.Decode(cursor);
+                var decodedCursor = Cursor<DateTime>.Decode(cursor);
                 if (decodedCursor is null)
                     return ResultResponse.BadRequest<ErrorList>(Errors.General.ValueIsInvalid());
 
-                query = query.Where(x => EF.Functions.LessThanOrEqual(
+                queryTags = queryTags.Where(x => EF.Functions.LessThanOrEqual(
                     ValueTuple.Create(x.CreatedAt, x.Id),
-                    ValueTuple.Create(decodedCursor.Date, decodedCursor.LastId)));
+                    ValueTuple.Create(decodedCursor.Filter, decodedCursor.LastId)));
+
+                queryCount = queryTags.Where(x => EF.Functions.LessThanOrEqual(
+                    ValueTuple.Create(x.CreatedAt, x.Id),
+                    ValueTuple.Create(decodedCursor.Filter, decodedCursor.LastId)
+                ));
             }
 
-            var items = await query
+            var items = await queryTags
                 .OrderByDescending(x => x.CreatedAt)
                 .ThenByDescending(x => x.Id)
                 .Take(limit + 1)
                 .ToListAsync(cancellationToken);
+            
+            var count = await queryCount
+                .OrderByDescending(x => x.CreatedAt)
+                .ThenByDescending(x => x.Id)
+                .CountAsync(cancellationToken);
 
-            var hasMore = items.Count > limit;
+            var hasMore = limit < count;
 
-            DateTime? nextDate = hasMore ? items[^1].CreatedAt : null;
-            Guid? nextId = items.Count > limit ? items[^1].Id : null;
+            string? newCursor = null;
+            if (hasMore && items.Count > 0)
+            {
+                var lastItem = items[^1];
 
-            items.RemoveAt(items.Count - 1);
+                items.Remove(lastItem);
 
-            var newCursor = nextDate is not null && nextId is not null
-                ? Cursor.Encode(nextDate.Value, nextId.Value)
-                : null;
+                newCursor = Cursor<DateTime>.Encode(lastItem.CreatedAt, lastItem.Id);
+            }
 
             var result = new CursorList<Tag>(items, newCursor, hasMore);
 

@@ -7,14 +7,14 @@ using SachkovTech.Core.Database;
 using SachkovTech.Issues.Contracts.Lesson;
 using SharedKernel;
 
-namespace SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonById;
+namespace SachkovTech.Issues.Application.Features.Lessons.Queries.GetUserLessonById;
 
-public class GetLessonByIdHandler : IQueryHandlerWithResult<LessonDto, GetLessonByIdQuery>
+public class GetUserLessonByIdHandler : IQueryHandlerWithResult<LessonDto, GetUserLessonByIdQuery>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
     private readonly IFileService _fileService;
 
-    public GetLessonByIdHandler(
+    public GetUserLessonByIdHandler(
         ISqlConnectionFactory sqlConnectionFactory,
         IFileService fileService)
     {
@@ -23,12 +23,13 @@ public class GetLessonByIdHandler : IQueryHandlerWithResult<LessonDto, GetLesson
     }
 
     public async Task<Result<LessonDto, ErrorList>> Handle(
-        GetLessonByIdQuery query, CancellationToken cancellationToken = default)
+        GetUserLessonByIdQuery query, CancellationToken cancellationToken = default)
     {
         using var connection = _sqlConnectionFactory.Create();
 
         var parameters = new DynamicParameters();
         parameters.Add("@LessonId", query.LessonId);
+        parameters.Add("@UserId", query.UserId);
 
         var sqlBuilder = new StringBuilder(
             """
@@ -43,10 +44,14 @@ public class GetLessonByIdHandler : IQueryHandlerWithResult<LessonDto, GetLesson
                    lp.position       AS Position,
                    (l.video->>'OriginalFileId')::uuid AS OriginalFileId,
                    (l.video->>'ProcessedFileId')::uuid AS ProcessedFileId,
-                   l.video->>'IsProcessed' AS IsProcessed
+                   l.video->>'IsProcessed' AS IsProcessed,
+                   ul.is_completed AS IsCompleted
             FROM issues.lessons AS l
                      JOIN issues.lesson_position AS lp
                           ON l.id = lp.lesson_id
+                     LEFT JOIN issues.user_lessons AS ul
+                               ON l.id = ul.lesson_id
+                                   AND ul.user_id = @UserId
             WHERE NOT l.is_deleted
               AND l.id = @LessonId
             """);

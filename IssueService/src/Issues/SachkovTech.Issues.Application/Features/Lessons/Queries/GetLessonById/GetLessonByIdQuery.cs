@@ -2,4 +2,4 @@
 
 namespace SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonById;
 
-public record GetLessonByIdQuery(Guid LessonId, Guid UserId) : IQuery;
+public record GetLessonByIdQuery(Guid LessonId) : IQuery;

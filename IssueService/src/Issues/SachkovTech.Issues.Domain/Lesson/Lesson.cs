@@ -16,26 +16,6 @@ public class Lesson : DomainEntity<LessonId>, ISoftDeletable
     {
     }
 
-    public Guid ModuleId { get; private set; }
-
-    public Title Title { get; private set; }
-
-    public Description Description { get; private set; }
-
-    public Experience Experience { get; private set; }
-
-    public Guid[] Tags { get; private set; }
-
-    public Guid[] Issues { get; private set; }
-
-    public Preview AutoPreview { get; private set; } = Preview.None;
-
-    public Video Video { get; private set; } = Video.None;
-
-    public bool IsDeleted { get; private set; }
-
-    public DateTime? DeletionDate { get; private set; }
-
     public Lesson(
         LessonId id,
         Guid moduleId,
@@ -55,6 +35,26 @@ public class Lesson : DomainEntity<LessonId>, ISoftDeletable
 
         AddDomainEvent(new LessonCreatedDomainEvent(id, moduleId));
     }
+
+    public Guid ModuleId { get; private set; }
+
+    public Title Title { get; private set; }
+
+    public Description Description { get; private set; }
+
+    public Experience Experience { get; private set; }
+
+    public Guid[] Tags { get; private set; }
+
+    public Guid[] Issues { get; private set; }
+
+    public Preview AutoPreview { get; private set; } = Preview.None;
+
+    public Video Video { get; private set; } = Video.None;
+
+    public bool IsDeleted { get; private set; }
+
+    public DateTime? DeletionDate { get; private set; }
 
     /// <summary>
     /// Метод, который полностью обновляет урок.

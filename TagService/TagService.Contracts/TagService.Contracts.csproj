@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageId>TagService.Communication</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>SachkovTech</Authors>
+    <Company>SachkovTech</Company>
+    <PackageDescription>
+      TagService intended to get tags.
+    </PackageDescription>
+    <RepositoryUrl>https://github.com/SachkovTech/sachkov-tech-backend</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>

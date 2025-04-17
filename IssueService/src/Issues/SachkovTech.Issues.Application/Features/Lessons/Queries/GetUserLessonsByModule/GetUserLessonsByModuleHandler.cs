@@ -11,17 +11,17 @@ using SachkovTech.Issues.Contracts.Lesson;
 using SachkovTech.Issues.Domain.Lesson.ValueObjects;
 using SharedKernel;
 
-namespace SachkovTech.Issues.Application.Features.Lessons.Queries.GetLessonsByModule;
+namespace SachkovTech.Issues.Application.Features.Lessons.Queries.GetUserLessonsByModule;
 
-public class GetLessonsByModuleHandler
-    : IQueryHandlerWithResult<PagedList<LessonDto>, GetLessonsByModuleQuery>
+public class GetUserLessonsByModuleHandler
+    : IQueryHandlerWithResult<PagedList<LessonDto>, GetUserLessonsByModuleQuery>
 {
-    private readonly IValidator<GetLessonsByModuleQuery> _validator;
+    private readonly IValidator<GetUserLessonsByModuleQuery> _validator;
     private readonly IFileService _fileService;
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
 
-    public GetLessonsByModuleHandler(
-        IValidator<GetLessonsByModuleQuery> validator,
+    public GetUserLessonsByModuleHandler(
+        IValidator<GetUserLessonsByModuleQuery> validator,
         IFileService fileService,
         ISqlConnectionFactory sqlConnectionFactory)
     {
@@ -31,7 +31,7 @@ public class GetLessonsByModuleHandler
     }
 
     public async Task<Result<PagedList<LessonDto>, ErrorList>> Handle(
-        GetLessonsByModuleQuery query, CancellationToken cancellationToken = default)
+        GetUserLessonsByModuleQuery query, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(query, cancellationToken);
         if (validationResult.IsValid == false)
@@ -41,6 +41,7 @@ public class GetLessonsByModuleHandler
 
         var parameters = new DynamicParameters();
         parameters.Add("@ModuleId", query.ModuleId);
+        parameters.Add("@UserId", query.UserId);
 
         var sqlBuilder = new StringBuilder(
             """
@@ -55,10 +56,14 @@ public class GetLessonsByModuleHandler
                    lp.position       AS Position,
                    (l.video->>'OriginalFileId')::uuid AS OriginalFileId,
                    (l.video->>'ProcessedFileId')::uuid AS ProcessedFileId,
-                   l.video->>'IsProcessed' AS IsProcessed
+                   l.video->>'IsProcessed' AS IsProcessed,
+                   COALESCE(ul.is_completed, false) AS IsCompleted
             FROM issues.lessons AS l
                      JOIN issues.lesson_position AS lp
                           ON l.id = lp.lesson_id
+                     LEFT JOIN issues.user_lessons AS ul
+                               ON l.id = ul.lesson_id
+                                   AND ul.user_id = @UserId
             WHERE NOT l.is_deleted
               AND l.module_id = @ModuleId
             """);
@@ -113,9 +118,11 @@ public class GetLessonsByModuleHandler
             }
         }
 
+
         return new PagedList<LessonDto>
         {
             Items = lessons, TotalCount = totalCount, PageSize = query.PageSize, Page = query.Page,
         };
     }
+
 }

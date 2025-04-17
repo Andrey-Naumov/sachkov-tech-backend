@@ -19,6 +19,7 @@
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
       <PackageReference Include="Polly" Version="8.5.0" />
       <PackageReference Include="Quartz.Extensions.Hosting" Version="3.13.1" />
+      <PackageReference Include="TagService.Communication" Version="1.0.0" />
     </ItemGroup>
 
 </Project>

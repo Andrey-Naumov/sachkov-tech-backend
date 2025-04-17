@@ -10,6 +10,7 @@ using SachkovTech.Issues.Infrastructure.Migrator;
 using SachkovTech.Issues.Infrastructure.Outbox;
 using SachkovTech.Issues.Infrastructure.Repositories;
 using SachkovTech.Issues.Infrastructure.Services;
+using SharedKernel.Exeptions;
 using IMigrator = SachkovTech.Core.Database.IMigrator;
 
 namespace SachkovTech.Issues.Infrastructure;
@@ -27,7 +28,6 @@ public static class DependencyInjection
             .AddDatabase()
             .AddHostedServices()
             .AddServices()
-            //.AddQuartzService()
             .AddMessageBus(configuration)
             .AddMigrators();
 
@@ -49,6 +49,16 @@ public static class DependencyInjection
 
             configure.AddConsumer<LessonVideoProcessedConsumer>();
             configure.AddConsumer<LessonVideoProgressReceivedConsumer>();
+
+            configure.AddConsumer<TagDeletedConsumer>(cfg =>
+            {
+                cfg.UseMessageRetry(r =>
+                {
+                    r.Ignore<NotFoundException>();
+
+                    r.Incremental(3, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+                });
+            });
 
             configure.UsingRabbitMq((context, cfg) =>
             {
