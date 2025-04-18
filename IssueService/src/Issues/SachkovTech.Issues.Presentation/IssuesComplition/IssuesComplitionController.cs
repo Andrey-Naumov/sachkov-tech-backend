@@ -1,17 +1,84 @@
 using Microsoft.AspNetCore.Mvc;
 using SachkovTech.Framework;
 using SachkovTech.Framework.Authorization;
+using SachkovTech.Issues.Application.Features.Issue.Queries.GetUserActiveIssues;
+using SachkovTech.Issues.Application.Features.Issue.Queries.GetUserCompletedIssues;
+using SachkovTech.Issues.Application.Features.Issue.Queries.GetUserNewIssues;
 using SachkovTech.Issues.Application.Features.IssuesComplition.Commands.SendOnReview;
 using SachkovTech.Issues.Application.Features.IssuesComplition.Commands.StopWorking;
 using SachkovTech.Issues.Application.Features.IssuesComplition.Commands.TakeOnWork;
 using SachkovTech.Issues.Application.Features.IssuesComplition.Queries.GetUserIssuesByModuleWithPagination;
+using SachkovTech.Issues.Contracts.Issue;
 using SachkovTech.Issues.Contracts.IssueReview;
 using SachkovTech.Issues.Contracts.IssueSolving;
 
-namespace SachkovTech.Issues.Presentation.IssueSolving;
+namespace SachkovTech.Issues.Presentation.IssuesComplition;
 
-public class IssueSolvingController : ApplicationController
+public class IssuesComplitionController : ApplicationController
 {
+    [Permission(Permissions.Issues.READ_ISSUE)]
+    [HttpGet("active")]
+    public async Task<ActionResult> GetUserActiveIssues(
+        [FromQuery] GetUserActiveIssuesWithPaginationRequest request,
+        [FromServices] GetUserActiveIssuesWithPaginationHandler handler,
+        [FromServices] UserScopedData userScopedData,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetUserActiveIssuesWithPaginationQuery(
+            userScopedData.UserId,
+            request.Cursor,
+            request.Limit);
+
+        var response = await handler.Handle(query, cancellationToken);
+
+        if (response.IsFailure)
+            return response.Error.ToResponse();
+
+        return Ok(response.Value);
+    }
+
+    [Permission(Permissions.Issues.READ_ISSUE)]
+    [HttpGet("completed")]
+    public async Task<ActionResult> GetUserCompletedIssues(
+        [FromQuery] GetUserCompletedIssuesWithPaginationRequest request,
+        [FromServices] GetUserCompletedIssuesWithPaginationHandler handler,
+        [FromServices] UserScopedData userScopedData,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetUserCompletedIssuesWithPaginationQuery(
+            userScopedData.UserId,
+            request.Cursor,
+            request.Limit);
+
+        var response = await handler.Handle(query, cancellationToken);
+
+        if (response.IsFailure)
+            return response.Error.ToResponse();
+
+        return Ok(response.Value);
+    }
+
+    [Permission(Permissions.Issues.READ_ISSUE)]
+    [HttpGet("new")]
+    public async Task<ActionResult> GetUserNewIssues(
+        [FromQuery] GetUserNewIssuesWithPaginationRequest request,
+        [FromServices] GetUserNewIssuesWithPaginationHandler handler,
+        [FromServices] UserScopedData userScopedData,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetUserNewIssuesWithPaginationQuery(
+            userScopedData.UserId,
+            request.Cursor,
+            request.Limit);
+
+        var response = await handler.Handle(query, cancellationToken);
+
+        if (response.IsFailure)
+            return response.Error.ToResponse();
+
+        return Ok(response.Value);
+    }
+
     [HttpGet]
     public async Task<ActionResult> GetUserIssuesByModuleId(
         [FromQuery] GetUserIssuesByModuleWithPaginationRequest request,

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using SachkovTech.Framework.Authorization;
-using Volo.Abp.Authorization;
 
 namespace SachkovTech.Framework.Endpoints;
 

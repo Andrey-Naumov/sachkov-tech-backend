@@ -12,5 +12,5 @@ public class IssueDto
 
     public string Description { get; init; } = default!;
 
-    public int? Position { get; init; }
+    public int Position { get; init; }
 }

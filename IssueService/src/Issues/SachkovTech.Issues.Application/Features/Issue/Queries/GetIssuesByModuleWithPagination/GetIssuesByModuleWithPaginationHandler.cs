@@ -25,7 +25,7 @@ public class GetIssuesByModuleWithPaginationHandler
         using var connection = _sqlConnectionFactory.Create();
 
         var parameters = new DynamicParameters();
-        parameters.Add("@ModuleId", query.ModuleId); // Добавляем ModuleId в параметры
+        parameters.Add("@ModuleId", query.ModuleId);
 
         var sqlBuilder = new StringBuilder(
             """

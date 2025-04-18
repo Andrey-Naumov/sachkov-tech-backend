@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Core" Version="1.1.8" />
+        <PackageReference Include="Core" Version="1.1.9" />
         <PackageReference Include="CSharpFunctionalExtensions" Version="3.5.1" />
         <PackageReference Include="Framework" Version="1.4.6" />
         <PackageReference Include="IssueService.Communication" Version="1.0.3" />

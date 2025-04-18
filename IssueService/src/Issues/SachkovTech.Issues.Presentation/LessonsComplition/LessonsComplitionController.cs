@@ -5,9 +5,9 @@ using SachkovTech.Issues.Application.Features.LessonsComplition.Command.Complete
 using SachkovTech.Issues.Application.Features.LessonsComplition.Command.UncompleteViewed;
 using SachkovTech.Issues.Contracts.LessonsViewing;
 
-namespace SachkovTech.Issues.Presentation.LessonsViewing;
+namespace SachkovTech.Issues.Presentation.LessonsComplition;
 
-public class LessonsViewingController : ApplicationController
+public class LessonsComplitionController : ApplicationController
 {
     [HttpPost("completed-view")]
     public async Task<ActionResult> CompletedView(
