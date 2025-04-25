@@ -18,21 +18,17 @@ public class IssueReviewConfiguration : IEntityTypeConfiguration<IssueReview>
                 id => id.Value,
                 value => IssueReviewId.Create(value));
 
-        builder.ComplexProperty(i => i.UserIssueId, ub =>
-        {
-            ub.Property(i => i.Value)
-                .HasColumnName("user_issue_id")
-                .IsRequired();
-        });
+        builder.Property(i => i.IssueId)
+            .HasConversion(
+                id => id.Value,
+                value => IssueId.Create(value));
 
         builder.Property(i => i.UserId)
             .HasColumnName("user_id")
             .IsRequired();
 
         builder.Property(i => i.ReviewerId)
-            .HasConversion(
-                id => id!.Value,
-                value => UserId.Create(value));
+            .IsRequired(false);
 
         builder.Property(i => i.IssueReviewStatus)
             .HasConversion<string>()

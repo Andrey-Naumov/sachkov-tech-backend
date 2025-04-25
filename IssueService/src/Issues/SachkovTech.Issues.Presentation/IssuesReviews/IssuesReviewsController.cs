@@ -7,6 +7,7 @@ using SachkovTech.Issues.Application.Features.IssuesReviews.Commands.Approve;
 using SachkovTech.Issues.Application.Features.IssuesReviews.Commands.DeleteComment;
 using SachkovTech.Issues.Application.Features.IssuesReviews.Commands.SendForRevision;
 using SachkovTech.Issues.Application.Features.IssuesReviews.Commands.StartReview;
+using SachkovTech.Issues.Application.Features.IssuesReviews.Queries.GetUserReviewIssues;
 using SachkovTech.Issues.Contracts.IssueReview;
 using SharedKernel;
 
@@ -14,6 +15,27 @@ namespace SachkovTech.Issues.Presentation.IssuesReviews;
 
 public class IssuesReviewsController : ApplicationController
 {
+    [Permission(Permissions.Issues.READ_ISSUE)]
+    [HttpGet("review")]
+    public async Task<ActionResult> GetUserReviewIssues(
+        [FromQuery] GetUserReviewIssuesRequest request,
+        [FromServices] GetUserReviewIssuesHandler handler,
+        [FromServices] UserScopedData userScopedData,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetUserReviewIssuesWithPaginationQuery(
+            userScopedData.UserId,
+            request.ModuleId,
+            request.Cursor,
+            request.Limit);
+
+        var response = await handler.Handle(query, cancellationToken);
+        if (response.IsFailure)
+            return response.Error.ToResponse();
+
+        return Ok(response.Value);
+    }
+
     [Permission(Permissions.IssuesReview.COMMENT_REVIEW_ISSUE)]
     [HttpPost("comment")]
     public async Task<ActionResult> Comment(

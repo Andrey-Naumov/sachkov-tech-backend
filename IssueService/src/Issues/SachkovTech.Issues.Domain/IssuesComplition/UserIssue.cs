@@ -19,13 +19,11 @@ public class UserIssue : DomainEntity<UserIssueId>
     public UserIssue(
         UserIssueId id,
         Guid userId,
-        IssueId issueId,
-        ModuleId moduleId)
+        IssueId issueId)
         : base(id)
     {
         UserId = userId;
         IssueId = issueId;
-        ModuleId = moduleId;
 
         TakeOnWork();
     }
@@ -33,8 +31,6 @@ public class UserIssue : DomainEntity<UserIssueId>
     public Guid UserId { get; private set; }
 
     public IssueId IssueId { get; private set; } = null!;
-
-    public ModuleId ModuleId { get; private set; } = null!;
 
     public IssueStatus Status { get; private set; }
 
@@ -54,7 +50,7 @@ public class UserIssue : DomainEntity<UserIssueId>
         Status = IssueStatus.UnderReview;
         PullRequestUrl = pullRequestUrl;
 
-        var domainEvent = new IssueSentOnReviewEvent(Id, UserId, pullRequestUrl);
+        var domainEvent = new IssueSentOnReviewEvent(IssueId, UserId, pullRequestUrl);
         AddDomainEvent(domainEvent);
 
         return Result.Success<Error>();
@@ -94,7 +90,7 @@ public class UserIssue : DomainEntity<UserIssueId>
         return Result.Success<Error>();
     }
 
-    private void TakeOnWork()
+    public void TakeOnWork()
     {
         StartDateOfExecution = DateTime.UtcNow;
         Status = IssueStatus.AtWork;

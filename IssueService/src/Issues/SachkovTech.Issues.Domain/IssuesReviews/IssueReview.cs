@@ -12,12 +12,12 @@ public sealed class IssueReview : DomainEntity<IssueReviewId>
 {
     public IssueReview(
         IssueReviewId issueReviewId,
-        UserIssueId userIssueId,
+        IssueId issueId,
         Guid userId,
         PullRequestUrl pullRequestUrl)
         : base(issueReviewId)
     {
-        UserIssueId = userIssueId;
+        IssueId = issueId;
         UserId = userId;
         IssueReviewStatus = IssueReviewStatus.WaitingForReviewer;
         ReviewStartedTime = DateTime.UtcNow;
@@ -30,7 +30,7 @@ public sealed class IssueReview : DomainEntity<IssueReviewId>
     {
     }
 
-    public UserIssueId UserIssueId { get; private set; } = null!;
+    public IssueId IssueId { get; private set; } = null!;
 
     public Guid UserId { get; private set; }
 
@@ -72,7 +72,7 @@ public sealed class IssueReview : DomainEntity<IssueReviewId>
 
         IssueReviewStatus = IssueReviewStatus.AskedForRevision;
 
-        AddDomainEvent(new IssueSentForRevisionDomainEvent(UserIssueId));
+        AddDomainEvent(new IssueSentForRevisionDomainEvent(IssueId, UserId));
 
         return UnitResult.Success<Error>();
     }

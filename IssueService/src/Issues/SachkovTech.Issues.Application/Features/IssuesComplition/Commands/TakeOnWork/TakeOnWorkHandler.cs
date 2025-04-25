@@ -36,39 +36,46 @@ public class TakeOnWorkHandler : ICommandHandler<Guid, TakeOnWorkCommand>
         CancellationToken cancellationToken = default)
     {
         var issueResult = await GetIssueById(command.IssueId, cancellationToken);
-
         if (issueResult.IsFailure)
             return issueResult.Error;
 
-        var userIssueExisting =
-            await _readDbContext.ReadUserIssues.FirstOrDefaultAsync(ui => ui.IssueId == command.IssueId, cancellationToken);
-
-        if (userIssueExisting is not null)
-            return Errors.General.ValueIsInvalid().ToErrorList();
+        var issueId = IssueId.Create(command.IssueId);
 
         var previousUserIssue = await _readDbContext.ReadUserIssues
-            .FirstOrDefaultAsync(u => u.UserId == command.UserId, cancellationToken);
+            .FirstOrDefaultAsync(
+                u => u.UserId == command.UserId
+                     && u.IssueId != issueId
+                     && u.Status != IssueStatus.Completed
+                     && u.Status != IssueStatus.NotAtWork
+                     && u.Status != IssueStatus.UnderReview,
+                cancellationToken);
 
-        var previousUserIssueStatus =
-            previousUserIssue?.Status ?? IssueStatus.Completed;
+        var previousUserIssueStatus = previousUserIssue?.Status ?? IssueStatus.Completed;
 
         if (previousUserIssueStatus != IssueStatus.Completed)
-            return Error.Failure("prev.issue.not.solved", "previous issue not solved").ToErrorList();
+            return Error.Failure("prev.issue.not.solved", "Предыдущая задача не выполнена").ToErrorList();
 
-        var userIssueId = UserIssueId.NewIssueId();
-        var userId = UserId.Create(command.UserId);
+        var userIssue = await _userIssueRepository
+            .GetUserIssue(command.UserId, issueId, cancellationToken);
 
-        var userIssue = new UserIssue(userIssueId, userId, command.IssueId, command.ModuleId);
+        if (userIssue.IsFailure)
+        {
+            var userIssueId = UserIssueId.NewUserIssueId();
+            var userId = UserId.Create(command.UserId);
 
-        var result = await _userIssueRepository.Add(userIssue, cancellationToken);
+            userIssue = new UserIssue(userIssueId, userId, issueId);
+            await _userIssueRepository.Add(userIssue.Value, cancellationToken);
+        }
+
+        userIssue.Value.TakeOnWork();
 
         await _unitOfWork.SaveChanges(cancellationToken);
 
         _logger.LogInformation(
             "User took issue on work. A record was created with id {userIssueId}",
-            userIssueId);
+            userIssue.Value.Id.Value);
 
-        return result;
+        return userIssue.Value.Id.Value;
     }
 
     private async Task<Result<IssueDto, ErrorList>> GetIssueById(

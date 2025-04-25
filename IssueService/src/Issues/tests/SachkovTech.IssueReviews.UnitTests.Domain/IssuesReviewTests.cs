@@ -44,7 +44,7 @@ public class IssuesReviewTests
 
         result.IsSuccess.Should().BeTrue();
         domainEvent.Should().NotBeNull();
-        domainEvent!.UserIssueId.Should().Be(issueReview.UserIssueId);
+        domainEvent!.IssueId.Should().Be(issueReview.IssueId);
         issueReview.IssueReviewStatus.Should().Be(IssueReviewStatus.AskedForRevision);
     }
 
@@ -110,25 +110,25 @@ public class IssuesReviewTests
 
         var issueReview = new IssueReview(
             IssueReviewId.NewIssueReviewId(),
-            UserIssueId.NewIssueId(),
+            IssueId.NewIssueId(),
             authorId,
             PullRequestUrl.Empty);
 
         issueReview.StartReview(reviewerId);
 
-        var commentFromAuthor = Comment.Create(authorId, Message.Create("Test1").Value);
-        var commentFromReviewer = Comment.Create(reviewerId, Message.Create("Test2").Value);
+        var commentFromAuthor = new Comment(CommentId.NewCommentId(), authorId, Message.Create("Test1").Value);
+        var commentFromReviewer = new Comment(CommentId.NewCommentId(), reviewerId, Message.Create("Test2").Value);
 
         // Act
-        var resultFromReviewer = issueReview.AddComment(commentFromReviewer.Value);
-        var resultFromAuthor = issueReview.AddComment(commentFromAuthor.Value);
+        var resultFromReviewer = issueReview.AddComment(commentFromReviewer);
+        var resultFromAuthor = issueReview.AddComment(commentFromAuthor);
 
         // Assert
         resultFromReviewer.IsSuccess.Should().BeTrue();
         resultFromAuthor.IsSuccess.Should().BeTrue();
 
-        issueReview.Comments.Should().Contain(commentFromAuthor.Value);
-        issueReview.Comments.Should().Contain(commentFromReviewer.Value);
+        issueReview.Comments.Should().Contain(commentFromAuthor);
+        issueReview.Comments.Should().Contain(commentFromReviewer);
     }
 
     [Fact]
@@ -140,15 +140,15 @@ public class IssuesReviewTests
         var issueReview = CreateAndFillIssueReview();
         issueReview.StartReview(reviewerId);
 
-        var invalidComment = Comment.Create(invalidUserId, Message.Create("Test").Value);
+        var invalidComment = new Comment(CommentId.NewCommentId(), invalidUserId, Message.Create("Test").Value);
 
         // Act
-        var result = issueReview.AddComment(invalidComment.Value);
+        var result = issueReview.AddComment(invalidComment);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().Be(Errors.General.ValueIsInvalid("userId"));
-        issueReview.Comments.Should().NotContain(invalidComment.Value);
+        issueReview.Comments.Should().NotContain(invalidComment);
     }
 
     [Fact]
@@ -156,16 +156,16 @@ public class IssuesReviewTests
     {
         // Arrange
         var userId = UserId.NewUserId();
-        var comment = Comment.Create(userId, Message.Create("Test1").Value);
+        var comment = new Comment(CommentId.NewCommentId(), userId, Message.Create("Test1").Value);
         var issueReview = CreateAndFillIssueReview();
-        issueReview.AddComment(comment.Value);
+        issueReview.AddComment(comment);
 
         // Act
-        var result = issueReview.DeleteComment(comment.Value.Id, userId);
+        var result = issueReview.DeleteComment(comment.Id, userId);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        issueReview.Comments.Should().NotContain(comment.Value);
+        issueReview.Comments.Should().NotContain(comment);
     }
 
     [Fact]
@@ -175,14 +175,14 @@ public class IssuesReviewTests
         var authorId = UserId.NewUserId();
         var reviewerId = UserId.NewUserId();
         var otherUserId = UserId.NewUserId();
-        var comment = Comment.Create(authorId, Message.Create("Test1").Value);
+        var comment = new Comment(CommentId.NewCommentId(), authorId, Message.Create("Test1").Value);
 
         var issueReview = CreateAndFillIssueReview();
-        issueReview.AddComment(comment.Value);
+        issueReview.AddComment(comment);
         issueReview.StartReview(reviewerId);
 
         // Act
-        var result = issueReview.DeleteComment(comment.Value.Id, otherUserId);
+        var result = issueReview.DeleteComment(comment.Id, otherUserId);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -193,7 +193,7 @@ public class IssuesReviewTests
     {
         return new IssueReview(
             IssueReviewId.NewIssueReviewId(),
-            UserIssueId.NewIssueId(),
+            IssueId.NewIssueId(),
             UserId.NewUserId(),
             PullRequestUrl.Empty);
     }

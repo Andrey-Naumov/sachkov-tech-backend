@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SachkovTech.Framework;
 using SachkovTech.Issues.Application.Features.ModulesComplition.Command.StartModuleExecution;
-using SachkovTech.Issues.Contracts.ModuleProgress;
+using SachkovTech.Issues.Contracts.ModuleComplition;
 
 namespace SachkovTech.Issues.Presentation.ModulesComplition;
 

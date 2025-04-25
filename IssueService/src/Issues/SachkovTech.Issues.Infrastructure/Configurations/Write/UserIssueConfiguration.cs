@@ -22,19 +22,10 @@ public class UserIssueConfiguration : IEntityTypeConfiguration<UserIssue>
             .IsRequired()
             .HasColumnName("user_id");
 
-        builder.ComplexProperty(u => u.IssueId, pb =>
-        {
-            pb.Property(a => a.Value)
-                .IsRequired()
-                .HasColumnName("issue_id");
-        });
-
-        builder.ComplexProperty(u => u.ModuleId, pb =>
-        {
-            pb.Property(a => a.Value)
-                .IsRequired()
-                .HasColumnName("module_id");
-        });
+        builder.Property(u => u.IssueId)
+            .HasConversion(
+                id => id.Value,
+                value => IssueId.Create(value));
 
         builder.Property(u => u.Status)
             .IsRequired()

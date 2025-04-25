@@ -26,6 +26,16 @@ public class GetIssueByIdHandler : IQueryHandlerWithResult<IssueDto, GetIssueByI
         if (issueDto is null)
             return Errors.General.NotFound(query.IssueId).ToErrorList();
 
+        string? status = null;
+
+        var userIssue = await _readDbContext.ReadUserIssues
+            .FirstOrDefaultAsync(ui => ui.IssueId == issueDto.Id && ui.UserId == query.UserId, cancellationToken);
+
+        if (userIssue is not null)
+        {
+            status = userIssue.Status.ToString();
+        }
+
         var response = new IssueDto
         {
             Id = issueDto.Id,
@@ -33,6 +43,7 @@ public class GetIssueByIdHandler : IQueryHandlerWithResult<IssueDto, GetIssueByI
             Title = issueDto.Title.Value,
             Description = issueDto.Description.Value,
             LessonId = issueDto.LessonId?.Value,
+            Status = status,
         };
 
         return response;

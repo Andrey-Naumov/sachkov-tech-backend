@@ -40,21 +40,16 @@ public class AddCommentHandler : ICommandHandler<Guid, AddCommentCommand>
             return validationResult.ToList();
 
         var issueReviewResult = await _issuesReviewRepository
-            .GetById(IssueReviewId.Create(command.IssueReviewId), cancellationToken);
+            .GetIssueReview(command.UserId, command.IssueId, cancellationToken);
 
         if (issueReviewResult.IsFailure)
             return issueReviewResult.Error.ToErrorList();
 
         var message = Message.Create(command.Message).Value;
 
-        var comment = Comment.Create(UserId.Create(command.UserId), message);
+        var comment = new Comment(CommentId.NewCommentId(), command.IssueId, message);
 
-        // Хоть и проверка всегда вернет false на будущее если валидация внутри Comment будет присутствовать
-        // оставим это поле.
-        if (comment.IsFailure)
-            return comment.Error.ToErrorList();
-
-        var addCommentResult = issueReviewResult.Value.AddComment(comment.Value);
+        var addCommentResult = issueReviewResult.Value.AddComment(comment);
 
         if (addCommentResult.IsFailure)
             return addCommentResult.Error.ToErrorList();
@@ -63,9 +58,9 @@ public class AddCommentHandler : ICommandHandler<Guid, AddCommentCommand>
 
         _logger.LogInformation(
             "Comment {commentId} was created in issueReview {issueReviewId}",
-            comment.Value.Id.Value,
-            command.IssueReviewId);
+            comment.Id.Value,
+            issueReviewResult.Value.Id.Value);
 
-        return comment.Value.Id.Value;
+        return comment.Id.Value;
     }
 }

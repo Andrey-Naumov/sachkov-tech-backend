@@ -8,7 +8,7 @@ using SachkovTech.Issues.Application.Features.Issue.Commands.DeleteIssue.SoftDel
 using SachkovTech.Issues.Application.Features.Issue.Commands.RestoreIssue;
 using SachkovTech.Issues.Application.Features.Issue.Commands.UpdateIssueMainInfo;
 using SachkovTech.Issues.Application.Features.Issue.Queries.GetIssueById;
-using SachkovTech.Issues.Application.Features.Issue.Queries.GetIssuesByModuleWithPagination;
+using SachkovTech.Issues.Application.Features.Issue.Queries.GetIssuesByModule;
 using SachkovTech.Issues.Contracts.Issue;
 
 namespace SachkovTech.Issues.Presentation.Issues;
@@ -18,11 +18,11 @@ public class IssuesController : ApplicationController
     [Permission(Permissions.Issues.READ_ISSUE)]
     [HttpGet]
     public async Task<ActionResult> GetIssues(
-        [FromQuery] GetIssuesByModuleWithPaginationRequest request,
-        [FromServices] GetIssuesByModuleWithPaginationHandler handler,
+        [FromQuery] GetIssuesByModuleRequest request,
+        [FromServices] GetIssuesByModuleHandler handler,
         CancellationToken cancellationToken)
     {
-        var query = new GetFilteredIssuesByModuleWithPaginationQuery(
+        var query = new GetFilteredIssuesByModuleQuery(
             request.ModuleId,
             request.Title,
             request.SortBy,
@@ -43,9 +43,10 @@ public class IssuesController : ApplicationController
     public async Task<ActionResult> GetById(
         [FromRoute] Guid id,
         [FromServices] GetIssueByIdHandler handler,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken)
     {
-        var query = new GetIssueByIdQuery(id);
+        var query = new GetIssueByIdQuery(id, userScopedData.UserId);
 
         var response = await handler.Handle(query, cancellationToken);
 

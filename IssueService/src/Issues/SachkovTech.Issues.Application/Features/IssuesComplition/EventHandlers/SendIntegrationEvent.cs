@@ -17,7 +17,7 @@ public class SendIntegrationEvent : INotificationHandler<IssueSentOnReviewEvent>
     {
         var integrationEvent = new Contracts.Messaging.IssueSentOnReviewEvent(
             domainEvent.UserId,
-            domainEvent.UserIssueId.Value,
+            domainEvent.IssueId.Value,
             Guid.Empty);
 
         await _outboxRepository.Add(

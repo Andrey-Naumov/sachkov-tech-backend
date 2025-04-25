@@ -20,7 +20,7 @@ public class IssueSentForRevisionHandler : INotificationHandler<IssueSentForRevi
     public async Task Handle(IssueSentForRevisionDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         var userIssueResult = await _userIssueRepository
-            .GetUserIssueById(domainEvent.UserIssueId, cancellationToken);
+            .GetUserIssue(domainEvent.UserId, domainEvent.IssueId, cancellationToken);
 
         if (userIssueResult.IsFailure)
             throw new NotFoundException(userIssueResult.Error);

@@ -14,5 +14,7 @@ public class IssueDto
 
     public string Experience { get; init; } = default!;
 
+    public string? Status { get; init; }
+
     public int Position { get; init; }
 }

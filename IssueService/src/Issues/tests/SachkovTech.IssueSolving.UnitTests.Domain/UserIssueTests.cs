@@ -139,9 +139,8 @@ public class UserIssueTests
     private UserIssue CreateUserIssue()
     {
         return new UserIssue(
-            UserIssueId.NewIssueId(),
+            UserIssueId.NewUserIssueId(),
             UserId.NewUserId(),
-            IssueId.NewIssueId(),
-            ModuleId.NewModuleId());
+            IssueId.NewIssueId());
     }
 }

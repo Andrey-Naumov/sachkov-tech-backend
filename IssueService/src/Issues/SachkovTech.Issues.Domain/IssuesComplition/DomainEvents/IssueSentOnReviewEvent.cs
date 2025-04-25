@@ -5,6 +5,6 @@ using SharedKernel;
 namespace SachkovTech.Issues.Domain.IssuesComplition.DomainEvents;
 
 public record IssueSentOnReviewEvent(
-    UserIssueId UserIssueId,
+    IssueId IssueId,
     Guid UserId,
     PullRequestUrl PullRequestUrl) : IDomainEvent;

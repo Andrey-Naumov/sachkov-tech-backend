@@ -3,7 +3,7 @@ using SachkovTech.Framework;
 using SachkovTech.Framework.Authorization;
 using SachkovTech.Issues.Application.Features.LessonsComplition.Command.CompleteView;
 using SachkovTech.Issues.Application.Features.LessonsComplition.Command.UncompleteViewed;
-using SachkovTech.Issues.Contracts.LessonsViewing;
+using SachkovTech.Issues.Contracts.LessonsComplition;
 
 namespace SachkovTech.Issues.Presentation.LessonsComplition;
 

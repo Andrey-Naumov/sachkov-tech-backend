@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
 using SachkovTech.Issues.Application.Interfaces;
-using SachkovTech.Issues.Domain.IssuesComplition;
 using SharedKernel;
 
 namespace SachkovTech.Issues.Application.Features.IssuesComplition.Commands.StopWorking;
@@ -28,16 +27,13 @@ public class StopWorkingHandler : ICommandHandler<StopWorkingCommand>
         StopWorkingCommand command,
         CancellationToken cancellationToken = default)
     {
-        (_, bool isFailure, UserIssue? value, Error? error) = await _repository
-            .GetUserIssueById(command.UserIssueId, cancellationToken);
+        var userIssueResult = await _repository
+            .GetUserIssue(command.UserId, command.IssueId, cancellationToken);
 
-        if (isFailure)
-            return error.ToErrorList();
+        if (userIssueResult.IsFailure)
+            return userIssueResult.Error.ToErrorList();
 
-        if (value.UserId != command.UserId)
-            return Errors.General.Failure().ToErrorList();
-
-        var result = value.StopWorking();
+        var result = userIssueResult.Value.StopWorking();
 
         if (result.IsFailure)
             return result.Error.ToErrorList();
@@ -46,8 +42,8 @@ public class StopWorkingHandler : ICommandHandler<StopWorkingCommand>
 
         _logger.LogInformation(
             "Work on the task {issueId} wa stopped by user {userId}",
-            value.IssueId,
-            value.UserId);
+            userIssueResult.Value.IssueId,
+            userIssueResult.Value.UserId);
 
         return Result.Success<ErrorList>();
     }

@@ -1,10 +1,8 @@
 using CSharpFunctionalExtensions;
-using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
-using SachkovTech.Core.Validation;
 using SachkovTech.Issues.Application.Interfaces;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 using SharedKernel;
@@ -15,20 +13,17 @@ public class SendForRevisionHandler : ICommandHandler<Guid, SendForRevisionComma
 {
     private readonly IIssuesReviewRepository _issuesReviewRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IValidator<SendForRevisionCommand> _validator;
     private readonly ILogger<SendForRevisionHandler> _logger;
     private readonly IPublisher _publisher;
 
     public SendForRevisionHandler(
         IIssuesReviewRepository issuesReviewRepository,
         IUnitOfWork unitOfWork,
-        IValidator<SendForRevisionCommand> validator,
         ILogger<SendForRevisionHandler> logger,
         IPublisher publisher)
     {
         _issuesReviewRepository = issuesReviewRepository;
         _unitOfWork = unitOfWork;
-        _validator = validator;
         _logger = logger;
         _publisher = publisher;
     }
@@ -37,28 +32,22 @@ public class SendForRevisionHandler : ICommandHandler<Guid, SendForRevisionComma
         SendForRevisionCommand command,
         CancellationToken cancellationToken = default)
     {
-        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
-        if (validationResult.IsValid == false)
-            return validationResult.ToList();
-
         var issueReviewResult = await _issuesReviewRepository
-            .GetById(IssueReviewId.Create(command.IssueReviewId), cancellationToken);
+            .GetIssueReview(command.ReviewerId, command.IssueId, cancellationToken);
 
         if (issueReviewResult.IsFailure)
             return issueReviewResult.Error.ToErrorList();
 
-        var issueReview = issueReviewResult.Value;
+        issueReviewResult.Value.SendIssueForRevision(UserId.Create(command.ReviewerId));
 
-        issueReview.SendIssueForRevision(UserId.Create(command.ReviewerId));
-
-        await _publisher.PublishDomainEvents(issueReview, cancellationToken);
+        await _publisher.PublishDomainEvents(issueReviewResult.Value, cancellationToken);
 
         await _unitOfWork.SaveChanges(cancellationToken);
 
         _logger.LogInformation(
             "IssueReview {issueReviewId} is sent for review",
-            issueReview.Id.Value);
+            issueReviewResult.Value.Id.Value);
 
-        return issueReview.Id.Value;
+        return issueReviewResult.Value.Id.Value;
     }
 }

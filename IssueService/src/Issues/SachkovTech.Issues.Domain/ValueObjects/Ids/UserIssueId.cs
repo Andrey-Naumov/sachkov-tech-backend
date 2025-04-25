@@ -11,7 +11,7 @@ public class UserIssueId : ComparableValueObject
 
     public Guid Value { get; init; }
 
-    public static UserIssueId NewIssueId() => new(Guid.NewGuid());
+    public static UserIssueId NewUserIssueId() => new(Guid.NewGuid());
 
     public static UserIssueId Empty() => new(Guid.Empty);
 

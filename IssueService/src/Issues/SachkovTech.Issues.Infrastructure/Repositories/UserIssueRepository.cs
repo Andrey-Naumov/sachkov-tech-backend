@@ -25,12 +25,13 @@ public class UserIssueRepository : IUserIssueRepository
         return userIssue.Id;
     }
 
-    public async Task<Result<UserIssue, Error>> GetUserIssueById(
-        UserIssueId userIssueId,
+    public async Task<Result<UserIssue, Error>> GetUserIssue(
+        Guid userId,
+        IssueId issueId,
         CancellationToken cancellationToken = default)
     {
         var userIssue = await _dbContext.UserIssues
-            .SingleOrDefaultAsync(ui => ui.Id == userIssueId, cancellationToken);
+            .FirstOrDefaultAsync(ui => ui.IssueId == issueId && ui.UserId == userId, cancellationToken);
 
         if (userIssue is null)
             return Errors.General.NotFound();

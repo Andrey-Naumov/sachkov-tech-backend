@@ -9,7 +9,8 @@ public interface IUserIssueRepository
 {
     Task<Guid> Add(UserIssue userIssue, CancellationToken cancellationToken = default);
 
-    Task<Result<UserIssue, Error>> GetUserIssueById(
-        UserIssueId userIssueId,
+    Task<Result<UserIssue, Error>> GetUserIssue(
+        Guid userId,
+        IssueId issueId,
         CancellationToken cancellationToken = default);
 }

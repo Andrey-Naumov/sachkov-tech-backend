@@ -7,12 +7,9 @@ namespace SachkovTech.Issues.Application.Interfaces;
 
 public interface IIssuesReviewRepository
 {
-    Task<Result<IssueReview, Error>> GetById(
-        IssueReviewId id,
-        CancellationToken cancellationToken = default);
-
-    Task<Result<IssueReview, Error>> GetByUserIssueId(
-        UserIssueId id,
+    Task<Result<IssueReview, Error>> GetIssueReview(
+        Guid userId,
+        IssueId issueId,
         CancellationToken cancellationToken = default);
 
     Task<UnitResult<Error>> Add(

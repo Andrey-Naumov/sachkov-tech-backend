@@ -3,4 +3,4 @@ using SharedKernel;
 
 namespace SachkovTech.Issues.Domain.IssuesReviews.Events;
 
-public record IssueSentForRevisionDomainEvent(UserIssueId UserIssueId) : IDomainEvent;
+public record IssueSentForRevisionDomainEvent(IssueId IssueId, Guid UserId) : IDomainEvent;

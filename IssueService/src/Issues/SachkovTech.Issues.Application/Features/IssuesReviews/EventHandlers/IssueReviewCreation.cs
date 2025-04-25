@@ -26,7 +26,7 @@ public class IssueReviewCreation : INotificationHandler<IssueSentOnReviewEvent>
     {
         var issueReviewResult = new IssueReview(
             IssueReviewId.NewIssueReviewId(),
-            domainEvent.UserIssueId,
+            domainEvent.IssueId,
             domainEvent.UserId,
             domainEvent.PullRequestUrl);
 

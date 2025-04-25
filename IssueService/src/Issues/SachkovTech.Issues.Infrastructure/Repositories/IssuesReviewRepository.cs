@@ -17,29 +17,17 @@ public class IssuesReviewRepository : IIssuesReviewRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Result<IssueReview, Error>> GetById(
-        IssueReviewId id,
+    public async Task<Result<IssueReview, Error>> GetIssueReview(
+        Guid userId,
+        IssueId issueId,
         CancellationToken cancellationToken = default)
     {
         var issueReview = await _dbContext.IssueReviews
             .Include(ir => ir.Comments)
-            .FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(i => i.IssueId == issueId && i.UserId == userId, cancellationToken);
 
         if (issueReview == null)
-            return Errors.General.NotFound(id);
-
-        return issueReview;
-    }
-
-    public async Task<Result<IssueReview, Error>> GetByUserIssueId(
-        UserIssueId id,
-        CancellationToken cancellationToken = default)
-    {
-        var issueReview = await _dbContext.IssueReviews
-            .FirstOrDefaultAsync(i => i.UserIssueId == id, cancellationToken);
-
-        if (issueReview == null)
-            return Errors.General.NotFound(id);
+            return Errors.General.NotFound();
 
         return issueReview;
     }
