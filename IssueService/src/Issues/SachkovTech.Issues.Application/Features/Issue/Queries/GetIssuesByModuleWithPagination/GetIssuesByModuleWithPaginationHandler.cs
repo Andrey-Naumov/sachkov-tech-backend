@@ -33,11 +33,12 @@ public class GetIssuesByModuleWithPaginationHandler
                 i.id AS Id,
                 i.module_id AS ModuleId,
                 i.lesson_id AS LessonId,
+                i.title AS Title,
+                i.description AS Description,
+                i.experience AS Experience,
                 ip.position AS Position,
                 i.files AS Files,
-                i.is_deleted AS IsDeleted,
-                i.description AS Description,
-                i.title AS Title
+                i.is_deleted AS IsDeleted
             FROM issues.issues AS i
                      JOIN issues.issue_positions AS ip
                           ON i.id = ip.issue_id

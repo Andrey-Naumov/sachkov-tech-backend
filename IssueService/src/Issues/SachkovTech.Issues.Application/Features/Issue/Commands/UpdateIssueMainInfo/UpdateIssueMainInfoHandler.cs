@@ -63,14 +63,14 @@ public class UpdateIssueMainInfoHandler : ICommandHandler<Guid, UpdateIssueMainI
         if (oldModule.IsFailure)
             return oldModule.Error.ToErrorList();
 
-        var moduleResult = await _modulesRepository.GetById(command.ModuleId, cancellationToken);
-        if (moduleResult.IsFailure)
-            return moduleResult.Error.ToErrorList();
+        var newModuleResult = await _modulesRepository.GetById(command.ModuleId, cancellationToken);
+        if (newModuleResult.IsFailure)
+            return newModuleResult.Error.ToErrorList();
 
         var title = Title.Create(command.Title).Value;
         var description = Description.Create(command.Description).Value;
         var experience = Experience.Create(command.Experience).Value;
-        var moduleId = moduleResult.Value.Id;
+        var moduleId = newModuleResult.Value.Id;
 
         var updateResult = issueResult.Value.UpdateMainInfo(
             title,
@@ -82,9 +82,12 @@ public class UpdateIssueMainInfoHandler : ICommandHandler<Guid, UpdateIssueMainI
         if (updateResult.IsFailure)
             return updateResult.Error.ToErrorList();
 
-        oldModule.Value.DeleteIssuePosition(issueResult.Value.Id);
+        if (oldModule.Value.Id != newModuleResult.Value.Id)
+        {
+            oldModule.Value.DeleteIssuePosition(issueResult.Value.Id);
 
-        moduleResult.Value.AddIssue(issueResult.Value.Id);
+            newModuleResult.Value.AddIssue(issueResult.Value.Id);
+        }
 
         await _unitOfWork.SaveChanges(cancellationToken);
 

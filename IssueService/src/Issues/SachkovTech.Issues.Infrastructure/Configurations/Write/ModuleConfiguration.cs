@@ -37,10 +37,14 @@ public class ModuleConfiguration : IEntityTypeConfiguration<Module>
 
         builder.HasMany(m => m.IssuesPosition)
             .WithOne()
+            .HasForeignKey("module_id")
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(i => i.LessonsPosition)
             .WithOne()
+            .HasForeignKey("module_id")
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(m => m.IsDeleted)

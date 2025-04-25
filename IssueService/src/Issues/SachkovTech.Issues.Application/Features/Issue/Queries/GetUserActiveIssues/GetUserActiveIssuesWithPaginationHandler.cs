@@ -51,7 +51,7 @@ public class GetUserActiveIssuesWithPaginationHandler
 
             items.Remove(lastItem);
 
-            newCursor = Cursor<int>.Encode(lastItem.Position, lastItem.Id);
+            newCursor = Cursor<int, Guid>.Encode(lastItem.Position, lastItem.Id);
         }
 
         var result = new CursorList<IssueDto>(items, newCursor, hasMore);
@@ -82,7 +82,7 @@ public class GetUserActiveIssuesWithPaginationHandler
 
         if (!string.IsNullOrWhiteSpace(query.Cursor))
         {
-            var decodedCursor = Cursor<int>.Decode(query.Cursor);
+            var decodedCursor = Cursor<int, Guid>.Decode(query.Cursor);
             if (decodedCursor is null)
                 return Errors.General.ValueIsInvalid().ToErrorList();
 

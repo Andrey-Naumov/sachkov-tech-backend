@@ -12,5 +12,7 @@ public class IssueDto
 
     public string Description { get; init; } = default!;
 
+    public string Experience { get; init; } = default!;
+
     public int Position { get; init; }
 }
