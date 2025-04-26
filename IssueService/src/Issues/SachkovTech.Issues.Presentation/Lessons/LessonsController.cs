@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using SachkovTech.Framework;
 using SachkovTech.Framework.Authorization;
 using SachkovTech.Issues.Application.Features.Lessons.Command.AddIssueToLesson;
-using SachkovTech.Issues.Application.Features.Lessons.Command.AddTagToLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.CreateLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.RemoveIssueFromLesson;
-using SachkovTech.Issues.Application.Features.Lessons.Command.RemoveTagFromLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.RestoreLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.SoftDeleteLesson;
 using SachkovTech.Issues.Application.Features.Lessons.Command.StartUploadVideo;
@@ -186,23 +184,6 @@ public class LessonsController : ApplicationController
 
         return Ok();
     }
-
-    [HttpPatch("{lessonId}/tag")]
-    [Permission(Permissions.Lessons.UPDATE_LESSON)]
-    public async Task<IActionResult> AddTagToLesson(
-        [FromRoute] Guid lessonId,
-        [FromBody] Guid tagId,
-        [FromServices] AddTagToLessonHandler handler,
-        CancellationToken cancellationToken)
-    {
-        var result = await handler.Handle(new AddTagToLessonCommand(lessonId, tagId), cancellationToken);
-
-        if (result.IsFailure)
-            return result.Error.ToResponse();
-
-        return Ok();
-    }
-
     [HttpPatch("{lessonId}/issue")]
     [Permission(Permissions.Lessons.UPDATE_LESSON)]
     public async Task<IActionResult> AddIssueToLesson(
@@ -243,22 +224,6 @@ public class LessonsController : ApplicationController
         CancellationToken cancellationToken)
     {
         var result = await handler.Handle(new RemoveIssueFromLessonCommand(lessonId, issueId), cancellationToken);
-
-        if (result.IsFailure)
-            return result.Error.ToResponse();
-
-        return Ok();
-    }
-
-    [HttpDelete("{lessonId}/tag")]
-    [Permission(Permissions.Lessons.UPDATE_LESSON)]
-    public async Task<IActionResult> RemoveTagFromLesson(
-        [FromRoute] Guid lessonId,
-        [FromBody] Guid tagId,
-        [FromServices] RemoveTagFromLessonHandler handler,
-        CancellationToken cancellationToken)
-    {
-        var result = await handler.Handle(new RemoveTagFromLessonCommand(lessonId, tagId), cancellationToken);
 
         if (result.IsFailure)
             return result.Error.ToResponse();
