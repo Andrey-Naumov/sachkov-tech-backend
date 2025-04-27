@@ -31,7 +31,7 @@ public class GetQuestionsWithCursorPagination
             .AsNoTracking()
             .Where(q => questionIds.Contains(q.Id));
 
-        var paginatedQuestionsDtos = await QuestionsToDTOCursorListWithOrderedIds(
+        var paginatedQuestionsDtos = await QuestionsToDtoCursorListWithOrderedIds(
             source: questionsQuery,
             cursor: query.Cursor,
             orderedIds: questionIds,
@@ -41,26 +41,26 @@ public class GetQuestionsWithCursorPagination
         return ResultResponse.Ok(paginatedQuestionsDtos);
     }
 
-    private static async Task<CursorList<QuestionDto>> QuestionsToDTOCursorListWithOrderedIds(
-    IQueryable<Entities.Question> source,
-    List<Guid> orderedIds,
-    Guid? cursor,
-    int limit,
-    CancellationToken cancellationToken = default)
+    private static async Task<CursorList<QuestionDto>> QuestionsToDtoCursorListWithOrderedIds(
+        IQueryable<Entities.Question> source,
+        List<Guid> orderedIds,
+        Guid? cursor,
+        int limit,
+        CancellationToken cancellationToken = default)
     {
         if (orderedIds.Count == 0)
         {
             return new CursorList<QuestionDto>(
-           items: [],
-           cursor: cursor,
-           nextCursor: null,
-           limit: limit,
-           totalCount: 0);
+                items: [],
+                cursor: cursor,
+                nextCursor: null,
+                limit: limit,
+                totalCount: 0);
         }
 
-        var totalCount = await source.CountAsync(cancellationToken);
+        int totalCount = await source.CountAsync(cancellationToken);
 
-        var cursorIndex = cursor.HasValue ? orderedIds.IndexOf(cursor.Value) : -1;
+        int cursorIndex = cursor.HasValue ? orderedIds.IndexOf(cursor.Value) : -1;
         var questionIdsForPagination = cursorIndex >= 0
             ? orderedIds.Skip(cursorIndex + 1).Take(limit).ToList()
             : orderedIds.Take(limit).ToList();
@@ -69,8 +69,7 @@ public class GetQuestionsWithCursorPagination
             .Where(p => questionIdsForPagination.Contains(p.Id))
             .Select(q => new
             {
-                Question = q,
-                AnswerCount = q.Answers.Count(),
+                Question = q, AnswerCount = q.Answers.Count,
             })
             .OrderBy(x => questionIdsForPagination.IndexOf(x.Question.Id))
             .Take(limit)
