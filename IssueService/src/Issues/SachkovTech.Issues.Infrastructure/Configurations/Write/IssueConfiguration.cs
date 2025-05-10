@@ -15,13 +15,6 @@ public class IssueConfiguration : IEntityTypeConfiguration<Issue>
 
         builder.HasKey(i => i.Id);
 
-        builder.ComplexProperty(b => b.Experience, eb =>
-        {
-            eb.Property(e => e.Value)
-                .HasColumnName("experience")
-                .IsRequired();
-        });
-
         builder.Property(i => i.Id)
             .HasConversion(
                 id => id.Value,
@@ -38,6 +31,10 @@ public class IssueConfiguration : IEntityTypeConfiguration<Issue>
             .HasConversion(
                 id => id!.Value,
                 value => LessonId.Create(value));
+
+        builder.Property(x => x.Tags)
+            .HasColumnName("tags")
+            .HasColumnType("uuid[]");
 
         builder.ComplexProperty(
             i => i.Experience,

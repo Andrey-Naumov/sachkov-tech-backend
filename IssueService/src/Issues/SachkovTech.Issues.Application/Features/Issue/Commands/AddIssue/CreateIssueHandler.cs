@@ -88,6 +88,8 @@ public class CreateIssueHandler : ICommandHandler<Guid, CreateIssueCommand>
         var title = Title.Create(command.Title).Value;
         var description = Description.Create(command.Description).Value;
         var experience = Experience.Create(command.Experience).Value;
+        var tags = command.Tags;
+        var files = new List<FileId>();
 
         return new Domain.Issue.Issue(
             issueId,
@@ -95,6 +97,8 @@ public class CreateIssueHandler : ICommandHandler<Guid, CreateIssueCommand>
             description,
             lessonId,
             moduleId,
-            experience);
+            experience,
+            tags,
+            files);
     }
 }

@@ -5,4 +5,5 @@ public record UpdateIssueMainInfoRequest(
     Guid ModuleId,
     string Title,
     string Description,
-    int Experience);
+    int Experience,
+    IEnumerable<Guid> Tags);

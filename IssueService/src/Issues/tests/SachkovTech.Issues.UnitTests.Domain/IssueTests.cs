@@ -22,7 +22,7 @@ public class IssueTests
         var newExperience = Experience.Create(5).Value;
 
         // Act
-        var result = issue.UpdateMainInfo(newTitle, newDescription, newLessonId, newModuleId, newExperience);
+        var result = issue.UpdateMainInfo(newTitle, newDescription, newLessonId, newModuleId, newExperience, []);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -110,7 +110,9 @@ public class IssueTests
             Description.Create("test description").Value,
             LessonId.NewLessonId(),
             ModuleId.NewModuleId(),
-            Experience.Create(1).Value);
+            Experience.Create(1).Value,
+            [],
+            []);
 
         return issue;
     }

@@ -74,6 +74,7 @@ services:
     depends_on:
       - minio
       - postgres
+      - rabbitmq
       - seq
     restart: always
     environment:

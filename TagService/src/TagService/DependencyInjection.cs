@@ -63,6 +63,26 @@ public static class DependencyInjection
                     r.Incremental(3, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
                 });
             });
+            
+            configure.AddConsumer<TagsAssignedConsumer>(cfg =>
+            {
+                cfg.UseMessageRetry(r =>
+                {
+                    r.Ignore<NotFoundException>();
+
+                    r.Incremental(3, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+                });
+            });
+            
+            configure.AddConsumer<TagsUnAssignedConsumer>(cfg =>
+            {
+                cfg.UseMessageRetry(r =>
+                {
+                    r.Ignore<NotFoundException>();
+
+                    r.Incremental(3, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+                });
+            });
 
             configure.UsingRabbitMq((context, cfg) =>
             {

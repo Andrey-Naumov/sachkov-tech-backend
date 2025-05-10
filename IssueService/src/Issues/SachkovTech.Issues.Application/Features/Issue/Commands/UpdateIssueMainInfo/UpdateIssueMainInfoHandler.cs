@@ -71,13 +71,15 @@ public class UpdateIssueMainInfoHandler : ICommandHandler<Guid, UpdateIssueMainI
         var description = Description.Create(command.Description).Value;
         var experience = Experience.Create(command.Experience).Value;
         var moduleId = newModuleResult.Value.Id;
+        var tags = command.Tags;
 
         var updateResult = issueResult.Value.UpdateMainInfo(
             title,
             description,
             lessonId,
             moduleId,
-            experience);
+            experience,
+            tags);
 
         if (updateResult.IsFailure)
             return updateResult.Error.ToErrorList();

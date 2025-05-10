@@ -71,7 +71,8 @@ public class IssueTestsBase : IClassFixture<IntegrationTestsWebFactory>, IAsyncL
             lessonId,
             moduleId,
             Experience.Create(5).Value,
-            null);
+            [],
+            []);
 
         await DbContext.Issues.AddAsync(issue);
 
@@ -93,7 +94,8 @@ public class IssueTestsBase : IClassFixture<IntegrationTestsWebFactory>, IAsyncL
             Guid.NewGuid(),
             Guid.NewGuid(),
             Experience.Create(5).Value,
-            null);
+            [],
+            []);
 
         issue.SoftDelete();
 

@@ -7,4 +7,5 @@ public record AddIssueRequest(
     Guid? LessonId,
     string Title,
     string Description,
-    int Experience);
+    int Experience,
+    IEnumerable<Guid> Tags);

@@ -44,7 +44,7 @@ public class UpdateLessonHandler : ICommandHandler<UpdateLessonCommand>
         var title = Title.Create(command.Title).Value;
         var description = Description.Create(command.Title).Value;
         var experience = Experience.Create(command.Experience).Value;
-        lesson.Value.Update(title, description, experience, command.Tags.ToArray(), command.Issues.ToArray());
+        lesson.Value.Update(title, description, experience, command.Tags, command.Issues.ToArray());
 
         await _unitOfWork.SaveChanges(cancellationToken);
 

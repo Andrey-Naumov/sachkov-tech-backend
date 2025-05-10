@@ -2,6 +2,7 @@
 using SachkovTech.Issues.Domain.Issue.ValueObjects;
 using SachkovTech.Issues.Domain.Lesson.Events;
 using SachkovTech.Issues.Domain.Lesson.ValueObjects;
+using SachkovTech.Issues.Domain.Tags.Events;
 using SachkovTech.Issues.Domain.ValueObjects;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 using SharedKernel;
@@ -22,7 +23,7 @@ public class Lesson : DomainEntity<LessonId>, ISoftDeletable
         Title title,
         Description description,
         Experience experience,
-        Guid[] tags,
+        IEnumerable<Guid> tags,
         Guid[] issues)
         : base(id)
     {
@@ -30,9 +31,9 @@ public class Lesson : DomainEntity<LessonId>, ISoftDeletable
         Title = title;
         Description = description;
         Experience = experience;
-        Tags = tags;
         Issues = issues;
 
+        UpdateTags(tags);
         AddDomainEvent(new LessonCreatedDomainEvent(id, moduleId));
     }
 
@@ -68,14 +69,15 @@ public class Lesson : DomainEntity<LessonId>, ISoftDeletable
         Title title,
         Description description,
         Experience experience,
-        Guid[] tags,
+        IEnumerable<Guid> tags,
         Guid[] issues)
     {
         Title = title;
         Description = description;
         Experience = experience;
-        Tags = tags;
         Issues = issues;
+
+        UpdateTags(tags);
     }
 
     public void SoftDelete()
@@ -162,6 +164,7 @@ public class Lesson : DomainEntity<LessonId>, ISoftDeletable
             return Errors.General.NotFound(tagId, "tag");
 
         Tags = Tags.Where(id => id != tagId).ToArray();
+
         return UnitResult.Success<Error>();
     }
 
@@ -178,4 +181,25 @@ public class Lesson : DomainEntity<LessonId>, ISoftDeletable
         Issues = Issues.Where(id => id != issueId).ToArray();
         return UnitResult.Success<Error>();
     }
+
+    private void UpdateTags(IEnumerable<Guid> tags)
+    {
+        var updatedTags = tags.ToArray();
+
+        var assignedTags = GetAssignedTags(updatedTags);
+        if (assignedTags.Any())
+            AddDomainEvent(new TagsAssignedDomainEvent(Id, assignedTags));
+
+        var unassignedTags = GetUnassignedTags(updatedTags);
+        if (unassignedTags.Any())
+            AddDomainEvent(new TagsUnassignedDomainEvent(Id, unassignedTags));
+
+        Tags = updatedTags;
+    }
+
+    private Guid[] GetAssignedTags(IEnumerable<Guid> newTags)
+        => newTags.Except(Tags).ToArray();
+
+    private Guid[] GetUnassignedTags(IEnumerable<Guid> newTags)
+        => Tags.Except(newTags).ToArray();
 }
