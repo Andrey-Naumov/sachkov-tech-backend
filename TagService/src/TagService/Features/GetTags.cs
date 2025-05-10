@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using SachkovTech.Core.Database;
 using SachkovTech.Framework.Endpoints;
 using SharedKernel;
-using TagService.API;
 using TagService.Entities;
 using TagService.Infrastructure;
 

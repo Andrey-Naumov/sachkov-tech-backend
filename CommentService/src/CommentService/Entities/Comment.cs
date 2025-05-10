@@ -1,5 +1,5 @@
-using CommentService.HelperClasses;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
+using SharedKernel;
 
 namespace CommentService.Entities;
 
@@ -11,15 +11,13 @@ public class Comment : Entity<Guid>
         Guid id,
         Guid relationId,
         Guid userId,
-        Guid? repliedId,
-        string text,
-        int rating) : base(id)
+        Guid? parentId,
+        string text) : base(id)
     {
+        ParentId = parentId;
         RelationId = relationId;
         UserId = userId;
-        RepliedId = repliedId;
         Text = text;
-        Rating = rating;
         CreatedAt = DateTime.UtcNow;
     }
 
@@ -27,31 +25,32 @@ public class Comment : Entity<Guid>
 
     public Guid UserId { get; private set; }
 
-    public Guid? RepliedId { get; private set; }
+    public Guid? ParentId { get; private set; }
 
     public string Text { get; private set; }
 
     public int Rating { get; private set; }
-    
+
     public DateTime CreatedAt { get; private set; }
+
+    public int RepliesCount { get; private set; }
 
     public static Result<Comment, Error> Create(
         Guid relationId,
         Guid userId,
-        Guid? repliedId,
-        string text,
-        int rating)
+        Guid? parentId,
+        string text)
     {
         if (string.IsNullOrWhiteSpace(text) || text.Length > TEXT_MAX_LENGTH)
-            return Error.Validation("Text is invalid");
+            return Error.Validation("text.invalid", "Text is invalid");
 
-        return new Comment(Guid.NewGuid(), relationId, userId, repliedId, text, rating);
+        return new Comment(Guid.NewGuid(), relationId, userId, parentId, text);
     }
 
     public UnitResult<Error> Edit(string text)
     {
         if (string.IsNullOrWhiteSpace(text) || text.Length > TEXT_MAX_LENGTH)
-            return Error.Validation("Text is invalid");
+            return Error.Validation("text.invalid", "Text is invalid");
 
         Text = text;
 
@@ -60,5 +59,17 @@ public class Comment : Entity<Guid>
 
     public void RatingIncrease() => Rating++;
 
-    public void RatingDecrease() => Rating--;
+    public void RatingDecrease()
+    {
+        if (Rating > 0)
+            Rating--;
+    }
+
+    public void RepliesCountIncrease() => RepliesCount++;
+
+    public void RepliesCountDecrease()
+    {
+        if (RepliesCount > 0)
+            RepliesCount--;
+    }
 }

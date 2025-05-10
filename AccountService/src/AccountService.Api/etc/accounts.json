@@ -1,4 +1,4 @@
-{
+﻿{
   "Roles": {
     "Admin": [
       "lessons.read",
@@ -29,7 +29,11 @@
       "tag.read",
       "tag.create",
       "tag.update",
-      "tag.delete"
+      "tag.delete",
+      "comment.read",
+      "comment.create",
+      "comment.update",
+      "comment.delete"
     ],
     "Student": [
       "lessons.read",
@@ -105,6 +109,12 @@
       "accounts.enroll",
       "accounts.read",
       "accounts.update"
+    ],
+    "Comments": [
+      "comment.read",
+      "comment.create",
+      "comment.update",
+      "comment.delete"
     ]
   }
 }

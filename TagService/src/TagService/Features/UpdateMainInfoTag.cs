@@ -2,10 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using SachkovTech.Framework.Endpoints;
 using SharedKernel;
-using TagService.API.Contracts.Requests;
+using TagService.Contracts.Requests;
 using TagService.Infrastructure;
 using IResult = Microsoft.AspNetCore.Http.IResult;
-using Permissions = TagService.API.Permissions;
+using Permissions = TagService.Permissions;
 
 namespace TagService.Features;
 

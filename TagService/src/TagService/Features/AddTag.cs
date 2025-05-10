@@ -2,10 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using SachkovTech.Framework.Endpoints;
 using SharedKernel;
-using TagService.API.Contracts.Requests;
+using TagService.Contracts.Requests;
 using TagService.Entities;
 using TagService.Infrastructure;
-using Permissions = TagService.API.Permissions;
 
 namespace TagService.Features;
 
@@ -22,7 +21,7 @@ public class AddTag
         public async Task<IResult> Handler(
             AddTagRequest request,
             [FromServices] ApplicationDbContext context,
-            [FromServices] ILogger<DeleteTag> logger,
+            [FromServices] ILogger<AddTag> logger,
             CancellationToken cancellationToken)
         {
             var tagResult = await context.Tags.SingleOrDefaultAsync(t => t.Name == request.Name, cancellationToken);

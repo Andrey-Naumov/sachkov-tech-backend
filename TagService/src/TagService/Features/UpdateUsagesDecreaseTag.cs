@@ -4,7 +4,7 @@ using SachkovTech.Framework.Endpoints;
 using SharedKernel;
 using TagService.Infrastructure;
 using IResult = Microsoft.AspNetCore.Http.IResult;
-using Permissions = TagService.API.Permissions;
+using Permissions = TagService.Permissions;
 
 namespace TagService.Features;
 

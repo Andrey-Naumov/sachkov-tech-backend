@@ -5,7 +5,7 @@ using SachkovTech.Framework.Endpoints;
 using SharedKernel;
 using TagService.Contracts.IntegrationEvents;
 using TagService.Infrastructure;
-using Permissions = TagService.API.Permissions;
+using Permissions = TagService.Permissions;
 
 namespace TagService.Features;
 

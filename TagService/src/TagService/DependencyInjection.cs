@@ -4,6 +4,7 @@ using MassTransit;
 using MassTransit.Logging;
 using MassTransit.Monitoring;
 using SachkovTech.Framework.Authorization;
+using SachkovTech.Framework.Cors;
 using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Logging;
 using SachkovTech.Framework.Observability;

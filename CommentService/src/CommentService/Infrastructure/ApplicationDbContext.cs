@@ -1,4 +1,4 @@
-using CommentService.Entities;
+﻿using CommentService.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -21,6 +21,11 @@ public class ApplicationDbContext(IConfiguration configuration) : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema("comments");
+
+        modelBuilder.Entity<Comment>()
+            .HasIndex(a => new { a.CreatedAt, a.Id });
+
         modelBuilder.Entity<Comment>()
             .ToTable("comments");
 
@@ -42,8 +47,8 @@ public class ApplicationDbContext(IConfiguration configuration) : DbContext
             .IsRequired();
 
         modelBuilder.Entity<Comment>()
-            .Property(c => c.RepliedId)
-            .HasColumnName("replied_id")
+            .Property(c => c.ParentId)
+            .HasColumnName("parent_id")
             .IsRequired(false);
 
         modelBuilder.Entity<Comment>()
@@ -61,5 +66,9 @@ public class ApplicationDbContext(IConfiguration configuration) : DbContext
             .Property(c => c.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();
+
+        modelBuilder.Entity<Comment>()
+            .Property(a => a.RepliesCount)
+            .HasColumnName("replies_count");
     }
 }
