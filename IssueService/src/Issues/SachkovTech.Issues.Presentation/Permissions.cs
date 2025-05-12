@@ -26,10 +26,23 @@ public static class Permissions
         public const string DELETE_ISSUE = "issues.delete";
     }
 
+    public static class SolvingModules
+    {
+        public const string READ_SOLVING_MODULE = "solving.modules.read";
+        public const string CREATE_SOLVING_MODULE = "solving.modules.create";
+        public const string UPDATE_SOLVING_MODULE = "solving.modules.update";
+    }
+
     public static class SolvingIssues
     {
         public const string CREATE_SOLVING_ISSUE = "solving.issues.create";
         public const string UPDATE_SOLVING_ISSUE = "solving.issues.update";
+    }
+
+    public static class ViewingLessons
+    {
+        public const string CREATE_VIEWING_LESSON = "viewing.lessons.create";
+        public const string UPDATE_VIEWING_LESSON = "viewing.lessons.update";
     }
 
     public static class IssuesReview

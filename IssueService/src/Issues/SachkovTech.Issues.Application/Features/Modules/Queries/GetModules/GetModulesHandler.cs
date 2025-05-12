@@ -2,7 +2,6 @@
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
 using SachkovTech.Issues.Application.Interfaces;
-using SachkovTech.Issues.Contracts.Dtos;
 using SachkovTech.Issues.Contracts.Module;
 
 namespace SachkovTech.Issues.Application.Features.Modules.Queries.GetModules;
@@ -23,7 +22,11 @@ public class GetModulesHandler : IQueryHandler<PagedList<ModuleDto>, GetModulesQ
         var modulesQuery = _readDbContext.ReadModules;
 
         if (!string.IsNullOrWhiteSpace(query.Title))
-            modulesQuery = modulesQuery.Where(m => EF.Functions.Like(m.Title.Value.ToLower(), $"%{query.Title.ToLower()}%"));
+        {
+            modulesQuery = modulesQuery
+                .Where(m => EF.Functions
+                    .Like(m.Title.Value.ToLower(), $"%{query.Title.ToLower()}%"));
+        }
 
         var modulesPagedList = await modulesQuery.ToPagedList(
             query.Page,
@@ -31,9 +34,7 @@ public class GetModulesHandler : IQueryHandler<PagedList<ModuleDto>, GetModulesQ
             m => new ModuleDto(
                 m.Id,
                 m.Title.Value,
-                m.Description.Value,
-                m.IssuesPosition.Select(i => new IssuePositionDto(i.IssueId.Value, i.Position.Value)).ToList(),
-                m.LessonsPosition.Select(l => new LessonPositionDto(l.LessonId.Value, l.Position.Value)).ToList()),
+                m.Description.Value),
             cancellationToken);
 
         return modulesPagedList;

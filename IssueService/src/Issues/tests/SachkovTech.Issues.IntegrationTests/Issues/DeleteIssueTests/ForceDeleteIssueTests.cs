@@ -72,7 +72,7 @@ public class ForceDeleteIssueTests : IssueTestsBase
 
         var userModules = await ReadDbContext.ReadUserModules
             .Where(um => um.ModuleId == moduleId
-                         && EF.Functions.JsonContains(um.CompletedIssues, issueIdJson))
+                         && EF.Functions.JsonContains(um.UserIssues, issueIdJson))
             .ToListAsync(cancellationToken);
 
         userModules.Count.Should().Be(0);

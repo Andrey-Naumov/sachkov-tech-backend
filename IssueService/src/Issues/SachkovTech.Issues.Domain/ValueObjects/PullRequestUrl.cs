@@ -8,7 +8,7 @@ public class PullRequestUrl : ComparableValueObject
 {
     private const string PATTERN = @"^https:\/\/github\.com\/[^\/]+\/[^\/]+\/pull\/\d+$";
 
-    public PullRequestUrl(string value)
+    private PullRequestUrl(string value)
     {
         Value = value;
     }

@@ -59,8 +59,8 @@ public class AddLessonTests : LessonsTestsBase
 
         foreach (var module in modules)
         {
-            module.IsModuleCompleted.Should().BeFalse();
-            module.CompletedLessons.Count.Should().Be(0);
+            module.IsCompleted.Should().BeFalse();
+            module.UserLessons.Count.Should().Be(0);
         }
     }
 

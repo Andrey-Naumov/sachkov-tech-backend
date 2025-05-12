@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
@@ -10,19 +11,22 @@ namespace SachkovTech.Issues.Application.Features.IssuesReviews.Commands.Approve
 public class ApproveIssueReviewHandler : ICommandHandler<Guid, ApproveIssueReviewCommand>
 {
     private readonly IIssuesReviewRepository _issuesReviewRepository;
-    private readonly IUserIssueRepository _userIssueRepository;
+    private readonly IModuleComplitionRepository _moduleComplitionRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPublisher _publisher;
     private readonly ILogger<ApproveIssueReviewHandler> _logger;
 
     public ApproveIssueReviewHandler(
         IIssuesReviewRepository issuesReviewRepository,
-        IUserIssueRepository userIssueRepository,
+        IModuleComplitionRepository moduleComplitionRepository,
         IUnitOfWork unitOfWork,
+        IPublisher publisher,
         ILogger<ApproveIssueReviewHandler> logger)
     {
         _issuesReviewRepository = issuesReviewRepository;
-        _userIssueRepository = userIssueRepository;
+        _moduleComplitionRepository = moduleComplitionRepository;
         _unitOfWork = unitOfWork;
+        _publisher = publisher;
         _logger = logger;
     }
 
@@ -30,6 +34,8 @@ public class ApproveIssueReviewHandler : ICommandHandler<Guid, ApproveIssueRevie
         ApproveIssueReviewCommand command,
         CancellationToken cancellationToken = default)
     {
+        await using var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
+
         var issueReviewResult = await _issuesReviewRepository
             .GetIssueReview(command.ReviewerId, command.IssueId, cancellationToken);
 
@@ -38,39 +44,16 @@ public class ApproveIssueReviewHandler : ICommandHandler<Guid, ApproveIssueRevie
 
         issueReviewResult.Value.Approve(command.ReviewerId);
 
-        var sendIssueForRevisionRes = await ApproveIssue(
-            command.ReviewerId,
-            command.IssueId,
-            cancellationToken);
-
-        if (sendIssueForRevisionRes.IsFailure)
-            return sendIssueForRevisionRes.Error;
-
         await _unitOfWork.SaveChanges(cancellationToken);
+
+        await _publisher.PublishDomainEvents(issueReviewResult.Value, cancellationToken);
+
+        await transaction.CommitAsync(cancellationToken);
 
         _logger.LogInformation(
             "IssueReview {issueReviewId} is approved",
             issueReviewResult.Value.Id.Value);
 
         return issueReviewResult.Value.Id.Value;
-    }
-
-    private async Task<Result<Guid, ErrorList>> ApproveIssue(
-        Guid userId,
-        Guid issueId,
-        CancellationToken cancellationToken)
-    {
-        var userIssueResult = await _userIssueRepository
-            .GetUserIssue(userId, issueId, cancellationToken);
-
-        if (userIssueResult.IsFailure)
-            return userIssueResult.Error.ToErrorList();
-
-        var completeIssueResult = userIssueResult.Value.CompleteIssue();
-
-        if (completeIssueResult.IsFailure)
-            return completeIssueResult.Error.ToErrorList();
-
-        return userIssueResult.Value.Id.Value;
     }
 }

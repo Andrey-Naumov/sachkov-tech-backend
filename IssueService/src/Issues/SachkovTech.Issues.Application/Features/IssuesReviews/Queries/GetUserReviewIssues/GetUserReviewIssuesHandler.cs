@@ -5,7 +5,7 @@ using Dapper;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
 using SachkovTech.Issues.Contracts.Issue;
-using SachkovTech.Issues.Domain.IssuesComplition.Enums;
+using SachkovTech.Issues.Domain.ModulesComplition.Enums;
 using SharedKernel;
 
 namespace SachkovTech.Issues.Application.Features.IssuesReviews.Queries.GetUserReviewIssues;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SachkovTech.Issues.Domain.LessonsComplition;
+using SachkovTech.Issues.Domain.ModulesComplition.Entities;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 
 namespace SachkovTech.Issues.Infrastructure.Configurations.Write;

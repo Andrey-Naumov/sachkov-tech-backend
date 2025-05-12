@@ -109,9 +109,7 @@ public static class DependencyInjection
         services.AddScoped<ILessonsRepository, LessonsRepository>();
         services.AddScoped<IModulesRepository, ModulesRepository>();
         services.AddScoped<IIssuesReviewRepository, IssuesReviewRepository>();
-        services.AddScoped<IUserModuleRepository, UserModuleRepository>();
-        services.AddScoped<IUserIssueRepository, UserIssueRepository>();
-        services.AddScoped<IUserLessonRepository, UserLessonRepository>();
+        services.AddScoped<IModuleComplitionRepository, ModuleComplitionRepository>();
         services.AddScoped<IModulesRepository, ModulesRepository>();
         services.AddScoped<IIssuesRepository, IssuesesRepository>();
         services.AddScoped<IOutboxRepository, OutboxRepository>();

@@ -50,7 +50,7 @@ public class StartModuleExecutionTests : ModulesComplitionTestsBase
         var userModule = (await DbContext.UserModules.ToListAsync()).First();
         userModule.ModuleId.Should().Be(moduleId);
         userModule.UserId.Should().Be(userId);
-        userModule.CompletedIssues.Count.Should().Be(0);
-        userModule.CompletedLessons.Count.Should().Be(0);
+        userModule.UserIssues.Count.Should().Be(0);
+        userModule.UserLessons.Count.Should().Be(0);
     }
 }

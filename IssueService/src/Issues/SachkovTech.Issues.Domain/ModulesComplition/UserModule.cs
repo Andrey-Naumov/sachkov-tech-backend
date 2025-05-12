@@ -1,4 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
+using SachkovTech.Issues.Domain.ModulesComplition.Entities;
+using SachkovTech.Issues.Domain.ModulesComplition.Enums;
+using SachkovTech.Issues.Domain.ValueObjects;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 using SharedKernel;
 
@@ -6,9 +9,9 @@ namespace SachkovTech.Issues.Domain.ModulesComplition;
 
 public sealed class UserModule : DomainEntity<UserModuleId>
 {
-    private readonly List<LessonId> _completedLessons = [];
+    private readonly List<UserLesson> _userLessons = [];
 
-    private readonly List<IssueId> _completedIssues = [];
+    private readonly List<UserIssue> _userIssues = [];
 
     public UserModule(
         UserModuleId id,
@@ -18,6 +21,7 @@ public sealed class UserModule : DomainEntity<UserModuleId>
     {
         UserId = userId;
         ModuleId = moduleId;
+        AtWork = true;
     }
 
     private UserModule(UserModuleId id)
@@ -29,47 +33,158 @@ public sealed class UserModule : DomainEntity<UserModuleId>
 
     public ModuleId ModuleId { get; private set; } = null!;
 
-    public IReadOnlyList<LessonId> CompletedLessons => _completedLessons.AsReadOnly();
+    public IReadOnlyList<UserLesson> UserLessons => _userLessons.AsReadOnly();
 
-    public IReadOnlyList<IssueId> CompletedIssues => _completedIssues.AsReadOnly();
+    public IReadOnlyList<UserIssue> UserIssues => _userIssues.AsReadOnly();
 
-    public bool IsModuleCompleted { get; private set; }
+    public bool IsCompleted { get; private set; }
+
+    public bool AtWork { get; private set; }
 
     public void CompleteModule(int totalIssuesCount, int totalLessonsCount)
     {
-        if (totalLessonsCount == _completedLessons.Count && totalIssuesCount == _completedIssues.Count)
-            IsModuleCompleted = true;
+        if (totalLessonsCount == _userLessons.Count && totalIssuesCount == _userIssues.Count)
+            IsCompleted = true;
         else
-            IsModuleCompleted = false;
+            IsCompleted = false;
     }
 
-    public UnitResult<Error> AddCompletedLessons(int totalLessonsCount, LessonId lessonId)
+    public UnitResult<Error> TakeIssueOnWork(UserIssue userIssue, int totalIssuesCount)
     {
-        if (totalLessonsCount < _completedLessons.Count)
+        if (AtWork == false)
             return Errors.General.Failure();
 
-        _completedLessons.Add(lessonId);
+        if (totalIssuesCount < _userIssues.Count)
+            return Errors.General.Failure();
+
+        var previousUserIssue = _userIssues
+            .Any(u => u.IssueId != userIssue.IssueId
+                      && u.Status == IssueStatus.AtWork);
+
+        if (previousUserIssue)
+            return Errors.General.Failure();
+
+        _userIssues.Add(userIssue);
 
         return UnitResult.Success<Error>();
     }
 
-    public UnitResult<Error> AddCompletedIssues(int totalIssuesCount, IssueId issueId)
+    public UnitResult<Error> SendOnReviewIssue(IssueId issueId, PullRequestUrl pullRequestUrl)
     {
-        if (totalIssuesCount < _completedIssues.Count)
-            return Errors.General.Failure();
+        var userIssue = _userIssues.FirstOrDefault(i => i.IssueId == issueId);
+        if (userIssue is null)
+            return Errors.General.NotFound(issueId);
 
-        _completedIssues.Add(issueId);
+        var result = userIssue.SendOnReview(pullRequestUrl);
+        if (result.IsFailure)
+            return result.Error;
+
+        return Result.Success<Error>();
+    }
+
+    public UnitResult<Error> SendForRevisionIssue(IssueId issueId)
+    {
+        var userIssue = _userIssues.FirstOrDefault(i => i.IssueId == issueId);
+        if (userIssue is null)
+            return Errors.General.NotFound(issueId);
+
+        var result = userIssue.SendForRevision();
+        if (result.IsFailure)
+            return result.Error;
+
+        return Result.Success<Error>();
+    }
+
+    public UnitResult<Error> StopWorking(IssueId issueId)
+    {
+        var userIssue = _userIssues.FirstOrDefault(i => i.IssueId == issueId);
+        if (userIssue is null)
+            return Errors.General.NotFound(issueId);
+
+        var result = userIssue.StopWorking();
+        if (result.IsFailure)
+            return result.Error;
+
+        return Result.Success<Error>();
+    }
+
+    public UnitResult<Error> CompleteIssue(IssueId issueId)
+    {
+        var userIssue = _userIssues.FirstOrDefault(i => i.IssueId == issueId);
+        if (userIssue is null)
+            return Errors.General.NotFound(issueId);
+
+        var result = userIssue.CompleteIssue();
+        if (result.IsFailure)
+            return result.Error;
+
+        return Result.Success<Error>();
+    }
+
+    public UnitResult<Error> DeleteUserIssue(IssueId issueId)
+    {
+        var userIssue = _userIssues.FirstOrDefault(x => x.IssueId == issueId);
+
+        if (userIssue is null)
+            return Errors.General.NotFound();
+
+        _userIssues.Remove(userIssue);
 
         return UnitResult.Success<Error>();
     }
 
-    public void DeleteCompletedIssue(IssueId issueId)
+    public UnitResult<Error> DeleteUserLesson(LessonId lessonId)
     {
-        _completedIssues.Remove(issueId);
+        var userLesson = _userLessons.FirstOrDefault(x => x.LessonId == lessonId);
+
+        if (userLesson is null)
+            return Errors.General.NotFound();
+
+        _userLessons.Remove(userLesson);
+
+        return UnitResult.Success<Error>();
     }
 
-    public void DeleteCompletedLesson(LessonId lessonId)
+    public UnitResult<Error> StartViewingLesson(UserLesson userLesson, int totalLessonsCount)
     {
-        _completedLessons.Remove(lessonId);
+        if (AtWork == false)
+            return Errors.General.Failure();
+
+        if (totalLessonsCount < _userLessons.Count)
+            return Errors.General.Failure();
+
+        _userLessons.Add(userLesson);
+
+        userLesson.StartWatching();
+
+        return UnitResult.Success<Error>();
+    }
+
+    public UnitResult<Error> CompleteWatching(LessonId lessonId)
+    {
+        if (AtWork == false)
+            return Errors.General.Failure();
+
+        var userLesson = _userLessons.FirstOrDefault(i => i.LessonId == lessonId);
+        if (userLesson is null)
+            return Errors.General.NotFound(lessonId);
+
+        userLesson.CompleteWatching();
+
+        return UnitResult.Success<Error>();
+    }
+
+    public UnitResult<Error> CancelWatching(LessonId lessonId)
+    {
+        if (AtWork == false)
+            return Errors.General.Failure();
+
+        var userLesson = _userLessons.FirstOrDefault(i => i.LessonId == lessonId);
+        if (userLesson is null)
+            return Errors.General.NotFound(lessonId);
+
+        userLesson.CancelWatching();
+
+        return UnitResult.Success<Error>();
     }
 }

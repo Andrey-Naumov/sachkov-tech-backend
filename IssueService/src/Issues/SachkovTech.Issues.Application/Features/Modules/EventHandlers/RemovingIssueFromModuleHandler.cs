@@ -9,16 +9,16 @@ namespace SachkovTech.Issues.Application.Features.Modules.EventHandlers;
 public class RemovingIssueFromModuleHandler : INotificationHandler<IssueDeletedEvent>
 {
     private readonly IModulesRepository _modulesRepository;
-    private readonly IUserModuleRepository _userModuleRepository;
+    private readonly IModuleComplitionRepository _moduleComplitionRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public RemovingIssueFromModuleHandler(
         IModulesRepository modulesRepository,
-        IUserModuleRepository userModuleRepository,
+        IModuleComplitionRepository moduleComplitionRepository,
         IUnitOfWork unitOfWork)
     {
         _modulesRepository = modulesRepository;
-        _userModuleRepository = userModuleRepository;
+        _moduleComplitionRepository = moduleComplitionRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -30,12 +30,14 @@ public class RemovingIssueFromModuleHandler : INotificationHandler<IssueDeletedE
 
         moduleResult.Value.DeleteIssuePosition(domainEvent.IssueId);
 
-        var userModules = await _userModuleRepository
+        var userModules = await _moduleComplitionRepository
             .GetUserModulesByIssueId(domainEvent.ModuleId, domainEvent.IssueId, cancellationToken);
 
         foreach (var userModule in userModules)
         {
-            userModule.DeleteCompletedIssue(domainEvent.IssueId);
+            var result = userModule.DeleteUserIssue(domainEvent.IssueId);
+            if (result.IsFailure)
+                throw new FailureException(result.Error);
 
             userModule.CompleteModule(moduleResult.Value.TotalIssuesCount(), moduleResult.Value.TotalLessonsCount());
         }

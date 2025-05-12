@@ -30,15 +30,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SachkovTech.Modules.UnitTes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C05ECE0D-33EF-49E2-A9FC-4B2110708813}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SachkovTech.IssueSolving.UnitTests.Domain", "src\Issues\tests\SachkovTech.IssueSolving.UnitTests.Domain\SachkovTech.IssueSolving.UnitTests.Domain.csproj", "{4311673E-8A2E-45A9-A573-649BFB9666BC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SachkovTech.IssueReviews.UnitTests.Domain", "src\Issues\tests\SachkovTech.IssueReviews.UnitTests.Domain\SachkovTech.IssueReviews.UnitTests.Domain.csproj", "{CAE5A324-8D37-4D8B-ABBB-DE61F0313BC6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SachkovTech.Issues.IntegrationTests", "src\Issues\tests\SachkovTech.Issues.IntegrationTests\SachkovTech.Issues.IntegrationTests.csproj", "{3858CC35-4A3D-48AD-93E7-6C6BDC73FAB7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SachkovTech.Issues.UnitTests.Domain", "src\Issues\tests\SachkovTech.Issues.UnitTests.Domain\SachkovTech.Issues.UnitTests.Domain.csproj", "{DBB34D63-8A28-47A4-86E9-D2518F81ED3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SachkovTech.ModuleProgress.UnitTests.Domain", "src\Issues\tests\SachkovTech.ModuleProgress.UnitTests.Domain\SachkovTech.ModuleProgress.UnitTests.Domain.csproj", "{08513FDF-F12A-4C74-9884-72A41FA4AE89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SachkovTech.ModuleComplition.UnitTests.Domain", "src\Issues\tests\SachkovTech.ModuleComplition.UnitTests.Domain\SachkovTech.ModuleComplition.UnitTests.Domain.csproj", "{08513FDF-F12A-4C74-9884-72A41FA4AE89}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IssueService.Communication", "IssueService.Communication\IssueService.Communication.csproj", "{58BAA6A6-4EE0-4816-BAF9-8CD3A74ED4E0}"
 EndProject
@@ -76,10 +74,6 @@ Global
 		{93DD93B1-DBCF-4E59-B222-D5D47D3E5971}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93DD93B1-DBCF-4E59-B222-D5D47D3E5971}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93DD93B1-DBCF-4E59-B222-D5D47D3E5971}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4311673E-8A2E-45A9-A573-649BFB9666BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4311673E-8A2E-45A9-A573-649BFB9666BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4311673E-8A2E-45A9-A573-649BFB9666BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4311673E-8A2E-45A9-A573-649BFB9666BC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CAE5A324-8D37-4D8B-ABBB-DE61F0313BC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CAE5A324-8D37-4D8B-ABBB-DE61F0313BC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAE5A324-8D37-4D8B-ABBB-DE61F0313BC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -114,7 +108,6 @@ Global
 		{300DC72B-68C8-435A-A64D-57A1D150C4B2} = {1955B47D-2627-4897-9AF0-863F215DA712}
 		{93DD93B1-DBCF-4E59-B222-D5D47D3E5971} = {C05ECE0D-33EF-49E2-A9FC-4B2110708813}
 		{C05ECE0D-33EF-49E2-A9FC-4B2110708813} = {1955B47D-2627-4897-9AF0-863F215DA712}
-		{4311673E-8A2E-45A9-A573-649BFB9666BC} = {C05ECE0D-33EF-49E2-A9FC-4B2110708813}
 		{CAE5A324-8D37-4D8B-ABBB-DE61F0313BC6} = {C05ECE0D-33EF-49E2-A9FC-4B2110708813}
 		{3858CC35-4A3D-48AD-93E7-6C6BDC73FAB7} = {C05ECE0D-33EF-49E2-A9FC-4B2110708813}
 		{DBB34D63-8A28-47A4-86E9-D2518F81ED3F} = {C05ECE0D-33EF-49E2-A9FC-4B2110708813}

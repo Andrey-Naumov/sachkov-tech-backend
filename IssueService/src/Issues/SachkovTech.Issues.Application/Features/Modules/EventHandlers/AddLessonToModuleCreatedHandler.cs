@@ -14,20 +14,20 @@ public class AddLessonToModuleCreatedHandler : INotificationHandler<LessonCreate
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IModulesRepository _modulesRepository;
-    private readonly IUserModuleRepository _userModuleRepository;
+    private readonly IModuleComplitionRepository _moduleComplitionRepository;
     private readonly ILogger<AddLessonToModuleCreatedHandler> _logger;
 
     public AddLessonToModuleCreatedHandler(
         IUnitOfWork unitOfWork,
         IPublishEndpoint publishEndpoint,
         IModulesRepository modulesRepository,
-        IUserModuleRepository userModuleRepository,
+        IModuleComplitionRepository moduleComplitionRepository,
         ILogger<AddLessonToModuleCreatedHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _publishEndpoint = publishEndpoint;
         _modulesRepository = modulesRepository;
-        _userModuleRepository = userModuleRepository;
+        _moduleComplitionRepository = moduleComplitionRepository;
         _logger = logger;
     }
 
@@ -39,8 +39,8 @@ public class AddLessonToModuleCreatedHandler : INotificationHandler<LessonCreate
 
         moduleResult.Value.AddLesson(domainEvent.LessonId);
 
-        var userModuleResult = await _userModuleRepository
-            .GetCompletedUserModulesByModuleId(domainEvent.ModuleId, cancellationToken);
+        var userModuleResult = await _moduleComplitionRepository
+            .GetUserModulesByModuleId(domainEvent.ModuleId, cancellationToken);
 
         foreach (var userModule in userModuleResult)
         {

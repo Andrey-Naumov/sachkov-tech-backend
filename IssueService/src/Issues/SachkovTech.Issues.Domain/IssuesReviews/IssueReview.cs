@@ -2,6 +2,7 @@
 using SachkovTech.Issues.Domain.IssuesReviews.Entities;
 using SachkovTech.Issues.Domain.IssuesReviews.Enums;
 using SachkovTech.Issues.Domain.IssuesReviews.Events;
+using SachkovTech.Issues.Domain.ModulesComplition.DomainEvents;
 using SachkovTech.Issues.Domain.ValueObjects;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 using SharedKernel;
@@ -90,6 +91,8 @@ public sealed class IssueReview : DomainEntity<IssueReviewId>
         }
 
         IssueReviewStatus = IssueReviewStatus.Accepted;
+
+        AddDomainEvent(new ApproveIssueDomainEvent(UserId, IssueId));
 
         return UnitResult.Success<Error>();
     }

@@ -30,14 +30,23 @@
       "tag.create",
       "tag.update",
       "tag.delete",
+      "tag.delete",
       "comment.read",
       "comment.create",
       "comment.update",
-      "comment.delete"
+      "comment.delete",
+      "solving.modules.read",
+      "solving.modules.create",
+      "solving.modules.update",
+      "viewing.lessons.create",
+      "viewing.lessons.update"
     ],
     "Student": [
       "lessons.read",
       "issues.read",
+      "solving.modules.read",
+      "solving.modules.create",
+      "solving.modules.update",
       "solving.issues.read",
       "solving.issues.create",
       "solving.issues.update",
@@ -83,10 +92,19 @@
       "issues.update",
       "issues.delete"
     ],
+    "SolvingModules": [
+      "solving.modules.read",
+      "solving.modules.create",
+      "solving.modules.update"
+    ],
     "SolvingIssues": [
       "solving.issues.read",
       "solving.issues.create",
       "solving.issues.update"
+    ],
+    "ViewingLessons": [
+      "viewing.lessons.create",
+      "viewing.lessons.update"
     ],
     "IssuesReview": [
       "review.issues.read",

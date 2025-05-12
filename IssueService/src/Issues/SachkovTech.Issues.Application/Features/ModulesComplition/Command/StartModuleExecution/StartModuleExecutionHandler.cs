@@ -9,45 +9,38 @@ using SharedKernel;
 
 namespace SachkovTech.Issues.Application.Features.ModulesComplition.Command.StartModuleExecution;
 
-public class StartModuleExecutionHandler : ICommandHandler<Guid, StartModuleExecutionCommand>
+public class StartModuleExecutionHandler : ICommandHandler<StartModuleExecutionCommand>
 {
-    private readonly IUserModuleRepository _userModuleRepository;
-    private readonly IModulesRepository _modulesRepository;
+    private readonly IModuleComplitionRepository _moduleComplitionRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<StartModuleExecutionHandler> _logger;
 
     public StartModuleExecutionHandler(
-        IUserModuleRepository userModuleRepository,
-        IModulesRepository modulesRepository,
+        IModuleComplitionRepository moduleComplitionRepository,
         IUnitOfWork unitOfWork,
         ILogger<StartModuleExecutionHandler> logger)
     {
-        _userModuleRepository = userModuleRepository;
-        _modulesRepository = modulesRepository;
+        _moduleComplitionRepository = moduleComplitionRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
-    public async Task<Result<Guid, ErrorList>> Handle(
+    public async Task<UnitResult<ErrorList>> Handle(
         StartModuleExecutionCommand command,
         CancellationToken cancellationToken)
     {
-        var userModule = await _userModuleRepository
+        var userModule = await _moduleComplitionRepository
             .GetUserModule(command.UserId, command.ModuleId, cancellationToken);
 
         if (userModule.IsSuccess)
-            return userModule.Value.Id.Value;
-
-        var module = await _modulesRepository.GetById(command.ModuleId, cancellationToken);
-        if (module.IsFailure)
-            return module.Error.ToErrorList();
+            return UnitResult.Success<ErrorList>();
 
         var userModuleResult = new UserModule(
             UserModuleId.NewUserModuleId(),
             command.UserId,
             command.ModuleId);
 
-        await _userModuleRepository.Add(userModuleResult, cancellationToken);
+        await _moduleComplitionRepository.Add(userModuleResult, cancellationToken);
 
         await _unitOfWork.SaveChanges(cancellationToken);
 
@@ -56,6 +49,6 @@ public class StartModuleExecutionHandler : ICommandHandler<Guid, StartModuleExec
             command.UserId,
             command.ModuleId);
 
-        return userModuleResult.Id.Value;
+        return UnitResult.Success<ErrorList>();
     }
 }

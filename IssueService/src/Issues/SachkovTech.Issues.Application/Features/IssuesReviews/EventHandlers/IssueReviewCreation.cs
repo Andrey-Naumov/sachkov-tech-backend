@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using SachkovTech.Core.Database;
 using SachkovTech.Issues.Application.Interfaces;
-using SachkovTech.Issues.Domain.IssuesComplition.DomainEvents;
 using SachkovTech.Issues.Domain.IssuesReviews;
+using SachkovTech.Issues.Domain.ModulesComplition.DomainEvents;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 
 namespace SachkovTech.Issues.Application.Features.IssuesReviews.EventHandlers;

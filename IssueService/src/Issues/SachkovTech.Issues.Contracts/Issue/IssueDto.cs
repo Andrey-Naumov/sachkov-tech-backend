@@ -4,7 +4,7 @@ public class IssueDto
 {
     public Guid Id { get; init; }
 
-    public Guid? ModuleId { get; init; }
+    public Guid ModuleId { get; init; }
 
     public Guid? LessonId { get; init; }
 

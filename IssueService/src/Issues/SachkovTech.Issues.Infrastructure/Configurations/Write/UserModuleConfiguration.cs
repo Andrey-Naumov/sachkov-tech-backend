@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SachkovTech.Core.Database;
 using SachkovTech.Issues.Domain.ModulesComplition;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 
@@ -31,13 +30,22 @@ public class UserModuleConfiguration : IEntityTypeConfiguration<UserModule>
                 id => id.Value,
                 value => ModuleId.Create(value));
 
-        builder.Property(um => um.CompletedLessons)
-            .ValueObjectsCollectionJsonConversion();
-
-        builder.Property(um => um.CompletedIssues)
-            .ValueObjectsCollectionJsonConversion();
-
-        builder.Property(um => um.IsModuleCompleted)
+        builder.Property(um => um.IsCompleted)
             .IsRequired();
+
+        builder.Property(um => um.AtWork)
+            .IsRequired();
+
+        builder.HasMany(um => um.UserLessons)
+            .WithOne()
+            .IsRequired()
+            .HasForeignKey("user_module_id")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(um => um.UserIssues)
+            .WithOne()
+            .IsRequired()
+            .HasForeignKey("user_module_id")
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

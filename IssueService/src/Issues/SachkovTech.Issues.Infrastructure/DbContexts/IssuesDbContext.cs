@@ -3,13 +3,12 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using SachkovTech.Issues.Application.Interfaces;
 using SachkovTech.Issues.Domain.Issue;
-using SachkovTech.Issues.Domain.IssuesComplition;
 using SachkovTech.Issues.Domain.IssuesReviews;
 using SachkovTech.Issues.Domain.Lesson;
-using SachkovTech.Issues.Domain.LessonsComplition;
 using SachkovTech.Issues.Domain.Module;
 using SachkovTech.Issues.Domain.Module.Entities;
 using SachkovTech.Issues.Domain.ModulesComplition;
+using SachkovTech.Issues.Domain.ModulesComplition.Entities;
 using SachkovTech.Issues.Infrastructure.Outbox;
 
 namespace SachkovTech.Issues.Infrastructure.DbContexts;

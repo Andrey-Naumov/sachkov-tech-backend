@@ -10,4 +10,9 @@
       <PackageReference Include="sharedkernel" Version="1.1.9" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="IssuesComplition\" />
+      <Folder Include="LessonsComplition\" />
+    </ItemGroup>
+
 </Project>

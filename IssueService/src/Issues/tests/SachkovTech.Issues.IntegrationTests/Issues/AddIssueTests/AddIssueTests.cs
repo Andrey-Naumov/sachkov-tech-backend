@@ -103,8 +103,8 @@ public class AddIssueTests : IssueTestsBase
 
         foreach (var module in modules)
         {
-            module.IsModuleCompleted.Should().BeFalse();
-            module.CompletedIssues.Count.Should().Be(0);
+            module.IsCompleted.Should().BeFalse();
+            module.UserIssues.Count.Should().Be(0);
         }
     }
 }

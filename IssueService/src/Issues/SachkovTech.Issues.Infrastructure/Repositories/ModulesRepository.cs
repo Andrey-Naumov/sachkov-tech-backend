@@ -25,19 +25,6 @@ public class ModulesRepository : IModulesRepository
         return issue.Id;
     }
 
-    public Guid Save(Module issue, CancellationToken cancellationToken = default)
-    {
-        _dbContext.Modules.Attach(issue);
-        return issue.Id.Value;
-    }
-
-    public Guid Delete(Module issue)
-    {
-        _dbContext.Modules.Remove(issue);
-
-        return issue.Id;
-    }
-
     public async Task<Result<Module, Error>> GetById(
         ModuleId moduleId,
         CancellationToken cancellationToken = default)

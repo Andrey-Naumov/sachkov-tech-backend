@@ -11,18 +11,18 @@ public class AddIssueToModuleCreatedHandler : INotificationHandler<IssueCreatedD
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IModulesRepository _modulesRepository;
-    private readonly IUserModuleRepository _userModuleRepository;
+    private readonly IModuleComplitionRepository _moduleComplitionRepository;
     private readonly ILogger<AddIssueToModuleCreatedHandler> _logger;
 
     public AddIssueToModuleCreatedHandler(
         IUnitOfWork unitOfWork,
         IModulesRepository modulesRepository,
-        IUserModuleRepository userModuleRepository,
+        IModuleComplitionRepository moduleComplitionRepository,
         ILogger<AddIssueToModuleCreatedHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _modulesRepository = modulesRepository;
-        _userModuleRepository = userModuleRepository;
+        _moduleComplitionRepository = moduleComplitionRepository;
         _logger = logger;
     }
 
@@ -34,8 +34,8 @@ public class AddIssueToModuleCreatedHandler : INotificationHandler<IssueCreatedD
 
         moduleResult.Value.AddIssue(domainEvent.IssueId);
 
-        var userModuleResult = await _userModuleRepository
-            .GetCompletedUserModulesByModuleId(domainEvent.ModuleId, cancellationToken);
+        var userModuleResult = await _moduleComplitionRepository
+            .GetUserModulesByModuleId(domainEvent.ModuleId, cancellationToken);
 
         foreach (var userModule in userModuleResult)
         {
