@@ -98,13 +98,13 @@ public class Issue : DomainEntity<IssueId>, ISoftDeletable
     {
         var updatedTags = tags.ToArray();
 
-        var assignedTags = GetAssignedTags(updatedTags);
-        if (assignedTags.Any())
-            AddDomainEvent(new TagsAssignedDomainEvent(Id, assignedTags));
-
-        var unassignedTags = GetUnassignedTags(updatedTags);
-        if (unassignedTags.Any())
-            AddDomainEvent(new TagsUnassignedDomainEvent(Id, unassignedTags));
+        // var assignedTags = GetAssignedTags(updatedTags);
+        // if (assignedTags.Any())
+        //     AddDomainEvent(new TagsAssignedDomainEvent(Id, assignedTags));
+        //
+        // var unassignedTags = GetUnassignedTags(updatedTags);
+        // if (unassignedTags.Any())
+        //     AddDomainEvent(new TagsUnassignedDomainEvent(Id, unassignedTags));
 
         Tags = updatedTags;
     }

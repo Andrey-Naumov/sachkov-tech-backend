@@ -64,13 +64,23 @@ public sealed class UserModule : DomainEntity<UserModuleId>
         if (previousUserIssue)
             return Errors.General.Failure();
 
+        var oldUserIssue = _userIssues.FirstOrDefault(i => i.IssueId == userIssue.IssueId);
+        if (oldUserIssue is not null)
+        {
+            oldUserIssue.TakeOnWork();
+            return UnitResult.Success<Error>();
+        }
+
         _userIssues.Add(userIssue);
 
         return UnitResult.Success<Error>();
     }
 
-    public UnitResult<Error> SendOnReviewIssue(IssueId issueId, PullRequestUrl pullRequestUrl)
+    public Result<UserIssue, Error> SendOnReviewIssue(IssueId issueId, PullRequestUrl pullRequestUrl)
     {
+        if (AtWork == false)
+            return Errors.General.Failure();
+
         var userIssue = _userIssues.FirstOrDefault(i => i.IssueId == issueId);
         if (userIssue is null)
             return Errors.General.NotFound(issueId);
@@ -79,11 +89,14 @@ public sealed class UserModule : DomainEntity<UserModuleId>
         if (result.IsFailure)
             return result.Error;
 
-        return Result.Success<Error>();
+        return userIssue;
     }
 
     public UnitResult<Error> SendForRevisionIssue(IssueId issueId)
     {
+        if (AtWork == false)
+            return Errors.General.Failure();
+
         var userIssue = _userIssues.FirstOrDefault(i => i.IssueId == issueId);
         if (userIssue is null)
             return Errors.General.NotFound(issueId);
@@ -97,6 +110,9 @@ public sealed class UserModule : DomainEntity<UserModuleId>
 
     public UnitResult<Error> StopWorking(IssueId issueId)
     {
+        if (AtWork == false)
+            return Errors.General.Failure();
+
         var userIssue = _userIssues.FirstOrDefault(i => i.IssueId == issueId);
         if (userIssue is null)
             return Errors.General.NotFound(issueId);
@@ -110,6 +126,9 @@ public sealed class UserModule : DomainEntity<UserModuleId>
 
     public UnitResult<Error> CompleteIssue(IssueId issueId)
     {
+        if (AtWork == false)
+            return Errors.General.Failure();
+
         var userIssue = _userIssues.FirstOrDefault(i => i.IssueId == issueId);
         if (userIssue is null)
             return Errors.General.NotFound(issueId);

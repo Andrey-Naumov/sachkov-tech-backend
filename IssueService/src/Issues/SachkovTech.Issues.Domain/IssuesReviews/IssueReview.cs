@@ -20,7 +20,7 @@ public sealed class IssueReview : DomainEntity<IssueReviewId>
     {
         IssueId = issueId;
         UserId = userId;
-        IssueReviewStatus = IssueReviewStatus.WaitingForReviewer;
+        IssueReviewStatus = IssueReviewStatus.PendingReview;
         ReviewStartedTime = DateTime.UtcNow;
         PullRequestUrl = pullRequestUrl;
     }
@@ -57,6 +57,14 @@ public sealed class IssueReview : DomainEntity<IssueReviewId>
         IssueReviewStatus = IssueReviewStatus.OnReview;
 
         IssueTakenTime ??= DateTime.UtcNow;
+    }
+
+    public void CancelReview()
+    {
+        ReviewerId = null;
+        IssueReviewStatus = IssueReviewStatus.PendingReview;
+
+        IssueTakenTime = null;
     }
 
     public UnitResult<Error> SendIssueForRevision(UserId reviewerId)

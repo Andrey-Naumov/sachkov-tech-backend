@@ -4,24 +4,24 @@ using CSharpFunctionalExtensions;
 using Dapper;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
-using SachkovTech.Issues.Contracts.Issue;
-using SachkovTech.Issues.Domain.ModulesComplition.Enums;
+using SachkovTech.Issues.Contracts.IssueReview;
+using SachkovTech.Issues.Domain.IssuesReviews.Enums;
 using SharedKernel;
 
-namespace SachkovTech.Issues.Application.Features.IssuesReviews.Queries.GetUserReviewIssues;
+namespace SachkovTech.Issues.Application.Features.IssuesReviews.Queries.GetPendingReviewIssues;
 
-public class GetUserReviewIssuesHandler
-    : IQueryHandlerWithResult<CursorList<IssueDto>, GetUserReviewIssuesWithPaginationQuery>
+public class GetPendingReviewIssuesHandler
+    : IQueryHandlerWithResult<CursorList<IssueReviewDto>, GetPendingReviewIssuesQuery>
 {
     private readonly ISqlConnectionFactory _sqlConnection;
 
-    public GetUserReviewIssuesHandler(ISqlConnectionFactory sqlConnection)
+    public GetPendingReviewIssuesHandler(ISqlConnectionFactory sqlConnection)
     {
         _sqlConnection = sqlConnection;
     }
 
-    public async Task<Result<CursorList<IssueDto>, ErrorList>> Handle(
-        GetUserReviewIssuesWithPaginationQuery query,
+    public async Task<Result<CursorList<IssueReviewDto>, ErrorList>> Handle(
+        GetPendingReviewIssuesQuery query,
         CancellationToken cancellationToken)
     {
         if (query.Limit < 1)
@@ -30,9 +30,7 @@ public class GetUserReviewIssuesHandler
         using var connection = _sqlConnection.Create();
 
         var parameters = new DynamicParameters();
-        parameters.Add("@UserId", query.UserId);
-        parameters.Add("@ModuleId", query.ModuleId);
-        parameters.Add("@Status", nameof(IssueStatus.UnderReview));
+        parameters.Add("@Status", nameof(IssueReviewStatus.PendingReview));
         parameters.Add("@Limit", query.Limit);
 
         var itemsResult = await GetItems(connection, parameters, query);
@@ -51,36 +49,37 @@ public class GetUserReviewIssuesHandler
             var lastItem = items[^1];
             items.Remove(lastItem);
 
-            newCursor = Cursor<int, Guid>.Encode(lastItem.Position, lastItem.Id);
+            newCursor = Cursor<int, Guid>.Encode(lastItem.Position, lastItem.IssueId);
         }
 
-        var result = new CursorList<IssueDto>(items, newCursor, hasMore);
+        var result = new CursorList<IssueReviewDto>(items, newCursor, hasMore);
 
         return result;
     }
 
-    private async Task<Result<List<IssueDto>, ErrorList>> GetItems(
+    private async Task<Result<List<IssueReviewDto>, ErrorList>> GetItems(
         IDbConnection connection,
         DynamicParameters parameters,
-        GetUserReviewIssuesWithPaginationQuery query)
+        GetPendingReviewIssuesQuery query)
     {
         var sqlBuilder = new StringBuilder(
             """
-            SELECT i.id          AS Id,
-                   i.module_id   AS ModuleId,
-                   i.lesson_id   AS LessonId,
-                   i.title       AS Title,
-                   i.description as Description,
-                   i.experience as Experience,
-                   ip.position   as Position,
-                   ui.status     as Status
+            SELECT i.id                   AS IssueId,
+                   i.module_id            AS ModuleId,
+                   i.lesson_id            AS LessonId,
+                   ir.user_id             AS UserId,
+                   ir.id                  AS IssueReviewId,
+                   i.title                AS Title,
+                   i.description          as Description,
+                   ir.issue_review_status as Status,
+                   ir.pull_request_url    as PullRequestUrl,
+                   ip.position            as Position
             FROM issues.issues AS i
                      JOIN issues.issue_positions AS ip
                           ON i.id = ip.issue_id
-                     LEFT JOIN issues.user_issues AS ui
-                               ON i.id = ui.issue_id
+                     JOIN issues.issue_reviews AS ir
+                          ON i.id = ir.issue_id
             WHERE NOT i.is_deleted
-              AND i.module_id = @ModuleId
             """);
 
         if (!string.IsNullOrWhiteSpace(query.Cursor))
@@ -94,11 +93,11 @@ public class GetUserReviewIssuesHandler
             sqlBuilder.Append("\n AND (ip.position, i.id) >= (@Position, @LastId)");
         }
 
-        sqlBuilder.Append("\n AND ui.status = @Status" +
+        sqlBuilder.Append("\n AND ir.issue_review_status = @Status" +
                           "\nORDER BY ip.position ASC, i.id ASC" +
                           "\nLIMIT @Limit;");
 
-        return (await connection.QueryAsync<IssueDto>(
+        return (await connection.QueryAsync<IssueReviewDto>(
             sqlBuilder.ToString(),
             parameters)).AsList();
     }
@@ -106,7 +105,7 @@ public class GetUserReviewIssuesHandler
     private async Task<int> GetCount(
         IDbConnection connection,
         DynamicParameters parameters,
-        GetUserReviewIssuesWithPaginationQuery query)
+        GetPendingReviewIssuesQuery query)
     {
         var sqlBuilder = new StringBuilder(
             """
@@ -114,10 +113,10 @@ public class GetUserReviewIssuesHandler
             FROM issues.issues AS i
                      JOIN issues.issue_positions AS ip
                           ON i.id = ip.issue_id
-                     LEFT JOIN issues.user_issues AS ui
-                               ON i.id = ui.issue_id
+                     JOIN issues.issue_reviews AS ir
+                          ON i.id = ir.issue_id
             WHERE NOT i.is_deleted
-              AND (ui.issue_id IS NULL OR ui.status = @Status)
+              AND ir.issue_review_status = @Status
             """);
 
         if (!string.IsNullOrWhiteSpace(query.Cursor))

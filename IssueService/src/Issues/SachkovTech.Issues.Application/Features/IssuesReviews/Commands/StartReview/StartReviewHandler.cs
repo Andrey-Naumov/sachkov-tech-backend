@@ -29,7 +29,7 @@ public class StartReviewHandler : ICommandHandler<Guid, StartReviewCommand>
         CancellationToken cancellationToken = default)
     {
         var issueReviewResult = await _issuesReviewRepository
-            .GetIssueReview(command.ReviewerId, command.IssueId, cancellationToken);
+            .GetIssueReviewById(IssueReviewId.Create(command.IssueReviewId), cancellationToken);
 
         if (issueReviewResult.IsFailure)
             return issueReviewResult.Error.ToErrorList();

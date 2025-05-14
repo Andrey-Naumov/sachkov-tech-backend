@@ -2,7 +2,7 @@
 
 public enum IssueReviewStatus
 {
-    WaitingForReviewer,
+    PendingReview,
     OnReview,
     Accepted,
     AskedForRevision

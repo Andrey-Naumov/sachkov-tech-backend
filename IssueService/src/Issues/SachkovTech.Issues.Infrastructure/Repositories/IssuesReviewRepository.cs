@@ -17,6 +17,20 @@ public class IssuesReviewRepository : IIssuesReviewRepository
         _dbContext = dbContext;
     }
 
+    public async Task<Result<IssueReview, Error>> GetIssueReviewById(
+        IssueReviewId issueReviewId,
+        CancellationToken cancellationToken)
+    {
+        var issueReview = await _dbContext.IssueReviews
+            .Include(ir => ir.Comments)
+            .FirstOrDefaultAsync(i => i.Id == issueReviewId, cancellationToken);
+
+        if (issueReview == null)
+            return Errors.General.NotFound();
+
+        return issueReview;
+    }
+
     public async Task<Result<IssueReview, Error>> GetIssueReview(
         Guid userId,
         IssueId issueId,

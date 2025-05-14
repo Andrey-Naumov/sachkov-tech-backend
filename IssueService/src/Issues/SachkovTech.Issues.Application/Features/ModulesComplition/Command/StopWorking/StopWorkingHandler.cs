@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;

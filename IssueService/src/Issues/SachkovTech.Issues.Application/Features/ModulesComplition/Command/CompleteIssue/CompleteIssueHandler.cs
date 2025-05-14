@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
 using SachkovTech.Issues.Application.Interfaces;
+using SachkovTech.Issues.Domain.ModulesComplition.Entities;
+using SachkovTech.Issues.Domain.ValueObjects.Ids;
 using SharedKernel;
 
 namespace SachkovTech.Issues.Application.Features.ModulesComplition.Command.CompleteIssue;
@@ -44,7 +46,9 @@ public class CompleteIssueHandler : ICommandHandler<CompleteIssueCommand>
         if (userModule.IsFailure)
             return userModule.Error.ToErrorList();
 
-        var result = userModule.Value.CompleteIssue(command.IssueId);
+        var userIssue = new UserIssue(UserIssueId.NewUserIssueId(), command.UserId, command.IssueId);
+
+        var result = userModule.Value.TakeIssueOnWork(userIssue, module.TotalIssuesCount());
         if (result.IsFailure)
             return result.Error.ToErrorList();
 

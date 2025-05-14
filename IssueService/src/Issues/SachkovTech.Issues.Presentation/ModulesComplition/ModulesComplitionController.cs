@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SachkovTech.Framework;
 using SachkovTech.Framework.Authorization;
+using SachkovTech.Issues.Application.Features.IssuesComplition.Queries.GetUserReviewIssues;
 using SachkovTech.Issues.Application.Features.ModulesComplition.Command.CompleteIssue;
 using SachkovTech.Issues.Application.Features.ModulesComplition.Command.CompleteLessonView;
 using SachkovTech.Issues.Application.Features.ModulesComplition.Command.SendOnReview;
@@ -19,8 +20,9 @@ namespace SachkovTech.Issues.Presentation.ModulesComplition;
 public class ModulesComplitionController : ApplicationController
 {
     [Permission(Permissions.Issues.READ_ISSUE)]
-    [HttpGet("issues/active")]
+    [HttpGet("{moduleId:guid}/issues/active")]
     public async Task<ActionResult> GetUserActiveIssues(
+        [FromRoute] Guid moduleId,
         [FromQuery] GetUserActiveIssuesRequest request,
         [FromServices] GetUserActiveIssuesHandler handler,
         [FromServices] UserScopedData userScopedData,
@@ -28,7 +30,7 @@ public class ModulesComplitionController : ApplicationController
     {
         var query = new GetUserActiveIssuesQuery(
             userScopedData.UserId,
-            request.ModuleId,
+            moduleId,
             request.Cursor,
             request.Limit);
 
@@ -41,8 +43,9 @@ public class ModulesComplitionController : ApplicationController
     }
 
     [Permission(Permissions.Issues.READ_ISSUE)]
-    [HttpGet("issues/completed")]
+    [HttpGet("{moduleId:guid}/issues/completed")]
     public async Task<ActionResult> GetUserCompletedIssues(
+        [FromRoute] Guid moduleId,
         [FromQuery] GetUserCompletedIssuesRequest request,
         [FromServices] GetUserCompletedIssuesHandler handler,
         [FromServices] UserScopedData userScopedData,
@@ -50,7 +53,7 @@ public class ModulesComplitionController : ApplicationController
     {
         var query = new GetUserCompletedIssuesQuery(
             userScopedData.UserId,
-            request.ModuleId,
+            moduleId,
             request.Cursor,
             request.Limit);
 
@@ -63,8 +66,9 @@ public class ModulesComplitionController : ApplicationController
     }
 
     [Permission(Permissions.Issues.READ_ISSUE)]
-    [HttpGet("issues/new")]
+    [HttpGet("{moduleId:guid}/issues/new")]
     public async Task<ActionResult> GetUserNewIssues(
+        [FromRoute] Guid moduleId,
         [FromQuery] GetUserNewIssuesRequest request,
         [FromServices] GetUserNewIssuesHandler handler,
         [FromServices] UserScopedData userScopedData,
@@ -72,12 +76,34 @@ public class ModulesComplitionController : ApplicationController
     {
         var query = new GetUserNewIssuesQuery(
             userScopedData.UserId,
-            request.ModuleId,
+            moduleId,
             request.Cursor,
             request.Limit);
 
         var response = await handler.Handle(query, cancellationToken);
 
+        if (response.IsFailure)
+            return response.Error.ToResponse();
+
+        return Ok(response.Value);
+    }
+
+    [Permission(Permissions.Issues.READ_ISSUE)]
+    [HttpGet("{moduleId:guid}/issues/user-review")]
+    public async Task<ActionResult> GetUserReviewIssues(
+        [FromRoute] Guid moduleId,
+        [FromQuery] GetUserReviewIssuesRequest request,
+        [FromServices] GetUserReviewIssuesHandler handler,
+        [FromServices] UserScopedData userScopedData,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetUserReviewIssuesQuery(
+            userScopedData.UserId,
+            moduleId,
+            request.Cursor,
+            request.Limit);
+
+        var response = await handler.Handle(query, cancellationToken);
         if (response.IsFailure)
             return response.Error.ToResponse();
 

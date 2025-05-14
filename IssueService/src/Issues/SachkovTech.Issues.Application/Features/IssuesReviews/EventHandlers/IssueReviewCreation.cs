@@ -12,6 +12,7 @@ public class IssueReviewCreation : INotificationHandler<IssueSentOnReviewEvent>
 {
     private readonly IIssuesReviewRepository _issuesReviewRepository;
     private readonly ILogger<IssueReviewCreation> _logger;
+    private readonly IUnitOfWork _unitOfWork;
 
     public IssueReviewCreation(
         IIssuesReviewRepository issuesReviewRepository,
@@ -20,6 +21,7 @@ public class IssueReviewCreation : INotificationHandler<IssueSentOnReviewEvent>
     {
         _issuesReviewRepository = issuesReviewRepository;
         _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(IssueSentOnReviewEvent domainEvent, CancellationToken cancellationToken)
@@ -31,6 +33,8 @@ public class IssueReviewCreation : INotificationHandler<IssueSentOnReviewEvent>
             domainEvent.PullRequestUrl);
 
         await _issuesReviewRepository.Add(issueReviewResult, cancellationToken);
+
+        await _unitOfWork.SaveChanges(cancellationToken);
 
         _logger.LogInformation("IssueReview {IssueReviewId} was created", issueReviewResult.Id);
     }

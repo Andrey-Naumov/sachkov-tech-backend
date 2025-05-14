@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
@@ -15,17 +16,20 @@ public class SendOnReviewHandler : ICommandHandler<SendOnReviewCommand>
     private readonly IModuleComplitionRepository _moduleComplitionRepository;
     private readonly ILogger<SendOnReviewHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPublisher _publisher;
     private readonly IValidator<SendOnReviewCommand> _validator;
 
     public SendOnReviewHandler(
         IValidator<SendOnReviewCommand> validator,
         IModuleComplitionRepository moduleComplitionRepository,
         IUnitOfWork unitOfWork,
+        IPublisher publisher,
         ILogger<SendOnReviewHandler> logger)
     {
         _validator = validator;
         _moduleComplitionRepository = moduleComplitionRepository;
         _unitOfWork = unitOfWork;
+        _publisher = publisher;
         _logger = logger;
     }
 
@@ -36,6 +40,8 @@ public class SendOnReviewHandler : ICommandHandler<SendOnReviewCommand>
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (validationResult.IsValid == false)
             return validationResult.ToList();
+
+        await using var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
 
         var userModule = await _moduleComplitionRepository
             .GetUserModuleWithIssues(command.UserId, command.ModuleId, cancellationToken);
@@ -50,6 +56,10 @@ public class SendOnReviewHandler : ICommandHandler<SendOnReviewCommand>
             return userIssueResult.Error.ToErrorList();
 
         await _unitOfWork.SaveChanges(cancellationToken);
+
+        await _publisher.PublishDomainEvents(userIssueResult.Value, cancellationToken);
+
+        await transaction.CommitAsync(cancellationToken);
 
         _logger.LogInformation(
             "Issue id {IssueId} with User id {UserId} was created",

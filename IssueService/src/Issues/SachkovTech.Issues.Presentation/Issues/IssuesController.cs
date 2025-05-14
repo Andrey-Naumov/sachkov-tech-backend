@@ -93,7 +93,7 @@ public class IssuesController : ApplicationController
             request.ModuleId,
             request.Title,
             request.Description,
-            request.Experience, 
+            request.Experience,
             request.Tags);
 
         var result = await handler.Handle(command, cancellationToken);
