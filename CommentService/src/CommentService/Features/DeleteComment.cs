@@ -28,7 +28,7 @@ public class DeleteComment
                 cancellationToken);
 
             if (comment is null)
-                return ResultResponse.NotFound(Errors.General.NotFound(id));
+                return ResultResponse.NotFound(GeneralErrors.NotFound(id));
 
             var parentComment = await dbContext.Comments
                     .FirstOrDefaultAsync(a => a.Id == comment.ParentId);

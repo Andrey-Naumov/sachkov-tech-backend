@@ -8,11 +8,10 @@ public class Comment : Entity<Guid>
     public const int TEXT_MAX_LENGTH = 5000;
 
     private Comment(
-        Guid id,
         Guid relationId,
         Guid userId,
         Guid? parentId,
-        string text) : base(id)
+        string text)
     {
         ParentId = parentId;
         RelationId = relationId;
@@ -44,7 +43,7 @@ public class Comment : Entity<Guid>
         if (string.IsNullOrWhiteSpace(text) || text.Length > TEXT_MAX_LENGTH)
             return Error.Validation("text.invalid", "Text is invalid");
 
-        return new Comment(Guid.NewGuid(), relationId, userId, parentId, text);
+        return new Comment(relationId, userId, parentId, text);
     }
 
     public UnitResult<Error> Edit(string text)

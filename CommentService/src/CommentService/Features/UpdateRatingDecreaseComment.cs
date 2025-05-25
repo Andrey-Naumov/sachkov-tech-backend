@@ -28,7 +28,7 @@ public class UpdateRatingDecreaseComment
                 cancellationToken);
 
             if (comment is null)
-                return ResultResponse.NotFound(Errors.General.NotFound(id));
+                return ResultResponse.NotFound(GeneralErrors.NotFound(id));
 
             comment.RatingDecrease();
 

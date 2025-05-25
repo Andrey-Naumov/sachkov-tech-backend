@@ -1,12 +1,9 @@
-﻿using CommentService.Api;
-using CommentService.Contracts.Requests;
+﻿using CommentService.Contracts.Requests;
 using CommentService.Entities;
-using CSharpFunctionalExtensions;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using SachkovTech.Core.Database;
 using SachkovTech.Framework.Endpoints;
-using System.Data;
 
 namespace CommentService.Features;
 
@@ -16,88 +13,112 @@ public class GetChildrenComments
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapPost("api/comments/receiving-children", Handle)
-            .RequirePermissions(Permissions.Comments.READ_COMMENT);
+            app.MapPost("api/comments/receiving-children", Handle);
         }
 
-        public async Task<Microsoft.AspNetCore.Http.IResult> Handle(
+        public async Task<IResult> Handle(
             [FromBody] GetChildrenCommentsRequest request,
             ISqlConnectionFactory connectionFactory)
         {
-            var commentDtos = await GetDataAsync(connectionFactory, request);
-            var cursorList = CreateCursorList(commentDtos.ToList());
-            return ResultResponse.Ok(cursorList);
-        }
-
-        private async Task<IEnumerable<CommentDto>> GetDataAsync(
-            ISqlConnectionFactory connectionFactory,
-            GetChildrenCommentsRequest request)
-        {
             using var connection = connectionFactory.Create();
-            var decodedCursor = Cursor<DateTime, Guid>.Decode(request.Cursor);
-            var parameters = new DynamicParameters();
-            parameters.Add("@ChildrenLimit", Constants.CHILDREN_COUNT_LIMIT);
-            parameters.Add("@RelationId", request.RelationId);
-            parameters.Add("@ParentId", request.ParentId);
 
-            parameters.Add(
-                "@CursorCreatedAt",
-                dbType: DbType.DateTime,
-                direction: ParameterDirection.Input,
-                value: decodedCursor?.Filter);
+            var cursor = Cursor<DateTime, Guid>.Decode(request.Cursor);
 
-            parameters.Add(
-                "@CursorLastId",
-                dbType: DbType.Guid,
-                direction: ParameterDirection.Input,
-                value: decodedCursor?.LastId);
+            var sqlPage = """
+                          SELECT
+                          id           AS Id,
+                          parent_id    AS ParentId,
+                          relation_id  AS RelationId,
+                          user_id      AS UserId,
+                          text,
+                          created_at   AS CreatedAt,
+                          rating
+                          FROM comments.comments
+                          WHERE parent_id = @ParentId
+                          """
+                          + (cursor is not null
+                              ? """
 
-            var datas = await connection.QueryAsync<CommentDto>(
-                """
-                WITH children AS(
-                     SELECT 
-                        ch.id AS Id,
-                        ch.relation_id AS RelationId,
-                        ch.user_id AS UserId,
-                        ch.parent_id AS ParentId,
-                        ch.text AS Text,
-                        ch.rating AS Rating,
-                        ch.created_at AS CreatedAt,
-                        ch.replies_count AS RepliesCount,
-                        ROW_NUMBER() OVER(PARTITION BY ch.parent_id ORDER BY ch.created_at DESC) AS rn
-                     FROM comments.comments ch
-                     WHERE ch.relation_id = @RelationId
-                        AND ch.parent_id = @ParentId
-                        AND
-                            CASE 
-                                WHEN @CursorCreatedAt IS NOT NULL THEN (ch.created_at, ch.id) 
-                                    <= (@CursorCreatedAt, @CursorLastId)
-                                ELSE ch.created_at > '01.01.0001 00:00:00'
-                            END
-                )
+                                AND (created_at < @CreatedAt
+                                  OR (created_at = @CreatedAt AND id < @LastId))
+                                """
+                              : "")
+                          + """
 
-                SELECT Id, RelationId, UserId, ParentId, Text, Rating, CreatedAt, RepliesCount
-                FROM children
-                WHERE rn<@ChildrenLimit + 2
-                """
-            , parameters);
+                            ORDER BY created_at DESC, id DESC
+                            LIMIT @Limit;
+                            """;
 
-            return datas;
-        }
-
-        public CursorList<CommentDto> CreateCursorList(List<CommentDto> dtos)
-        {
-            var hasMore = dtos.Count > Constants.CHILDREN_COUNT_LIMIT;
-            string? cursor = null;
-
-            if (hasMore)
+            var pageAll = (await connection.QueryAsync<CommentDto>(sqlPage, new
             {
-                cursor = Cursor<DateTime, Guid>.Encode(dtos[^1].CreatedAt, dtos[^1].Id);
-                dtos.Remove(dtos.Last());
+                ParentId = request.ParentId, CreatedAt = cursor?.Filter, LastId = cursor?.LastId, Limit = request.Limit + 1
+            })).ToList();
+
+            string? nextCursor = null;
+            if (pageAll.Count > request.Limit)
+            {
+                var extra = pageAll[request.Limit];
+                nextCursor = Cursor<DateTime, Guid>.Encode(extra.CreatedAt, extra.Id);
+                pageAll.RemoveAt(request.Limit);
             }
 
-            var cursorList = new CursorList<CommentDto>(dtos, cursor, hasMore);
-            return cursorList;
+            if (pageAll.Count == 0)
+                return Results.Ok(new
+                {
+                    children = Array.Empty<CommentDto>(), nextCursor
+                });
+
+            var ids = pageAll.Select(x => x.Id).ToArray();
+
+            var sqlSub = """
+                         SELECT
+                           id           AS Id,
+                           parent_id    AS ParentId,
+                           relation_id  AS RelationId,
+                           user_id      AS UserId,
+                           text,
+                           created_at   AS CreatedAt,
+                           rating
+                         FROM (
+                           SELECT *,
+                                  ROW_NUMBER() OVER(
+                                    PARTITION BY parent_id
+                                    ORDER BY created_at DESC, id DESC
+                                  ) AS rn
+                           FROM comments.comments
+                           WHERE parent_id = ANY(@Ids)
+                         ) t
+                         WHERE t.rn <= @SubLimit
+                         ORDER BY parent_id, created_at DESC, id DESC;
+                         """;
+
+            var subs = (await connection.QueryAsync<CommentDto>(sqlSub, new
+            {
+                Ids = ids, SubLimit = 2
+            })).ToList();
+
+            var map = subs
+                .GroupBy(c => c.ParentId!.Value)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            foreach (var child in pageAll)
+            {
+                if (!map.TryGetValue(child.Id, out var list))
+                    continue;
+
+                child.Children = list;
+                if (list.Count != 2)
+                    continue;
+
+                child.HasMoreChildren = true;
+                var last = list[^1];
+                child.ChildrenCursor = Cursor<DateTime, Guid>.Encode(last.CreatedAt, last.Id);
+            }
+
+            return Results.Ok(new
+            {
+                children = pageAll, nextCursor
+            });
         }
     }
 }

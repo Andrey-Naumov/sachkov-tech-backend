@@ -1,7 +1,6 @@
 ﻿using CommentService.Infrastructure;
 using SachkovTech.Core.Database;
 using SachkovTech.Framework.Authorization;
-using SachkovTech.Framework.Cors;
 using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Logging;
 using SachkovTech.Framework.Swagger;

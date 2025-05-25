@@ -35,8 +35,8 @@ app.UseCors(config =>
         .AllowAnyMethod();
 });
 
-app.UseAuthentication();
-app.UseScopeDataMiddleware();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseScopeDataMiddleware();
+//app.UseAuthorization();
 app.MapEndpoints();
 app.Run();

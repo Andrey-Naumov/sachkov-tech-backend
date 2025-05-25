@@ -1,5 +1,4 @@
-﻿using CommentService.Api;
-using CommentService.Contracts.Requests;
+﻿using CommentService.Contracts.Requests;
 using CommentService.Entities;
 using CommentService.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +14,7 @@ public class AddComment
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapPost("api/comments", Handle)
-                .RequirePermissions(Permissions.Comments.CREATE_COMMENT);
+            app.MapPost("api/comments", Handle);
         }
 
         public async Task<IResult> Handle(
@@ -42,7 +40,7 @@ public class AddComment
                     .FirstOrDefaultAsync(a => a.Id == request.ParentId);
 
                 if (parentComment == null)
-                    return ResultResponse.NotFound(Errors.General.NotFound(request.ParentId, "RealationId"));
+                    return ResultResponse.NotFound(GeneralErrors.NotFound(request.ParentId, "RealationId"));
 
                 parentComment.RepliesCountIncrease();
             }

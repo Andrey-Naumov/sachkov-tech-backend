@@ -32,7 +32,7 @@ public sealed class IndexQuestionConsumer(SearchRepository searchRepository)
             context.Message.IssueId,
             context.Message.LessonId);
 
-        var success = await _searchRepository.IndexQuestion(indexQuestionCommand);
+        bool success = await _searchRepository.IndexQuestion(indexQuestionCommand);
         if (success == false)
             throw new ApplicationException($"Error occured while indexing question with id {context.Message.Id}");
     }

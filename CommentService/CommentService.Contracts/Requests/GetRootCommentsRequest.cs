@@ -2,5 +2,6 @@
 
 public record GetRootCommentsRequest(
     Guid RelationId,
-    string? Cursor
+    string? Cursor,
+    int Limit
 );

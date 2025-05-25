@@ -1,17 +1,16 @@
-﻿using SachkovTech.Core.Database;
-
-namespace CommentService.Entities;
+﻿namespace CommentService.Entities;
 
 public class CommentDto
 {
-    public Guid Id { get; set; }
-    public Guid RelationId { get; set; }
-    public Guid UserId { get; set; }
-    public Guid? ParentId { get; set; }
-    public string Text { get; set; } = string.Empty;
-    public int Rating { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public int RepliesCount { get; set; }
-    public CursorList<CommentDto> ChildrenComments { get; set; }
-    //public List<CommentDto> ChildrenComments { get; set; } = [];
+    public required Guid Id { get; init; }
+    public Guid? ParentId { get; init; }
+    public required Guid RelationId { get; init; }
+    public required Guid UserId { get; init; }
+    public required string Text { get; init; }
+    public required DateTime CreatedAt { get; init; }
+    public required int Rating { get; init; }
+    public List<CommentDto> Children { get; set; } = [];
+
+    public string? ChildrenCursor { get; set; }
+    public bool HasMoreChildren { get; set; }
 }
