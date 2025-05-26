@@ -1,32 +1,27 @@
 ﻿using CSharpFunctionalExtensions;
-using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SachkovTech.Core.Abstractions;
 using SachkovTech.Core.Database;
-using SachkovTech.Core.Validation;
+using SachkovTech.Issues.Application.Features.ModulesComplition.Command.TakeOnWorkIssue;
 using SachkovTech.Issues.Application.Interfaces;
-using SachkovTech.Issues.Domain.ValueObjects;
 using SharedKernel;
 
-namespace SachkovTech.Issues.Application.Features.ModulesComplition.Command.SendOnReview;
+namespace SachkovTech.Issues.Application.Features.ModulesComplition.Command.ReturnToWorkIssue;
 
-public class SendOnReviewHandler : ICommandHandler<SendOnReviewCommand>
+public class ReturnToWorkIssueHandler : ICommandHandler<ReturnToWorkIssueCommand>
 {
     private readonly IModuleComplitionRepository _moduleComplitionRepository;
-    private readonly ILogger<SendOnReviewHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPublisher _publisher;
-    private readonly IValidator<SendOnReviewCommand> _validator;
+    private readonly ILogger<TakeOnWorkIssueHandler> _logger;
 
-    public SendOnReviewHandler(
-        IValidator<SendOnReviewCommand> validator,
+    public ReturnToWorkIssueHandler(
         IModuleComplitionRepository moduleComplitionRepository,
         IUnitOfWork unitOfWork,
         IPublisher publisher,
-        ILogger<SendOnReviewHandler> logger)
+        ILogger<TakeOnWorkIssueHandler> logger)
     {
-        _validator = validator;
         _moduleComplitionRepository = moduleComplitionRepository;
         _unitOfWork = unitOfWork;
         _publisher = publisher;
@@ -34,13 +29,9 @@ public class SendOnReviewHandler : ICommandHandler<SendOnReviewCommand>
     }
 
     public async Task<UnitResult<ErrorList>> Handle(
-        SendOnReviewCommand command,
-        CancellationToken cancellationToken = default)
+        ReturnToWorkIssueCommand command,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
-        if (validationResult.IsValid == false)
-            return validationResult.ToList();
-
         await using var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
 
         var userModule = await _moduleComplitionRepository
@@ -49,11 +40,9 @@ public class SendOnReviewHandler : ICommandHandler<SendOnReviewCommand>
         if (userModule.IsFailure)
             return userModule.Error.ToErrorList();
 
-        var pullRequestUrl = PullRequestUrl.Create(command.PullRequestUrl).Value;
-
-        var userIssueResult = userModule.Value.SendOnReviewIssue(command.IssueId, pullRequestUrl);
-        if (userIssueResult.IsFailure)
-            return userIssueResult.Error.ToErrorList();
+        var result = userModule.Value.ReturnToWork(command.IssueId);
+        if (result.IsFailure)
+            return result.Error.ToErrorList();
 
         await _unitOfWork.SaveChanges(cancellationToken);
 
@@ -62,9 +51,9 @@ public class SendOnReviewHandler : ICommandHandler<SendOnReviewCommand>
         await transaction.CommitAsync(cancellationToken);
 
         _logger.LogInformation(
-            "Issue id {IssueId} with User id {UserId} was created",
-            command.UserId,
-            command.IssueId);
+            "Issue id {IssueId} with User id {UserId} was created and returned to work",
+            command.IssueId,
+            command.UserId);
 
         return UnitResult.Success<ErrorList>();
     }

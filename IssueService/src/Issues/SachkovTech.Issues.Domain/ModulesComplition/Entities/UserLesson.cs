@@ -1,9 +1,9 @@
-﻿using SachkovTech.Issues.Domain.ValueObjects.Ids;
-using SharedKernel;
+﻿using CSharpFunctionalExtensions;
+using SachkovTech.Issues.Domain.ValueObjects.Ids;
 
 namespace SachkovTech.Issues.Domain.ModulesComplition.Entities;
 
-public class UserLesson : DomainEntity<UserLessonId>
+public class UserLesson : Entity<UserLessonId>
 {
     // ef core
     private UserLesson(UserLessonId id)

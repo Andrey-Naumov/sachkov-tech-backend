@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using SachkovTech.Issues.Domain.ModulesComplition.DomainEvents;
 using SachkovTech.Issues.Domain.ModulesComplition.Entities;
 using SachkovTech.Issues.Domain.ModulesComplition.Enums;
 using SachkovTech.Issues.Domain.ValueObjects;
@@ -66,12 +67,25 @@ public sealed class UserModule : DomainEntity<UserModuleId>
 
         var oldUserIssue = _userIssues.FirstOrDefault(i => i.IssueId == userIssue.IssueId);
         if (oldUserIssue is not null)
-        {
-            oldUserIssue.TakeOnWork();
-            return UnitResult.Success<Error>();
-        }
+            return Errors.General.Failure();
 
         _userIssues.Add(userIssue);
+
+        return UnitResult.Success<Error>();
+    }
+
+    public UnitResult<Error> ReturnToWork(IssueId issueId)
+    {
+        if (AtWork == false)
+            return Errors.General.Failure();
+
+        var userIssue = _userIssues.FirstOrDefault(i => i.IssueId == issueId);
+        if (userIssue is null)
+            return Errors.General.NotFound();
+
+        userIssue.ReturnToWork();
+
+        AddDomainEvent(new IssueReturnToWorkEvent(userIssue.IssueId, userIssue.UserId));
 
         return UnitResult.Success<Error>();
     }
@@ -88,6 +102,8 @@ public sealed class UserModule : DomainEntity<UserModuleId>
         var result = userIssue.SendOnReview(pullRequestUrl);
         if (result.IsFailure)
             return result.Error;
+
+        AddDomainEvent(new IssueSentOnReviewEvent(userIssue.IssueId, userIssue.UserId, userIssue.PullRequestUrl));
 
         return userIssue;
     }

@@ -1,7 +1,6 @@
 using CSharpFunctionalExtensions;
 using SachkovTech.Issues.Domain.Issue.Events;
 using SachkovTech.Issues.Domain.Issue.ValueObjects;
-using SachkovTech.Issues.Domain.Tags.Events;
 using SachkovTech.Issues.Domain.ValueObjects;
 using SachkovTech.Issues.Domain.ValueObjects.Ids;
 using SharedKernel;

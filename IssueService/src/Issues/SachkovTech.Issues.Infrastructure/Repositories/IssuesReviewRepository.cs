@@ -46,10 +46,15 @@ public class IssuesReviewRepository : IIssuesReviewRepository
         return issueReview;
     }
 
-    public async Task<UnitResult<Error>> Add(IssueReview issueReview, CancellationToken cancellationToken = default)
+    public async Task<UnitResult<Error>> Add(IssueReview issueReview, CancellationToken cancellationToken)
     {
         await _dbContext.AddAsync(issueReview, cancellationToken);
 
         return UnitResult.Success<Error>();
+    }
+
+    public void Delete(IssueReview issueReview)
+    {
+        _dbContext.Remove(issueReview);
     }
 }

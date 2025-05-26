@@ -1,5 +1,4 @@
 using CSharpFunctionalExtensions;
-using SachkovTech.Issues.Domain.ModulesComplition.DomainEvents;
 using SachkovTech.Issues.Domain.ModulesComplition.Enums;
 using SachkovTech.Issues.Domain.ModulesComplition.ValueObjects;
 using SachkovTech.Issues.Domain.ValueObjects;
@@ -8,7 +7,7 @@ using SharedKernel;
 
 namespace SachkovTech.Issues.Domain.ModulesComplition.Entities;
 
-public class UserIssue : DomainEntity<UserIssueId>
+public class UserIssue : Entity<UserIssueId>
 {
     // ef core
     private UserIssue(UserIssueId id)
@@ -50,8 +49,16 @@ public class UserIssue : DomainEntity<UserIssueId>
         Status = IssueStatus.UnderReview;
         PullRequestUrl = pullRequestUrl;
 
-        var domainEvent = new IssueSentOnReviewEvent(IssueId, UserId, pullRequestUrl);
-        AddDomainEvent(domainEvent);
+        return Result.Success<Error>();
+    }
+
+    internal UnitResult<Error> ReturnToWork()
+    {
+        if (Status != IssueStatus.UnderReview)
+            return Error.Failure("issue.status.invalid", "issue status should be under review");
+
+        Status = IssueStatus.AtWork;
+        PullRequestUrl = PullRequestUrl.Empty;
 
         return Result.Success<Error>();
     }

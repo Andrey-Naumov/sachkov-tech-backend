@@ -2,11 +2,12 @@
 using SachkovTech.Framework;
 using SachkovTech.Framework.Authorization;
 using SachkovTech.Issues.Application.Features.IssuesComplition.Queries.GetUserReviewIssues;
-using SachkovTech.Issues.Application.Features.ModulesComplition.Command.CompleteIssue;
 using SachkovTech.Issues.Application.Features.ModulesComplition.Command.CompleteLessonView;
+using SachkovTech.Issues.Application.Features.ModulesComplition.Command.ReturnToWorkIssue;
 using SachkovTech.Issues.Application.Features.ModulesComplition.Command.SendOnReview;
 using SachkovTech.Issues.Application.Features.ModulesComplition.Command.StartModuleExecution;
 using SachkovTech.Issues.Application.Features.ModulesComplition.Command.StopWorking;
+using SachkovTech.Issues.Application.Features.ModulesComplition.Command.TakeOnWorkIssue;
 using SachkovTech.Issues.Application.Features.ModulesComplition.Command.UncompleteLessonViewed;
 using SachkovTech.Issues.Application.Features.ModulesComplition.Queries.GetUserActiveIssues;
 using SachkovTech.Issues.Application.Features.ModulesComplition.Queries.GetUserCompletedIssues;
@@ -149,14 +150,13 @@ public class ModulesComplitionController : ApplicationController
     public async Task<ActionResult> TakeOnWork(
         [FromRoute] Guid moduleId,
         [FromRoute] Guid issueId,
-        [FromServices] CompleteIssueHandler handler,
+        [FromServices] TakeOnWorkIssueHandler handler,
         [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var command = new CompleteIssueCommand(userScopedData.UserId, moduleId, issueId);
+        var command = new TakeOnWorkIssueCommand(userScopedData.UserId, moduleId, issueId);
 
         var result = await handler.Handle(command, cancellationToken);
-
         if (result.IsFailure)
             return result.Error.ToResponse();
 
@@ -164,7 +164,25 @@ public class ModulesComplitionController : ApplicationController
     }
 
     [Permission(Permissions.SolvingIssues.UPDATE_SOLVING_ISSUE)]
-    [HttpPost("{moduleId:guid}/issues/{issueId:guid}/review")]
+    [HttpPut("{moduleId:guid}/issues/{issueId:guid}/return-to-work")]
+    public async Task<ActionResult> ReturnToWork(
+        [FromRoute] Guid moduleId,
+        [FromRoute] Guid issueId,
+        [FromServices] ReturnToWorkIssueHandler handler,
+        [FromServices] UserScopedData userScopedData,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new ReturnToWorkIssueCommand(userScopedData.UserId, moduleId, issueId);
+
+        var result = await handler.Handle(command, cancellationToken);
+        if (result.IsFailure)
+            return result.Error.ToResponse();
+
+        return Ok();
+    }
+
+    [Permission(Permissions.SolvingIssues.UPDATE_SOLVING_ISSUE)]
+    [HttpPut("{moduleId:guid}/issues/{issueId:guid}/review")]
     public async Task<ActionResult> SendOnReview(
         [FromRoute] Guid moduleId,
         [FromRoute] Guid issueId,
@@ -180,7 +198,6 @@ public class ModulesComplitionController : ApplicationController
             request.PullRequestUrl);
 
         var result = await handler.Handle(command, cancellationToken);
-
         if (result.IsFailure)
             return result.Error.ToResponse();
 
@@ -188,7 +205,7 @@ public class ModulesComplitionController : ApplicationController
     }
 
     [Permission(Permissions.SolvingIssues.UPDATE_SOLVING_ISSUE)]
-    [HttpPost("{moduleId:guid}/issues/{issueId:guid}/cancel")]
+    [HttpPut("{moduleId:guid}/issues/{issueId:guid}/cancel")]
     public async Task<ActionResult> StopWorking(
         [FromRoute] Guid moduleId,
         [FromRoute] Guid issueId,
@@ -199,7 +216,6 @@ public class ModulesComplitionController : ApplicationController
         var command = new StopWorkingCommand(userScopedData.UserId, moduleId, issueId);
 
         var result = await handler.Handle(command, cancellationToken);
-
         if (result.IsFailure)
             return result.Error.ToResponse();
 

@@ -19,4 +19,6 @@ public interface IIssuesReviewRepository
     Task<UnitResult<Error>> Add(
         IssueReview issueReview,
         CancellationToken cancellationToken = default);
+
+    void Delete(IssueReview issueReview);
 }
