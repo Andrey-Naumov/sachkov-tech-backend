@@ -11,6 +11,7 @@ using SachkovTech.Framework.Observability;
 using SachkovTech.Framework.Swagger;
 using SharedKernel.Exeptions;
 using TagService.Consumers;
+using TagService.Infrastructure;
 
 namespace TagService;
 
@@ -20,8 +21,12 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services
-            .AddFramework(configuration);
+        services.AddLowerCaseRouting();
+        services.AddCors(configuration);
+
+        services.AddScoped<ApplicationDbContext>();
+
+        services.AddFramework(configuration);
 
         return services;
     }
@@ -64,7 +69,7 @@ public static class DependencyInjection
                     r.Incremental(3, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
                 });
             });
-            
+
             configure.AddConsumer<TagsAssignedConsumer>(cfg =>
             {
                 cfg.UseMessageRetry(r =>
@@ -74,7 +79,7 @@ public static class DependencyInjection
                     r.Incremental(3, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
                 });
             });
-            
+
             configure.AddConsumer<TagsUnAssignedConsumer>(cfg =>
             {
                 cfg.UseMessageRetry(r =>

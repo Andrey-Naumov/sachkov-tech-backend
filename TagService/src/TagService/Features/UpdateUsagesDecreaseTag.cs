@@ -4,7 +4,6 @@ using SachkovTech.Framework.Endpoints;
 using SharedKernel;
 using TagService.Infrastructure;
 using IResult = Microsoft.AspNetCore.Http.IResult;
-using Permissions = TagService.Permissions;
 
 namespace TagService.Features;
 
@@ -15,7 +14,7 @@ public class UpdateUsagesDecreaseTag
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapPatch("api/tags/{tagId:guid}/rating-decrease", Handler)
-                .RequireAuthorization(Permissions.Tags.UPDATE_TAG);
+                .RequirePermissions(Permissions.Tags.UPDATE_TAG);
         }
         
         public async Task<IResult> Handler(

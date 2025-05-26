@@ -15,14 +15,14 @@ public class Tag : Entity<Guid>
     
     public int UsagesCount { get; private set; }
     
-    public Tag(Guid id, string name, string description, DateTime createdAt) : base(id)
+    public Tag(Guid id, string name, string description) : base(id)
     {
         Name = name;
         Description = description;
-        CreatedAt = createdAt;
+        CreatedAt = DateTime.UtcNow;
     }
 
-    public static Result<Tag, Error> Create(string name, string description, DateTime createdAt)
+    public static Result<Tag, Error> Create(string name, string description)
     {
         if(string.IsNullOrWhiteSpace(name) || name.Length > TEXT_MAX_LENGTH)
             return Errors.General.ValueIsRequired("Name");
@@ -30,7 +30,7 @@ public class Tag : Entity<Guid>
         if(string.IsNullOrWhiteSpace(description) || description.Length > TEXT_MAX_LENGTH)
             return Errors.General.ValueIsRequired("Description");
         
-        return new Tag(Guid.NewGuid(), name, description, createdAt);
+        return new Tag(Guid.NewGuid(), name, description);
     }
 
     public UnitResult<Error> Edit(string name, string description)

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using SachkovTech.Framework.Endpoints;
 using TagService.Infrastructure;
-using Permissions = TagService.Permissions;
 
 namespace TagService.Features;
 
@@ -13,7 +12,7 @@ public class GetTagsByIds
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapGet("api/tags/ids", Handler)
-                .RequireAuthorization(Permissions.Tags.READ_TAG);
+                .RequirePermissions(Permissions.Tags.READ_TAG);
         }
         
         public async Task<IResult> Handler(

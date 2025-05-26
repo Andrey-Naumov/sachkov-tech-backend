@@ -49,5 +49,7 @@ public class ApplicationDbContext : DbContext
             .Property(t => t.UsagesCount)
             .HasColumnName("usages_count")
             .IsRequired();
+
+        modelBuilder.HasDefaultSchema("tags");
     }
 }

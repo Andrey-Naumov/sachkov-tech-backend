@@ -8,20 +8,20 @@ using TagService.Infrastructure;
 
 namespace TagService.Features;
 
-public class AddTag
+public class CreateTag
 {
     public sealed class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapPost("api/tags", Handler)
-                .RequireAuthorization(Permissions.Tags.CREATE_TAG);
+                .RequirePermissions(Permissions.Tags.CREATE_TAG);
         }
 
         public async Task<IResult> Handler(
             AddTagRequest request,
             [FromServices] ApplicationDbContext context,
-            [FromServices] ILogger<AddTag> logger,
+            [FromServices] ILogger<CreateTag> logger,
             CancellationToken cancellationToken)
         {
             var tagResult = await context.Tags.SingleOrDefaultAsync(t => t.Name == request.Name, cancellationToken);
@@ -30,8 +30,7 @@ public class AddTag
 
             var tag = Tag.Create(
                 request.Name,
-                request.Description,
-                request.CreatedAt);
+                request.Description);
 
             if (tag.IsFailure)
                 return ResultResponse.BadRequest<Tag>(tag.Error);

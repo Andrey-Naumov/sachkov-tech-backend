@@ -89,13 +89,6 @@ public class CreateIssueHandler : ICommandHandler<Guid, CreateIssueCommand>
         var description = Description.Create(command.Description).Value;
         var experience = Experience.Create(command.Experience).Value;
 
-        // TODO: Заглушка, реализовать доабвление тегов на фронтенде, потому что приходит null
-        IEnumerable<Guid> tags = [];
-        if (command.Tags is not null)
-        {
-            tags = command.Tags;
-        }
-
         var files = new List<FileId>();
 
         return new Domain.Issue.Issue(
@@ -105,7 +98,7 @@ public class CreateIssueHandler : ICommandHandler<Guid, CreateIssueCommand>
             lessonId,
             moduleId,
             experience,
-            tags,
+            command.Tags,
             files);
     }
 }

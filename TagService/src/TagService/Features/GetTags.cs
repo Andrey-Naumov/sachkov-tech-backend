@@ -14,8 +14,8 @@ public class GetTags
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapGet("api/tags/{cursor}", Handler)
-                .RequireAuthorization(Permissions.Tags.READ_TAG);
+            app.MapGet("api/tags", Handler)
+                .RequirePermissions(Permissions.Tags.READ_TAG);
         }
 
         public async Task<IResult> Handler(

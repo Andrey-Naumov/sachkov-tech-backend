@@ -5,7 +5,6 @@ using SharedKernel;
 using TagService.Contracts.Requests;
 using TagService.Infrastructure;
 using IResult = Microsoft.AspNetCore.Http.IResult;
-using Permissions = TagService.Permissions;
 
 namespace TagService.Features;
 
@@ -16,7 +15,7 @@ public class UpdateMainInfoTag
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapPatch("api/tags/{tagId:guid}", Handler)
-                .RequireAuthorization(Permissions.Tags.UPDATE_TAG);
+                .RequirePermissions(Permissions.Tags.UPDATE_TAG);
         }
 
         public async Task<IResult> Handler(

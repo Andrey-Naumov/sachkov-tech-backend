@@ -1,8 +1,8 @@
+using SachkovTech.Framework.Cors;
 using SachkovTech.Framework.Endpoints;
 using SachkovTech.Framework.Middlewares;
 using Serilog;
 using TagService;
-using TagService.Infrastructure;
 
 const string dockerEnv = "Docker";
 
@@ -13,7 +13,6 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
 builder.Services.AddProgramDependencies(builder.Configuration);
-builder.Services.AddScoped<ApplicationDbContext>();
 
 var app = builder.Build();
 
@@ -26,13 +25,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment(dockerEnv))
     app.UseSwaggerUI();
 }
 
-app.UseCors(config =>
-{
-    config.WithOrigins("http://localhost:5144")
-        .AllowCredentials()
-        .AllowAnyHeader()
-        .AllowAnyMethod();
-});
+app.ConfigureCors();
 
 app.UseAuthentication();
 app.UseScopeDataMiddleware();

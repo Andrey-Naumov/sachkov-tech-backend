@@ -5,7 +5,6 @@ using SachkovTech.Framework.Endpoints;
 using SharedKernel;
 using TagService.Contracts.IntegrationEvents;
 using TagService.Infrastructure;
-using Permissions = TagService.Permissions;
 
 namespace TagService.Features;
 
@@ -16,7 +15,7 @@ public class DeleteTag
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapDelete("api/tags/{tagId:guid}", Handler)
-                .RequireAuthorization(Permissions.Tags.DELETE_TAG);
+                .RequirePermissions(Permissions.Tags.DELETE_TAG);
         }
 
         public async Task<IResult> Handler(
