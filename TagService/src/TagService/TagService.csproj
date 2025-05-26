@@ -1,38 +1,44 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <UserSecretsId>386d8cef-29ac-431b-8226-741b21e9cb07</UserSecretsId>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>386d8cef-29ac-431b-8226-741b21e9cb07</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Core" Version="1.1.9" />
-        <PackageReference Include="CSharpFunctionalExtensions" Version="3.5.1" />
-        <PackageReference Include="Framework" Version="1.4.6" />
-        <PackageReference Include="IssueService.Communication" Version="1.0.4" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="8.4.0" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="SachkovTech.Issues.Contracts" Version="1.1.7" />
-        <PackageReference Include="SharedKernel" Version="1.1.9" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.0" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Core" Version="1.1.9"/>
+    <PackageReference Include="CSharpFunctionalExtensions" Version="3.5.1"/>
+    <PackageReference Include="Framework" Version="1.4.6"/>
+    <PackageReference Include="IssueService.Communication" Version="1.0.4"/>
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.4.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SachkovTech.Issues.Contracts" Version="1.1.7"/>
+    <PackageReference Include="SharedKernel" Version="1.1.9"/>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.0"/>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <Content Include="..\..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
-    </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\TagService.Contracts\TagService.Contracts.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <None Update="etc\key.pub">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TagService.Contracts\TagService.Contracts.csproj"/>
+  </ItemGroup>
 
 </Project>

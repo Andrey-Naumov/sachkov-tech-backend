@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C70CABA9-BAB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagService", "src\TagService\TagService.csproj", "{15C586DF-3871-4127-AA93-C3B471E796B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagService.Contracts", "TagService.Contracts\TagService.Contracts.csproj", "{88AE7B78-FE34-4967-97B3-E7DA1746DB29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagService.Contracts", "src\TagService.Contracts\TagService.Contracts.csproj", "{FD9BD635-9A0B-4682-96A4-B4F80B7BDE5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,13 +22,13 @@ Global
 		{15C586DF-3871-4127-AA93-C3B471E796B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15C586DF-3871-4127-AA93-C3B471E796B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15C586DF-3871-4127-AA93-C3B471E796B9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88AE7B78-FE34-4967-97B3-E7DA1746DB29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88AE7B78-FE34-4967-97B3-E7DA1746DB29}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88AE7B78-FE34-4967-97B3-E7DA1746DB29}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88AE7B78-FE34-4967-97B3-E7DA1746DB29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD9BD635-9A0B-4682-96A4-B4F80B7BDE5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD9BD635-9A0B-4682-96A4-B4F80B7BDE5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD9BD635-9A0B-4682-96A4-B4F80B7BDE5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD9BD635-9A0B-4682-96A4-B4F80B7BDE5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{15C586DF-3871-4127-AA93-C3B471E796B9} = {C70CABA9-BAB3-46C8-AA6F-8E666DE1E5C3}
-		{88AE7B78-FE34-4967-97B3-E7DA1746DB29} = {C70CABA9-BAB3-46C8-AA6F-8E666DE1E5C3}
+		{FD9BD635-9A0B-4682-96A4-B4F80B7BDE5B} = {C70CABA9-BAB3-46C8-AA6F-8E666DE1E5C3}
 	EndGlobalSection
 EndGlobal

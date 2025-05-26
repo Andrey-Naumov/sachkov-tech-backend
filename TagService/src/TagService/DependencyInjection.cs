@@ -95,7 +95,7 @@ public static class DependencyInjection
                 cfg.Host(new Uri(configuration["RabbitMQ:Host"]!), h =>
                 {
                     h.Username(configuration["RabbitMQ:UserName"]!);
-                    h.Password(configuration["RabbitMQ:PasswoЁrd"]!);
+                    h.Password(configuration["RabbitMQ:Password"]!);
                 });
 
                 cfg.ConfigureEndpoints(context);

@@ -1,7 +1,7 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8005
+EXPOSE 8004
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
@@ -16,6 +16,8 @@ RUN dotnet nuget add source https://nuget.pkg.github.com/SachkovTech/index.json 
     --store-password-in-clear-text
 
 COPY ["src/TagService/TagService.csproj", "src/TagService/"]
+COPY ["src/TagService/etc/key.pub", "src/TagService/etc/"]
+COPY ["src/TagService.Contracts/TagService.Contracts.csproj", "src/TagService.Contracts/"]
 RUN dotnet restore "src/TagService/TagService.csproj"
 COPY . .
 WORKDIR "/src/src/TagService"
