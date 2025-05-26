@@ -56,6 +56,13 @@ public class IssuesesRepository : IIssuesRepository
         return issue;
     }
 
+    public async Task<IReadOnlyList<Issue>> GetIssuesByModuleId(
+        ModuleId moduleId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Issues.Where(i => i.ModuleId == moduleId).ToListAsync(cancellationToken);
+    }
+
     public async Task<Result<Issue, Error>> GetByIdForRestore(
         IssueId issueId, CancellationToken cancellationToken = default)
     {

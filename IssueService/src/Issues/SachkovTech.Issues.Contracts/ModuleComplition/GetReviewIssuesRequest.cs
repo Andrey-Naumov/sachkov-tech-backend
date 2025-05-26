@@ -1,4 +1,4 @@
-﻿namespace SachkovTech.Issues.Contracts.IssueComlition;
+﻿namespace SachkovTech.Issues.Contracts.ModuleComplition;
 
 public record GetReviewIssuesRequest(
     string? Cursor,

@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using SachkovTech.Issues.Domain.Module.DomainEvents;
 using SachkovTech.Issues.Domain.Module.Entities;
 using SachkovTech.Issues.Domain.Module.ValueObjects;
 using SachkovTech.Issues.Domain.ValueObjects;
@@ -7,7 +8,7 @@ using SharedKernel;
 
 namespace SachkovTech.Issues.Domain.Module;
 
-public class Module : Entity<ModuleId>, ISoftDeletable
+public class Module : DomainEntity<ModuleId>, ISoftDeletable
 {
     private readonly List<IssuePosition> _issuesPosition = [];
 
@@ -46,6 +47,8 @@ public class Module : Entity<ModuleId>, ISoftDeletable
     {
         IsDeleted = true;
         DeletionDate = DateTime.UtcNow;
+
+        AddDomainEvent(new SoftDeleteModuleDomainEvent(Id));
     }
 
     public void Restore()

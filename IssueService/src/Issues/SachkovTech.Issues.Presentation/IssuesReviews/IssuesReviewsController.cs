@@ -9,8 +9,8 @@ using SachkovTech.Issues.Application.Features.IssuesReviews.Commands.SendForRevi
 using SachkovTech.Issues.Application.Features.IssuesReviews.Commands.StartReview;
 using SachkovTech.Issues.Application.Features.IssuesReviews.Queries.GetPendingReviewIssues;
 using SachkovTech.Issues.Application.Features.IssuesReviews.Queries.GetReviewerIssues;
-using SachkovTech.Issues.Contracts.IssueComlition;
 using SachkovTech.Issues.Contracts.IssueReview;
+using SachkovTech.Issues.Contracts.ModuleComplition;
 
 namespace SachkovTech.Issues.Presentation.IssuesReviews;
 

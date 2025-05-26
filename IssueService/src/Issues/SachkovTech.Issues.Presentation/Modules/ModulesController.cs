@@ -90,8 +90,8 @@ public class ModulesController : ApplicationController
         CancellationToken cancellationToken)
     {
         var command = new DeleteModuleCommand(id);
-        var result = await handler.Handle(command, cancellationToken);
 
+        var result = await handler.Handle(command, cancellationToken);
         if (result.IsFailure)
             return result.Error.ToResponse();
 

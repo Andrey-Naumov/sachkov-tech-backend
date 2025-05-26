@@ -19,5 +19,9 @@ public interface IIssuesRepository
         bool includeDeletedOption = false,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<Issue>> GetIssuesByModuleId(
+        ModuleId moduleId,
+        CancellationToken cancellationToken = default);
+
     Task<Result<Issue, Error>> GetByTitle(Title title, CancellationToken cancellationToken = default);
 }

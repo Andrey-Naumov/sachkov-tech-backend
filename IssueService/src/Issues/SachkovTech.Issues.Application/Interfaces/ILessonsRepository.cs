@@ -13,6 +13,8 @@ public interface ILessonsRepository
     public Task<Result<Lesson, Error>> GetById(LessonId lessonId, CancellationToken cancellationToken = default);
 
     public Task<Result<Lesson, Error>> GetByTitle(Title title, CancellationToken cancellationToken = default);
+    
+    public Task<IReadOnlyList<Lesson>> GetLessonsByModuleId(ModuleId moduleId, CancellationToken cancellationToken = default);
 
     Task<Result<IReadOnlyList<Lesson>, Error>> GetLessonsByTagId(
         Guid tagId, CancellationToken cancellationToken = default);

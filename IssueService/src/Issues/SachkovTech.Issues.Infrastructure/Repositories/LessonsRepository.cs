@@ -48,6 +48,13 @@ public class LessonsRepository : ILessonsRepository
         return module;
     }
 
+    public async Task<IReadOnlyList<Lesson>> GetLessonsByModuleId(
+        ModuleId moduleId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Lessons.Where(l => l.ModuleId == moduleId).ToListAsync(cancellationToken);
+    }
+
     public async Task<Result<IReadOnlyList<Lesson>, Error>> GetLessonsByTagId(
         Guid tagId, CancellationToken cancellationToken = default)
     {
